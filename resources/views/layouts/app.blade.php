@@ -366,15 +366,10 @@
         <div><span>Hotline: <strong>0188888888</strong> &nbsp;|&nbsp; Central Medical Centre Building</span></div>
         <div class="demo-roles">
             <strong>Demo Access:</strong>
-<<<<<<< HEAD
-            <a href="{{ Route::has('login.demo') ? route('login.demo', 'doctor') : '#' }}" class="demo-pill" title="Login as Dr. Anisur Rahman">1-Click Doctor Login (Dr. Anisur)</a>
-            <a href="{{ Route::has('doctor.queue') ? route('doctor.queue') : '#' }}" class="demo-pill" style="background:#2d9156;">Consultation Queue</a>
-            <a href="{{ Route::has('doctor.prescriptions.create') ? route('doctor.prescriptions.create') : '#' }}" class="demo-pill">Write Prescription</a>
-=======
-            <a href="{{ Route::has('login.demo') ? route('login.demo', 'patient') : '#' }}" class="demo-pill" title="Login as Student Patient">1-Click Patient Login (Rahman)</a>
-            <a href="{{ Route::has('patients.register') ? route('patients.register') : '#' }}" class="demo-pill" style="background:#2d9156;">Register New Patient</a>
-            <a href="{{ Route::has('appointments') ? route('appointments') : '#' }}" class="demo-pill">Book Visit</a>
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
+            <a href="{{ Route::has('login.demo') ? route('login.demo', 'admin') : '#' }}" class="demo-pill" title="Login as System Director">1-Click Admin Login</a>
+            <a href="{{ Route::has('login.demo') ? route('login.demo', 'pharmacist') : '#' }}" class="demo-pill" style="background:#2d9156;" title="Login as Head Pharmacist">1-Click Pharmacist Login</a>
+            <a href="{{ Route::has('pharmacy.inventory') ? route('pharmacy.inventory') : '#' }}" class="demo-pill">Medicine Stock</a>
+            <a href="{{ Route::has('pharmacy.dispense') ? route('pharmacy.dispense') : '#' }}" class="demo-pill">Dispensing Desk</a>
         </div>
     </div>
 

@@ -55,7 +55,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ Route::has('login.post') ? route('login.post') : '#' }}">
+            <form method="POST" action="{{ route('login.post') }}">
                 @csrf
 
                 <div style="margin-bottom: 1rem;">
@@ -73,7 +73,7 @@
                     <label style="display:flex;align-items:center;gap:.4rem;font-size:12px;cursor:pointer;">
                         <input type="checkbox" name="remember" style="accent-color:var(--green);"> Remember session
                     </label>
-                    <a href="{{ Route::has('patients.register') ? route('patients.register') : '#' }}" style="color:var(--green);font-size:12px;font-weight:700;text-decoration:none;">New patient? Register here</a>
+                    <a href="{{ route('patients.register') }}" style="color:var(--green);font-size:12px;font-weight:700;text-decoration:none;">New patient? Register here</a>
                 </div>
 
                 <button type="submit" class="btn btn-green" style="width: 100%; padding: .6rem;">Sign In to Medical Portal</button>
@@ -91,7 +91,7 @@
                 <strong>Patient Portal</strong>
                 <small>Rahman Al-Hasan (Student ID: 2022-CSE-011)</small>
             </div>
-            <a href="{{ Route::has('login.demo') ? route('login.demo', 'patient') : '#' }}" class="btn btn-green btn-sm">Enter as Patient</a>
+            <a href="{{ route('login.demo', 'patient') }}" class="btn btn-green btn-sm">Enter as Patient</a>
         </div>
 
         <div class="demo-role-item">
@@ -99,7 +99,7 @@
                 <strong>Doctor Consultation Desk</strong>
                 <small>Dr. Anisur Rahman (Senior Medical Officer)</small>
             </div>
-            <a href="{{ Route::has('login.demo') ? route('login.demo', 'doctor') : '#' }}" class="btn btn-green btn-sm">Enter as Doctor</a>
+            <a href="{{ route('login.demo', 'doctor') }}" class="btn btn-green btn-sm">Enter as Doctor</a>
         </div>
 
         <div class="demo-role-item">
@@ -107,7 +107,7 @@
                 <strong>Pharmacy &amp; Inventory</strong>
                 <small>Md. Rafiqul Islam (Head Pharmacist)</small>
             </div>
-            <a href="{{ Route::has('login.demo') ? route('login.demo', 'pharmacist') : '#' }}" class="btn btn-gold btn-sm">Enter as Pharmacist</a>
+            <a href="{{ route('login.demo', 'pharmacist') }}" class="btn btn-gold btn-sm">Enter as Pharmacist</a>
         </div>
 
         <div class="demo-role-item">
@@ -115,7 +115,7 @@
                 <strong>System Administrator</strong>
                 <small>Operational Analytics &amp; Role Management</small>
             </div>
-            <a href="{{ Route::has('login.demo') ? route('login.demo', 'admin') : '#' }}" class="btn btn-outline btn-sm">Enter as Admin</a>
+            <a href="{{ route('login.demo', 'admin') }}" class="btn btn-outline btn-sm">Enter as Admin</a>
         </div>
     </div>
 </div>

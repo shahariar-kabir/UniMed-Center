@@ -26,7 +26,7 @@
 
 {{-- Top Controls --}}
 <div class="inv-top-bar">
-    <form action="{{ Route::has('pharmacy.inventory') ? route('pharmacy.inventory') : '#' }}" method="GET" class="filter-bar">
+    <form action="{{ route('pharmacy.inventory') }}" method="GET" class="filter-bar">
         <input type="text" name="search" class="form-control" style="width:220px;" placeholder="Search name, generic, batch..." value="{{ request('search') }}">
         <select name="category" class="form-control" style="width:160px;">
             <option value="">&mdash; All Categories &mdash;</option>
@@ -41,7 +41,7 @@
         </select>
         <button type="submit" class="btn btn-green btn-sm">Filter</button>
         @if(request()->hasAny(['search', 'category', 'filter']))
-            <a href="{{ Route::has('pharmacy.inventory') ? route('pharmacy.inventory') : '#' }}" class="btn btn-outline btn-sm">Clear</a>
+            <a href="{{ route('pharmacy.inventory') }}" class="btn btn-outline btn-sm">Clear</a>
         @endif
     </form>
 
@@ -110,7 +110,7 @@
                             @endif
                         </td>
                         <td>
-                            <form action="{{ Route::has('pharmacy.inventory.stock') ? route('pharmacy.inventory.stock', $med->id) : '#' }}" method="POST" style="display:flex;gap:4px;align-items:center;">
+                            <form action="{{ route('pharmacy.inventory.stock', $med->id) }}" method="POST" style="display:flex;gap:4px;align-items:center;">
                                 @csrf
                                 <input type="hidden" name="action" value="add">
                                 <input type="number" name="adjustment" value="20" min="1" style="width:50px;padding:2px 4px;font-size:11px;border:1px solid #ccc;border-radius:3px;">
@@ -138,7 +138,7 @@
 <div class="card" id="newMedicineCard">
     <div class="card-header">+ Register New Medicine / Stock Batch</div>
     <div class="card-body">
-        <form action="{{ Route::has('pharmacy.inventory.store') ? route('pharmacy.inventory.store') : '#' }}" method="POST">
+        <form action="{{ route('pharmacy.inventory.store') }}" method="POST">
             @csrf
 
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:.8rem;">

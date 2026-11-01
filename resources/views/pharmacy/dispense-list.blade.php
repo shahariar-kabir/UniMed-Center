@@ -8,7 +8,7 @@
 <div class="card">
     <div class="card-header">
         <span>Prescriptions Awaiting Dispensation ({{ $prescriptions->total() }})</span>
-        <a href="{{ Route::has('pharmacy.inventory') ? route('pharmacy.inventory') : '#' }}" style="color:#fff;font-size:11px;text-decoration:underline;">View Medicine Stock &rarr;</a>
+        <a href="{{ route('pharmacy.inventory') }}" style="color:#fff;font-size:11px;text-decoration:underline;">View Medicine Stock &rarr;</a>
     </div>
     <div class="card-body" style="padding:0;">
         <table class="data-table">
@@ -69,13 +69,13 @@
                         </td>
                         <td>
                             <div style="display:flex;flex-direction:column;gap:5px;">
-                                <form action="{{ Route::has('pharmacy.dispense.store') ? route('pharmacy.dispense.store', $rx->id) : '#' }}" method="POST">
+                                <form action="{{ route('pharmacy.dispense.store', $rx->id) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-green btn-sm" style="width:100%;">
                                         Dispense &amp; Deduct Stock
                                     </button>
                                 </form>
-                                <a href="{{ Route::has('patient.prescriptions.show') ? route('patient.prescriptions.show', $rx->id) : '#' }}" class="btn btn-outline btn-sm" style="width:100%;text-align:center;">
+                                <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-sm" style="width:100%;text-align:center;">
                                     View Full Rx
                                 </a>
                             </div>

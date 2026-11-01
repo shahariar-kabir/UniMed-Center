@@ -138,9 +138,9 @@
         <div class="card" style="margin-bottom:1.4rem;">
             <div class="card-header">User &amp; Security Management</div>
             <div class="card-body" style="display:flex;flex-direction:column;gap:.6rem;">
-                <a href="{{ Route::has('admin.users') ? route('admin.users') : '#' }}" class="btn btn-green" style="width:100%;">Manage Users &amp; Role Authorization &rarr;</a>
-                <a href="{{ Route::has('pharmacy.inventory') ? route('pharmacy.inventory') : '#' }}" class="btn btn-outline" style="width:100%;">Medicine Inventory Control</a>
-                <a href="{{ Route::has('doctor.queue') ? route('doctor.queue') : '#' }}" class="btn btn-outline" style="width:100%;">View Live Consultation Queues</a>
+                <a href="{{ route('admin.users') }}" class="btn btn-green" style="width:100%;">Manage Users &amp; Role Authorization &rarr;</a>
+                <a href="{{ route('pharmacy.inventory') }}" class="btn btn-outline" style="width:100%;">Medicine Inventory Control</a>
+                <a href="{{ route('doctor.queue') }}" class="btn btn-outline" style="width:100%;">View Live Consultation Queues</a>
             </div>
         </div>
 

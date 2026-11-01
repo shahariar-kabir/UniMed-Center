@@ -43,8 +43,8 @@
 </div>
 
 <div style="display:flex;gap:.8rem;margin-bottom:1.4rem;flex-wrap:wrap;">
-    <a href="{{ Route::has('pharmacy.inventory') ? route('pharmacy.inventory') : '#' }}" class="btn btn-green">Full Medicine Inventory</a>
-    <a href="{{ Route::has('pharmacy.dispense') ? route('pharmacy.dispense') : '#' }}" class="btn btn-gold">Dispense Pending Prescriptions ({{ $pendingPrescriptions->count() }})</a>
+    <a href="{{ route('pharmacy.inventory') }}" class="btn btn-green">Full Medicine Inventory</a>
+    <a href="{{ route('pharmacy.dispense') }}" class="btn btn-gold">Dispense Pending Prescriptions ({{ $pendingPrescriptions->count() }})</a>
 </div>
 
 {{-- Two Alert Tables --}}
@@ -124,7 +124,7 @@
                             </td>
                             <td>{{ $med->reorder_level }} {{ $med->unit }}</td>
                             <td>
-                                <form action="{{ Route::has('pharmacy.inventory.stock') ? route('pharmacy.inventory.stock', $med->id) : '#' }}" method="POST" style="display:flex;gap:4px;">
+                                <form action="{{ route('pharmacy.inventory.stock', $med->id) }}" method="POST" style="display:flex;gap:4px;">
                                     @csrf
                                     <input type="hidden" name="action" value="add">
                                     <input type="number" name="adjustment" value="50" style="width:55px;padding:2px 4px;font-size:11px;border:1px solid #ccc;border-radius:3px;">
@@ -147,7 +147,7 @@
 <div class="card">
     <div class="card-header">
         <span>Prescriptions Ready for Dispensation ({{ $pendingPrescriptions->count() }})</span>
-        <a href="{{ Route::has('pharmacy.dispense') ? route('pharmacy.dispense') : '#' }}" style="color:#fff;font-size:11px;text-decoration:underline;">Full Dispensing Counter &rarr;</a>
+        <a href="{{ route('pharmacy.dispense') }}" style="color:#fff;font-size:11px;text-decoration:underline;">Full Dispensing Counter &rarr;</a>
     </div>
     <div class="card-body" style="padding:0;">
         <table class="data-table">
@@ -179,7 +179,7 @@
                         </td>
                         <td style="font-size:11px;color:var(--muted);">{{ $rx->created_at->diffForHumans() }}</td>
                         <td>
-                            <form action="{{ Route::has('pharmacy.dispense.store') ? route('pharmacy.dispense.store', $rx->id) : '#' }}" method="POST">
+                            <form action="{{ route('pharmacy.dispense.store', $rx->id) }}" method="POST">
                                 @csrf
                                 <button type="submit" class="btn btn-gold btn-sm">Dispense &amp; Deduct Stock</button>
                             </form>

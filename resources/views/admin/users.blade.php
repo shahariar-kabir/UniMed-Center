@@ -7,7 +7,7 @@
 
 {{-- Top Filter & Add User Button --}}
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;gap:1rem;flex-wrap:wrap;">
-    <form action="{{ Route::has('admin.users') ? route('admin.users') : '#' }}" method="GET" style="display:flex;gap:.5rem;flex-wrap:wrap;">
+    <form action="{{ route('admin.users') }}" method="GET" style="display:flex;gap:.5rem;flex-wrap:wrap;">
         <input type="text" name="search" class="form-control" style="width:220px;" placeholder="Search name, email, ID..." value="{{ request('search') }}">
         <select name="role" class="form-control" style="width:160px;">
             <option value="">&mdash; All Roles &mdash;</option>
@@ -18,7 +18,7 @@
         </select>
         <button type="submit" class="btn btn-green btn-sm">Filter Users</button>
         @if(request()->hasAny(['search', 'role']))
-            <a href="{{ Route::has('admin.users') ? route('admin.users') : '#' }}" class="btn btn-outline btn-sm">Clear</a>
+            <a href="{{ route('admin.users') }}" class="btn btn-outline btn-sm">Clear</a>
         @endif
     </form>
 
@@ -81,7 +81,7 @@
                         </td>
                         <td>
                             {{-- Quick Role / Status Update Form --}}
-                            <form action="{{ Route::has('admin.users.update') ? route('admin.users.update', $u->id) : '#' }}" method="POST" style="display:flex;gap:4px;align-items:center;">
+                            <form action="{{ route('admin.users.update', $u->id) }}" method="POST" style="display:flex;gap:4px;align-items:center;">
                                 @csrf
                                 @method('PUT')
                                 <select name="role" class="form-control" style="width:110px;padding:2px 4px;font-size:11px;">
@@ -118,7 +118,7 @@
 <div class="card" id="newUserFormCard">
     <div class="card-header">+ Create New Medical Staff or Administrative Account</div>
     <div class="card-body">
-        <form action="{{ Route::has('admin.users.store') ? route('admin.users.store') : '#' }}" method="POST">
+        <form action="{{ route('admin.users.store') }}" method="POST">
             @csrf
 
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:.8rem;">

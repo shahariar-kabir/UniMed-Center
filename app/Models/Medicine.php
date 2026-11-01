@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -35,6 +36,21 @@ class Medicine extends Model
             'reorder_level' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeLowStock(Builder $query): Builder
+    {
+        return $query->whereColumn('stock_quantity', '<=', 'reorder_level');
+    }
+
+    public function scopeNearExpiry(Builder $query, int $days = 60): Builder
+    {
+        return $query->whereDate('expiry_date', '<=', Carbon::today()->addDays($days));
     }
 
     public function prescriptionItems(): HasMany

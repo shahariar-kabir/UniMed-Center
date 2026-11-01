@@ -156,12 +156,6 @@ class AuthController extends Controller
 
     private function redirectForRole(User $user): RedirectResponse
     {
-        return match ($user->role) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'doctor' => redirect()->route('doctor.dashboard'),
-            'pharmacist' => redirect()->route('pharmacy.dashboard'),
-            'patient' => redirect()->route('patient.dashboard'),
-            default => redirect('/'),
-        };
+        return redirect()->route($user->dashboardRoute());
     }
 }

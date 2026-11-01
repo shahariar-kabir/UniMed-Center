@@ -371,7 +371,7 @@
         <a href="{{ route('login.demo', 'admin') }}" class="demo-pill" title="Login as Administrator">Admin</a>
     </div>
     <div>
-        <span>Hotline: <strong>0188888888</strong> &nbsp;|&nbsp; Central Medical Centre Building</span>
+        <span>Hotline: <strong>0188888888</strong> &nbsp;|&nbsp; UNIMED CENTER BUILDING, UNKNOWN</span>
     </div>
 </div>
 
@@ -473,7 +473,7 @@
 <footer>
     <div>
         &copy; {{ date('Y') }} University Medical Centre &mdash; All rights reserved.<br>
-        Medical Centre Building, Campus Road, Dhaka 1205 &nbsp;|&nbsp; Hotline: 0188888888
+        UNIMED CENTER BUILDING, UNKNOWN &nbsp;|&nbsp; Hotline: 0188888888
     </div>
     <div class="footer-links">
         <a href="{{ route('home') }}">Home</a>

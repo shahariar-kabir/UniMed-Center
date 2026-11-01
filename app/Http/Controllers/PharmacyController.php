@@ -7,7 +7,6 @@ use App\Models\Prescription;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class PharmacyController extends Controller
@@ -15,19 +14,10 @@ class PharmacyController extends Controller
     public function dashboard(): View
     {
         $today = Carbon::today();
-        $sixtyDaysAhead = $today->copy()->addDays(60);
 
-        $totalMedicines = Medicine::where('is_active', true)->count();
-
-        $lowStockMedicines = Medicine::where('is_active', true)
-            ->whereColumn('stock_quantity', '<=', 'reorder_level')
-            ->orderBy('stock_quantity')
-            ->get();
-
-        $nearExpiryMedicines = Medicine::where('is_active', true)
-            ->whereDate('expiry_date', '<=', $sixtyDaysAhead)
-            ->orderBy('expiry_date')
-            ->get();
+        $totalMedicines = Medicine::active()->count();
+        $lowStockMedicines = Medicine::active()->lowStock()->orderBy('stock_quantity')->get();
+        $nearExpiryMedicines = Medicine::active()->nearExpiry(60)->orderBy('expiry_date')->get();
 
         $pendingPrescriptions = Prescription::with(['patient', 'doctor', 'items'])
             ->where('status', 'active')
@@ -65,9 +55,9 @@ class PharmacyController extends Controller
         }
 
         if ($request->input('filter') === 'low_stock') {
-            $query->whereColumn('stock_quantity', '<=', 'reorder_level');
+            $query->lowStock();
         } elseif ($request->input('filter') === 'near_expiry') {
-            $query->whereDate('expiry_date', '<=', Carbon::today()->addDays(60));
+            $query->nearExpiry(60);
         }
 
         $medicines = $query->orderBy('name')->paginate(15)->withQueryString();
@@ -126,9 +116,6 @@ class PharmacyController extends Controller
 
     public function dispense(Prescription $prescription): RedirectResponse
     {
-        $pharmacist = Auth::user();
-
-        // Deduct inventory for each item
         foreach ($prescription->items as $item) {
             if ($item->medicine_id) {
                 $med = Medicine::find($item->medicine_id);
@@ -142,9 +129,9 @@ class PharmacyController extends Controller
         $prescription->update([
             'status' => 'dispensed',
             'dispensed_at' => Carbon::now(),
-            'dispensed_by' => $pharmacist->id,
+            'dispensed_by' => auth()->id(),
         ]);
 
-        return back()->with('success', "Prescription {$prescription->prescription_number} dispensed successfully! Medicine stock adjusted.");
+        return redirect()->route('pharmacy.dispense')->with('success', "Prescription {$prescription->prescription_number} dispensed successfully. Medicine inventory updated.");
     }
 }

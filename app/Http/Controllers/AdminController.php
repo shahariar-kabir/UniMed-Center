@@ -27,15 +27,14 @@ class AdminController extends Controller
             'total_pharmacists' => User::where('role', 'pharmacist')->where('is_active', true)->count(),
             'appointments_month' => Appointment::whereDate('appointment_date', '>=', $startOfMonth)->count(),
             'appointments_today' => Appointment::whereDate('appointment_date', $today)->count(),
-            'queues_today' => MedicalQueue::whereDate('queue_date', $today)->count(),
+            'queues_today' => MedicalQueue::today()->count(),
             'prescriptions_total' => Prescription::count(),
             'prescriptions_dispensed' => Prescription::where('status', 'dispensed')->count(),
-            'medicines_total' => Medicine::where('is_active', true)->count(),
-            'low_stock_count' => Medicine::where('is_active', true)->whereColumn('stock_quantity', '<=', 'reorder_level')->count(),
-            'near_expiry_count' => Medicine::where('is_active', true)->whereDate('expiry_date', '<=', $today->copy()->addDays(60))->count(),
+            'medicines_total' => Medicine::active()->count(),
+            'low_stock_count' => Medicine::active()->lowStock()->count(),
+            'near_expiry_count' => Medicine::active()->nearExpiry(60)->count(),
         ];
 
-        // Department breakdown
         $departmentStats = Appointment::selectRaw('department, count(*) as count')
             ->groupBy('department')
             ->orderByDesc('count')

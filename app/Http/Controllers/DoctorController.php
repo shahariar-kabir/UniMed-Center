@@ -6,7 +6,6 @@ use App\Models\MedicalQueue;
 use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\Prescription;
-use App\Models\PrescriptionItem;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,17 +17,11 @@ class DoctorController extends Controller
     public function dashboard(): View
     {
         $doctor = Auth::user();
-        $today = Carbon::today();
 
         $todayQueues = MedicalQueue::with('patient')
-            ->whereDate('queue_date', $today)
-            ->where(function ($q) use ($doctor) {
-                $q->where('doctor_id', $doctor->id)
-                    ->orWhereNull('doctor_id')
-                    ->orWhere('department', 'like', "%{$doctor->department}%");
-            })
-            ->orderByRaw("CASE WHEN status = 'in_consultation' THEN 1 WHEN status = 'waiting' THEN 2 ELSE 3 END")
-            ->orderBy('id')
+            ->today()
+            ->forDoctor($doctor)
+            ->ordered()
             ->get();
 
         $activePatientQueue = $todayQueues->where('status', 'in_consultation')->first();
@@ -41,23 +34,24 @@ class DoctorController extends Controller
             ->take(6)
             ->get();
 
-        return view('doctor.dashboard', compact('doctor', 'todayQueues', 'activePatientQueue', 'waitingCount', 'completedTodayCount', 'recentPrescriptions'));
+        return view('doctor.dashboard', compact(
+            'doctor',
+            'todayQueues',
+            'activePatientQueue',
+            'waitingCount',
+            'completedTodayCount',
+            'recentPrescriptions'
+        ));
     }
 
     public function queue(): View
     {
         $doctor = Auth::user();
-        $today = Carbon::today();
 
         $todayQueues = MedicalQueue::with(['patient', 'appointment'])
-            ->whereDate('queue_date', $today)
-            ->where(function ($q) use ($doctor) {
-                $q->where('doctor_id', $doctor->id)
-                    ->orWhereNull('doctor_id')
-                    ->orWhere('department', 'like', "%{$doctor->department}%");
-            })
-            ->orderByRaw("CASE WHEN status = 'in_consultation' THEN 1 WHEN status = 'waiting' THEN 2 ELSE 3 END")
-            ->orderBy('id')
+            ->today()
+            ->forDoctor($doctor)
+            ->ordered()
             ->get();
 
         return view('doctor.queue', compact('doctor', 'todayQueues'));
@@ -67,9 +61,8 @@ class DoctorController extends Controller
     {
         $doctor = Auth::user();
 
-        // If another patient was in consultation, mark them completed or reset
         MedicalQueue::where('doctor_id', $doctor->id)
-            ->whereDate('queue_date', Carbon::today())
+            ->today()
             ->where('status', 'in_consultation')
             ->where('id', '!=', $queue->id)
             ->update(['status' => 'completed', 'completed_at' => Carbon::now()]);
@@ -116,15 +109,10 @@ class DoctorController extends Controller
     public function createPrescription(Request $request): View
     {
         $doctor = Auth::user();
-        $selectedPatient = null;
-
-        if ($request->filled('patient_id')) {
-            $selectedPatient = Patient::find($request->input('patient_id'));
-        }
-
+        $selectedPatient = $request->filled('patient_id') ? Patient::find($request->input('patient_id')) : null;
         $queueId = $request->input('queue_id');
         $patients = Patient::orderBy('first_name')->get();
-        $medicines = Medicine::where('is_active', true)->orderBy('name')->get();
+        $medicines = Medicine::active()->orderBy('name')->get();
 
         return view('doctor.prescription-create', compact('doctor', 'selectedPatient', 'queueId', 'patients', 'medicines'));
     }
@@ -151,11 +139,8 @@ class DoctorController extends Controller
             'medicines.*.quantity' => 'required|integer|min:1',
         ]);
 
-        $rxCount = Prescription::count() + 1;
-        $prescriptionNumber = 'RX-'.date('Y').'-'.str_pad((string) $rxCount, 4, '0', STR_PAD_LEFT);
-
         $prescription = Prescription::create([
-            'prescription_number' => $prescriptionNumber,
+            'prescription_number' => Prescription::generateNumber(),
             'patient_id' => $validated['patient_id'],
             'doctor_id' => $doctor->id,
             'diagnosis' => $validated['diagnosis'],
@@ -168,8 +153,7 @@ class DoctorController extends Controller
         ]);
 
         foreach ($validated['medicines'] as $medItem) {
-            PrescriptionItem::create([
-                'prescription_id' => $prescription->id,
+            $prescription->items()->create([
                 'medicine_id' => $medItem['medicine_id'] ?? null,
                 'medicine_name' => $medItem['medicine_name'],
                 'dosage' => $medItem['dosage'],
@@ -180,7 +164,6 @@ class DoctorController extends Controller
             ]);
         }
 
-        // If this prescription was created from a queue consultation, mark it completed
         if (! empty($validated['queue_id'])) {
             MedicalQueue::where('id', $validated['queue_id'])->update([
                 'status' => 'completed',

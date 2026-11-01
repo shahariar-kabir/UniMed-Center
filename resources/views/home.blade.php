@@ -143,8 +143,8 @@
         Mon &ndash; Fri &nbsp;8:00am &ndash; 8:00pm<br>
         Saturday &nbsp;9:00am &ndash; 2:00pm<br>
         Sunday &nbsp;Emergency Counter Only<br><br>
-        Medical Centre Building,<br>
-        Campus Road, Dhaka 1205
+        UNIMED CENTER BUILDING,<br>
+        UNKNOWN
     </div>
 </div>
 

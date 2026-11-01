@@ -1,10 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-<<<<<<< HEAD
+use App\Http\Controllers\DemoUiController;
 use App\Http\Controllers\DoctorController;
-use App\Models\Prescription;
-=======
 use App\Http\Controllers\PatientController;
 use App\Models\Appointment;
 use App\Models\MedicalQueue;
@@ -12,26 +10,29 @@ use App\Models\Patient;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// Public & Landing
-Route::get('/', function () {
-<<<<<<< HEAD
-    if (Auth::check() && Auth::user()->isDoctor()) {
-        return redirect()->route('doctor.dashboard');
-    }
-
-    return redirect()->route('login');
-=======
-    if (Auth::check() && Auth::user()->isPatient()) {
-        return redirect()->route('patient.dashboard');
-    }
-
-    return redirect()->route('appointments');
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
-})->name('home');
+// Public landing page and UI prototype pages.
+Route::get('/', [DemoUiController::class, 'home'])->name('home');
+Route::get('/demo', [DemoUiController::class, 'home'])->name('demo.home');
+Route::prefix('demo')->name('demo.')->controller(DemoUiController::class)->group(function () {
+    Route::get('/patient/register', 'patientRegister')->name('patient.register');
+    Route::get('/patient/dashboard', 'patientDashboard')->name('patient.dashboard');
+    Route::get('/patient/appointments', 'appointmentBooking')->name('patient.appointments');
+    Route::get('/patient/queue', 'liveQueue')->name('patient.queue');
+    Route::get('/patient/profile', 'patientProfile')->name('patient.profile');
+    Route::get('/doctor/dashboard', 'doctorDashboard')->name('doctor.dashboard');
+    Route::get('/doctor/queue', 'doctorQueue')->name('doctor.queue');
+    Route::get('/doctor/history', 'doctorPatientHistory')->name('doctor.history');
+    Route::get('/doctor/prescriptions/create', 'doctorPrescriptionCreate')->name('doctor.prescription.create');
+    Route::get('/prescriptions/preview', 'prescriptionPreview')->name('doctor.prescription.preview');
+    Route::get('/pharmacy/dashboard', 'pharmacyDashboard')->name('pharmacy.dashboard');
+    Route::get('/pharmacy/inventory', 'pharmacyInventory')->name('pharmacy.inventory');
+    Route::get('/pharmacy/dispense', 'pharmacyDispense')->name('pharmacy.dispense');
+    Route::get('/admin/dashboard', 'adminDashboard')->name('admin.dashboard');
+    Route::get('/admin/users', 'adminUsers')->name('admin.users');
+});
 
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -39,7 +40,6 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/login/demo/{role}', [AuthController::class, 'quickLogin'])->name('login.demo');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-<<<<<<< HEAD
 // Doctor Module
 Route::middleware(['auth', 'role:doctor'])->prefix('doctor')->name('doctor.')->group(function () {
     Route::get('/dashboard', [DoctorController::class, 'dashboard'])->name('dashboard');
@@ -56,8 +56,8 @@ Route::middleware(['auth', 'role:doctor'])->prefix('doctor')->name('doctor.')->g
 Route::middleware('auth')->group(function () {
     Route::get('/prescriptions/{prescription}', [DoctorController::class, 'showPrescription'])->name('patient.prescriptions.show');
     Route::get('/prescriptions/{prescription}/pdf', [DoctorController::class, 'downloadPrescriptionPdf'])->name('patient.prescriptions.pdf');
-    Route::get('/patient/prescriptions', [DoctorController::class, 'patientPrescriptions'])->name('patient.prescriptions');
-=======
+});
+
 // Patient Registration
 Route::get('/patients/register', fn () => view('patients.register'))->name('patients.register');
 Route::post('/patients/register', [AuthController::class, 'registerPatient'])->name('patients.register.post');
@@ -199,5 +199,4 @@ Route::middleware(['auth', 'role:patient'])->prefix('patient')->name('patient.')
     Route::get('/appointments', [PatientController::class, 'appointments'])->name('appointments');
     Route::post('/appointments', [PatientController::class, 'storeAppointment'])->name('appointments.store');
     Route::get('/prescriptions', [PatientController::class, 'prescriptions'])->name('prescriptions');
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
 });

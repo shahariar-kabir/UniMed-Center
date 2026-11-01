@@ -112,7 +112,7 @@
     <a href="javascript:history.back()" class="btn btn-outline btn-sm">&larr; Back to Portal</a>
     <div style="display:flex;gap:.5rem;">
         <button onclick="window.print()" class="btn btn-outline btn-sm">Print Prescription</button>
-        <a href="{{ Route::has('patient.prescriptions.pdf') ? route('patient.prescriptions.pdf', $prescription->id) : '#' }}" class="btn btn-green btn-sm">Download Official PDF</a>
+        <a href="{{ route('patient.prescriptions.pdf', $prescription->id) }}" class="btn btn-green btn-sm">Download Official PDF</a>
     </div>
 </div>
 

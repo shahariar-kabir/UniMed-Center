@@ -34,6 +34,13 @@ class Prescription extends Model
         ];
     }
 
+    public static function generateNumber(): string
+    {
+        $count = static::count() + 1;
+
+        return 'RX-'.date('Y').'-'.str_pad((string) $count, 4, '0', STR_PAD_LEFT);
+    }
+
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class, 'patient_id');

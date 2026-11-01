@@ -156,12 +156,6 @@ class AuthController extends Controller
 
     private function redirectForRole(User $user): RedirectResponse
     {
-        $route = match ($user->role) {
-            'patient' => 'patient.dashboard',
-            'doctor' => 'doctor.dashboard',
-            default => 'home',
-        };
-
-        return redirect()->route($route)->with('success', "Welcome, {$user->name}!");
+        return redirect()->route($user->dashboardRoute())->with('success', "Welcome, {$user->name}!");
     }
 }

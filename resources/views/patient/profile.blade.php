@@ -95,7 +95,7 @@
     <div class="card">
         <div class="card-header">Update Contact &amp; Emergency Information</div>
         <div class="card-body">
-            <form action="{{ Route::has('patient.profile.update') ? route('patient.profile.update') : '#' }}" method="POST">
+            <form action="{{ route('patient.profile.update') }}" method="POST">
                 @csrf
 
                 <div class="form-grid-2">

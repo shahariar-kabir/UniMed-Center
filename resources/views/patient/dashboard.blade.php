@@ -66,7 +66,7 @@
                 @endif
             </div>
             <div>
-                <a href="{{ Route::has('patient.queue') ? route('patient.queue') : '#' }}" class="btn btn-green btn-sm">Open Live Queue Board &rarr;</a>
+                <a href="{{ route('patient.queue') }}" class="btn btn-green btn-sm">Open Live Queue Board &rarr;</a>
             </div>
         </div>
     </div>
@@ -102,7 +102,7 @@
         <div class="card" style="margin-bottom:1.4rem;">
             <div class="card-header">
                 <span>Digital Prescriptions &amp; Printable PDF</span>
-                <a href="{{ Route::has('patient.prescriptions') ? route('patient.prescriptions') : '#' }}" style="color:#fff;font-size:11px;text-decoration:underline;">View All &rarr;</a>
+                <a href="{{ route('patient.prescriptions') }}" style="color:#fff;font-size:11px;text-decoration:underline;">View All &rarr;</a>
             </div>
             <div class="card-body" style="padding:0;">
                 <table class="data-table">
@@ -128,8 +128,8 @@
                                 </td>
                                 <td>
                                     <div style="display:flex;gap:4px;">
-                                        <a href="{{ Route::has('patient.prescriptions.show') ? route('patient.prescriptions.show', $rx->id) : '#' }}" class="btn btn-outline btn-sm">View</a>
-                                        <a href="{{ Route::has('patient.prescriptions.pdf') ? route('patient.prescriptions.pdf', $rx->id) : '#' }}" class="btn btn-green btn-sm" title="Download printable PDF">PDF &darr;</a>
+                                        <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-sm">View</a>
+                                        <a href="{{ route('patient.prescriptions.pdf', $rx->id) }}" class="btn btn-green btn-sm" title="Download printable PDF">PDF &darr;</a>
                                     </div>
                                 </td>
                             </tr>
@@ -147,7 +147,7 @@
         <div class="card">
             <div class="card-header">
                 <span>My Appointments</span>
-                <a href="{{ Route::has('patient.appointments') ? route('patient.appointments') : '#' }}" style="color:#fff;font-size:11px;text-decoration:underline;">Book New Visit &rarr;</a>
+                <a href="{{ route('patient.appointments') }}" style="color:#fff;font-size:11px;text-decoration:underline;">Book New Visit &rarr;</a>
             </div>
             <div class="card-body" style="padding:0;">
                 <table class="data-table">
@@ -198,7 +198,7 @@
                     {{ $patient->emergency_name ?? 'Not set' }} &ndash; {{ $patient->emergency_phone ?? 'N/A' }}
                 </div>
                 <div style="margin-top:1rem;">
-                    <a href="{{ Route::has('patient.profile') ? route('patient.profile') : '#' }}" class="btn btn-outline btn-sm" style="width:100%;">Edit Profile &amp; Contact Info</a>
+                    <a href="{{ route('patient.profile') }}" class="btn btn-outline btn-sm" style="width:100%;">Edit Profile &amp; Contact Info</a>
                 </div>
             </div>
         </div>
@@ -207,15 +207,15 @@
             <div class="card-header">Quick Actions</div>
             <div class="card-body" style="display:flex;flex-direction:column;gap:.6rem;">
                 @if(!$activeQueue)
-                    <form action="{{ Route::has('patient.queue.join') ? route('patient.queue.join') : '#' }}" method="POST">
+                    <form action="{{ route('patient.queue.join') }}" method="POST">
                         @csrf
                         <input type="hidden" name="department" value="General Medicine">
                         <button type="submit" class="btn btn-green" style="width:100%;">Get Today's Walk-in Queue Token</button>
                     </form>
                 @endif
-                <a href="{{ Route::has('patient.queue') ? route('patient.queue') : '#' }}" class="btn btn-outline" style="width:100%;">View Live Queue Tracking</a>
-                <a href="{{ Route::has('patient.appointments') ? route('patient.appointments') : '#' }}" class="btn btn-outline" style="width:100%;">Book Doctor Appointment</a>
-                <a href="{{ Route::has('patient.prescriptions') ? route('patient.prescriptions') : '#' }}" class="btn btn-outline" style="width:100%;">Download Prescriptions (PDF)</a>
+                <a href="{{ route('patient.queue') }}" class="btn btn-outline" style="width:100%;">View Live Queue Tracking</a>
+                <a href="{{ route('patient.appointments') }}" class="btn btn-outline" style="width:100%;">Book Doctor Appointment</a>
+                <a href="{{ route('patient.prescriptions') }}" class="btn btn-outline" style="width:100%;">Download Prescriptions (PDF)</a>
             </div>
         </div>
     </div>

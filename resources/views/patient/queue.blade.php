@@ -100,7 +100,7 @@
                 <p style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;">
                     If you do not have an advance appointment, you can generate a walk-in queue token instantly for general consultation today.
                 </p>
-                <form action="{{ Route::has('patient.queue.join') ? route('patient.queue.join') : '#' }}" method="POST" style="margin-top:.8rem;display:flex;gap:.6rem;flex-wrap:wrap;">
+                <form action="{{ route('patient.queue.join') }}" method="POST" style="margin-top:.8rem;display:flex;gap:.6rem;flex-wrap:wrap;">
                     @csrf
                     <select name="department" class="form-control" style="max-width:220px;" required>
                         <option value="General Medicine">General Medicine</option>

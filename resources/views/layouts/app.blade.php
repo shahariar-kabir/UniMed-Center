@@ -362,21 +362,18 @@
 <body>
 
 {{-- Top Demo Switcher & Quick Access --}}
-    <div class="top-bar">
-        <div><span>Hotline: <strong>0188888888</strong> &nbsp;|&nbsp; Central Medical Centre Building</span></div>
-        <div class="demo-roles">
-            <strong>Demo Access:</strong>
-<<<<<<< HEAD
-            <a href="{{ Route::has('login.demo') ? route('login.demo', 'doctor') : '#' }}" class="demo-pill" title="Login as Dr. Anisur Rahman">1-Click Doctor Login (Dr. Anisur)</a>
-            <a href="{{ Route::has('doctor.queue') ? route('doctor.queue') : '#' }}" class="demo-pill" style="background:#2d9156;">Consultation Queue</a>
-            <a href="{{ Route::has('doctor.prescriptions.create') ? route('doctor.prescriptions.create') : '#' }}" class="demo-pill">Write Prescription</a>
-=======
-            <a href="{{ Route::has('login.demo') ? route('login.demo', 'patient') : '#' }}" class="demo-pill" title="Login as Student Patient">1-Click Patient Login (Rahman)</a>
-            <a href="{{ Route::has('patients.register') ? route('patients.register') : '#' }}" class="demo-pill" style="background:#2d9156;">Register New Patient</a>
-            <a href="{{ Route::has('appointments') ? route('appointments') : '#' }}" class="demo-pill">Book Visit</a>
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
-        </div>
+<div class="top-bar">
+    <div class="demo-roles">
+        <strong>Demo 1-Click Login:</strong>
+        <a href="{{ route('login.demo', 'patient') }}" class="demo-pill" title="Login as Student Patient">Patient</a>
+        <a href="{{ route('login.demo', 'doctor') }}" class="demo-pill" title="Login as Dr. Anisur Rahman">Doctor</a>
+        <a href="{{ route('login.demo', 'pharmacist') }}" class="demo-pill" title="Login as Head Pharmacist">Pharmacist</a>
+        <a href="{{ route('login.demo', 'admin') }}" class="demo-pill" title="Login as Administrator">Admin</a>
     </div>
+    <div>
+        <span>Hotline: <strong>0188888888</strong> &nbsp;|&nbsp; UNIMED CENTER BUILDING, UNKNOWN</span>
+    </div>
+</div>
 
 {{-- Site header --}}
 <div class="site-header">
@@ -403,28 +400,28 @@
 
         @auth
             @if(Auth::user()->isPatient())
-                <a href="{{ Route::has('patient.dashboard') ? route('patient.dashboard') : '#' }}" class="{{ request()->routeIs('patient.dashboard') ? 'active' : '' }}">My Dashboard</a>
-                <a href="{{ Route::has('patient.queue') ? route('patient.queue') : '#' }}" class="{{ request()->routeIs('patient.queue') ? 'active' : '' }}">Live Queue</a>
-                <a href="{{ Route::has('patient.appointments') ? route('patient.appointments') : '#' }}" class="{{ request()->routeIs('patient.appointments*') ? 'active' : '' }}">Appointments</a>
-                <a href="{{ Route::has('patient.prescriptions') ? route('patient.prescriptions') : '#' }}" class="{{ request()->routeIs('patient.prescriptions*') ? 'active' : '' }}">Prescriptions</a>
-                <a href="{{ Route::has('patient.profile') ? route('patient.profile') : '#' }}" class="{{ request()->routeIs('patient.profile') ? 'active' : '' }}">My Profile</a>
+                <a href="{{ route('patient.dashboard') }}" class="{{ request()->routeIs('patient.dashboard') ? 'active' : '' }}">My Dashboard</a>
+                <a href="{{ route('patient.queue') }}" class="{{ request()->routeIs('patient.queue') ? 'active' : '' }}">Live Queue</a>
+                <a href="{{ route('patient.appointments') }}" class="{{ request()->routeIs('patient.appointments*') ? 'active' : '' }}">Appointments</a>
+                <a href="{{ route('patient.prescriptions') }}" class="{{ request()->routeIs('patient.prescriptions*') ? 'active' : '' }}">Prescriptions</a>
+                <a href="{{ route('patient.profile') }}" class="{{ request()->routeIs('patient.profile') ? 'active' : '' }}">My Profile</a>
             @elseif(Auth::user()->isDoctor())
-                <a href="{{ Route::has('doctor.dashboard') ? route('doctor.dashboard') : '#' }}" class="{{ request()->routeIs('doctor.dashboard') ? 'active' : '' }}">Doctor Desk</a>
-                <a href="{{ Route::has('doctor.queue') ? route('doctor.queue') : '#' }}" class="{{ request()->routeIs('doctor.queue') ? 'active' : '' }}">Consultation Queue</a>
-                <a href="{{ Route::has('doctor.prescriptions.create') ? route('doctor.prescriptions.create') : '#' }}" class="{{ request()->routeIs('doctor.prescriptions.create') ? 'active' : '' }}">Generate Prescription</a>
+                <a href="{{ route('doctor.dashboard') }}" class="{{ request()->routeIs('doctor.dashboard') ? 'active' : '' }}">Doctor Desk</a>
+                <a href="{{ route('doctor.queue') }}" class="{{ request()->routeIs('doctor.queue') ? 'active' : '' }}">Consultation Queue</a>
+                <a href="{{ route('doctor.prescriptions.create') }}" class="{{ request()->routeIs('doctor.prescriptions.create') ? 'active' : '' }}">Generate Prescription</a>
             @elseif(Auth::user()->isPharmacist())
-                <a href="{{ Route::has('pharmacy.dashboard') ? route('pharmacy.dashboard') : '#' }}" class="{{ request()->routeIs('pharmacy.dashboard') ? 'active' : '' }}">Pharmacy Desk</a>
-                <a href="{{ Route::has('pharmacy.inventory') ? route('pharmacy.inventory') : '#' }}" class="{{ request()->routeIs('pharmacy.inventory') ? 'active' : '' }}">Medicine Inventory</a>
-                <a href="{{ Route::has('pharmacy.dispense') ? route('pharmacy.dispense') : '#' }}" class="{{ request()->routeIs('pharmacy.dispense') ? 'active' : '' }}">Dispense Prescriptions</a>
+                <a href="{{ route('pharmacy.dashboard') }}" class="{{ request()->routeIs('pharmacy.dashboard') ? 'active' : '' }}">Pharmacy Desk</a>
+                <a href="{{ route('pharmacy.inventory') }}" class="{{ request()->routeIs('pharmacy.inventory') ? 'active' : '' }}">Medicine Inventory</a>
+                <a href="{{ route('pharmacy.dispense') }}" class="{{ request()->routeIs('pharmacy.dispense') ? 'active' : '' }}">Dispense Prescriptions</a>
             @elseif(Auth::user()->isAdmin())
-                <a href="{{ Route::has('admin.dashboard') ? route('admin.dashboard') : '#' }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Admin Analytics</a>
-                <a href="{{ Route::has('admin.users') ? route('admin.users') : '#' }}" class="{{ request()->routeIs('admin.users*') ? 'active' : '' }}">User Management</a>
-                <a href="{{ Route::has('pharmacy.inventory') ? route('pharmacy.inventory') : '#' }}" class="{{ request()->routeIs('pharmacy.inventory') ? 'active' : '' }}">Medicine Stock</a>
-                <a href="{{ Route::has('doctor.queue') ? route('doctor.queue') : '#' }}" class="{{ request()->routeIs('doctor.queue') ? 'active' : '' }}">Live Queues</a>
+                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Admin Analytics</a>
+                <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users*') ? 'active' : '' }}">User Management</a>
+                <a href="{{ route('pharmacy.inventory') }}" class="{{ request()->routeIs('pharmacy.inventory') ? 'active' : '' }}">Medicine Stock</a>
+                <a href="{{ route('doctor.queue') }}" class="{{ request()->routeIs('doctor.queue') ? 'active' : '' }}">Live Queues</a>
             @endif
         @else
-            <a href="{{ Route::has('patients.register') ? route('patients.register') : '#' }}" class="{{ request()->routeIs('patients.register') ? 'active' : '' }}">Patient Registration</a>
-            <a href="{{ Route::has('appointments') ? route('appointments') : '#' }}" class="{{ request()->routeIs('appointments') ? 'active' : '' }}">Book Appointment</a>
+            <a href="{{ route('patients.register') }}" class="{{ request()->routeIs('patients.register') ? 'active' : '' }}">Patient Registration</a>
+            <a href="{{ route('appointments') }}" class="{{ request()->routeIs('appointments') ? 'active' : '' }}">Book Appointment</a>
         @endauth
     </div>
 
@@ -442,12 +439,12 @@
                 @endphp
                 <span class="badge {{ $roleBadges[Auth::user()->role] ?? 'badge-gray' }}">{{ ucfirst(Auth::user()->role) }}</span>
             </div>
-            <form action="{{ Route::has('logout') ? route('logout') : '#' }}" method="POST" style="display:inline;">
+            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                 @csrf
                 <button type="submit" class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.4);">Logout</button>
             </form>
         @else
-            <a href="{{ Route::has('login') ? route('login') : '#' }}" class="btn btn-gold btn-sm">Staff &amp; Patient Login</a>
+            <a href="{{ route('login') }}" class="btn btn-gold btn-sm">Staff &amp; Patient Login</a>
         @endauth
     </div>
 </nav>
@@ -476,12 +473,12 @@
 <footer>
     <div>
         &copy; {{ date('Y') }} University Medical Centre &mdash; All rights reserved.<br>
-        Medical Centre Building, Campus Road, Dhaka 1205 &nbsp;|&nbsp; Hotline: 0188888888
+        UNIMED CENTER BUILDING, UNKNOWN &nbsp;|&nbsp; Hotline: 0188888888
     </div>
     <div class="footer-links">
-        <a href="{{ Route::has('home') ? route('home') : '#' }}">Home</a>
-        <a href="{{ Route::has('patients.register') ? route('patients.register') : '#' }}">Registration</a>
-        <a href="{{ Route::has('login') ? route('login') : '#' }}">Portal Login</a>
+        <a href="{{ route('home') }}">Home</a>
+        <a href="{{ route('patients.register') }}">Registration</a>
+        <a href="{{ route('login') }}">Portal Login</a>
         <a href="#">Medical Emergency</a>
     </div>
 </footer>

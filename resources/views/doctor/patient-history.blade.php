@@ -12,7 +12,7 @@
         </div>
     </div>
     <div>
-        <a href="{{ Route::has('doctor.prescriptions.create') ? route('doctor.prescriptions.create', ['patient_id' => $patient->id]) : '#' }}" class="btn btn-green btn-sm">Generate New Prescription</a>
+        <a href="{{ route('doctor.prescriptions.create', ['patient_id' => $patient->id]) }}" class="btn btn-green btn-sm">Generate New Prescription</a>
         <a href="javascript:history.back()" class="btn btn-outline btn-sm">&larr; Back to Queue</a>
     </div>
 </div>
@@ -93,7 +93,7 @@
                             {{ Str::limit($rx->clinical_advice, 60) }}
                         </td>
                         <td>
-                            <a href="{{ Route::has('patient.prescriptions.show') ? route('patient.prescriptions.show', $rx->id) : '#' }}" class="btn btn-outline btn-sm">Full Rx</a>
+                            <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-sm">Full Rx</a>
                         </td>
                     </tr>
                 @empty

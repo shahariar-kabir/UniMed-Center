@@ -46,7 +46,7 @@
     <div class="card">
         <div class="card-header">Book New Appointment</div>
         <div class="card-body">
-            <form action="{{ Route::has('patient.appointments.store') ? route('patient.appointments.store') : '#' }}" method="POST">
+            <form action="{{ route('patient.appointments.store') }}" method="POST">
                 @csrf
 
                 <div style="margin-bottom:.8rem;">

@@ -63,20 +63,20 @@
                         </td>
                         <td>
                             <div style="display:flex;gap:4px;flex-wrap:wrap;">
-                                <a href="{{ Route::has('doctor.patients.history') ? route('doctor.patients.history', $q->patient_id) : '#' }}" class="btn btn-outline btn-sm" title="View past history">History</a>
+                                <a href="{{ route('doctor.patients.history', $q->patient_id) }}" class="btn btn-outline btn-sm" title="View past history">History</a>
 
                                 @if($q->status === 'waiting')
-                                    <form action="{{ Route::has('doctor.queue.call') ? route('doctor.queue.call', $q->id) : '#' }}" method="POST">
+                                    <form action="{{ route('doctor.queue.call', $q->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn btn-green btn-sm">Call Patient</button>
                                     </form>
-                                    <form action="{{ Route::has('doctor.queue.skip') ? route('doctor.queue.skip', $q->id) : '#' }}" method="POST">
+                                    <form action="{{ route('doctor.queue.skip', $q->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn btn-outline btn-sm" style="color:#c0392b;border-color:#e0a098;">Skip</button>
                                     </form>
                                 @elseif($q->status === 'in_consultation')
-                                    <a href="{{ Route::has('doctor.prescriptions.create') ? route('doctor.prescriptions.create', ['queue_id' => $q->id, 'patient_id' => $q->patient_id]) : '#' }}" class="btn btn-green btn-sm">Write Rx</a>
-                                    <form action="{{ Route::has('doctor.queue.complete') ? route('doctor.queue.complete', $q->id) : '#' }}" method="POST">
+                                    <a href="{{ route('doctor.prescriptions.create', ['queue_id' => $q->id, 'patient_id' => $q->patient_id]) }}" class="btn btn-green btn-sm">Write Rx</a>
+                                    <form action="{{ route('doctor.queue.complete', $q->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn btn-gold btn-sm">Complete</button>
                                     </form>

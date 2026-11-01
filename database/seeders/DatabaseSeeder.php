@@ -2,17 +2,12 @@
 
 namespace Database\Seeders;
 
-<<<<<<< HEAD
+use App\Models\Appointment;
 use App\Models\MedicalQueue;
 use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
-=======
-use App\Models\Appointment;
-use App\Models\MedicalQueue;
-use App\Models\Patient;
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -24,10 +19,7 @@ class DatabaseSeeder extends Seeder
     {
         $today = Carbon::today();
 
-<<<<<<< HEAD
-        // Doctors
-=======
-        // 1. Users
+        // 1. Users & Roles
         $admin = User::updateOrCreate(
             ['email' => 'admin@bu.edu.bd'],
             [
@@ -41,7 +33,6 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
         $doctor1 = User::updateOrCreate(
             ['email' => 'doctor@bu.edu.bd'],
             [
@@ -68,10 +59,6 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-<<<<<<< HEAD
-        // Patients
-        $pUser = User::updateOrCreate(
-=======
         $doctor3 = User::updateOrCreate(
             ['email' => 'doctor3@bu.edu.bd'],
             [
@@ -85,8 +72,20 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $pharmacist = User::updateOrCreate(
+            ['email' => 'pharma@bu.edu.bd'],
+            [
+                'name' => 'Md. Rafiqul Islam',
+                'password' => Hash::make('password'),
+                'role' => 'pharmacist',
+                'university_id' => 'PHARM-005',
+                'phone' => '01822334455',
+                'department' => 'Central Pharmacy',
+                'designation' => 'Head Pharmacist (B.Pharm, M.Pharm)',
+            ]
+        );
+
         $patientUser = User::updateOrCreate(
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
             ['email' => 'patient@bu.edu.bd'],
             [
                 'name' => 'Rahman Al-Hasan',
@@ -95,38 +94,20 @@ class DatabaseSeeder extends Seeder
                 'university_id' => '2022-CSE-011',
                 'phone' => '01911223344',
                 'department' => 'Computer Science & Engineering',
-<<<<<<< HEAD
-            ]
-        );
-
-        $p1 = Patient::updateOrCreate(
-            ['university_id' => '2022-CSE-011'],
-            [
-                'user_id' => $pUser->id,
-=======
                 'designation' => 'Undergraduate Student (Year 3)',
             ]
         );
 
-        // 2. Patient Profiles
+        // 2. Patients Profiles
         $p1 = Patient::updateOrCreate(
             ['university_id' => '2022-CSE-011'],
             [
                 'user_id' => $patientUser->id,
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
                 'first_name' => 'Rahman',
                 'last_name' => 'Al-Hasan',
                 'dob' => '2002-05-14',
                 'gender' => 'Male',
                 'blood_group' => 'B+',
-<<<<<<< HEAD
-                'role_category' => 'student',
-                'department' => 'Computer Science & Engineering',
-                'email' => 'patient@bu.edu.bd',
-                'phone' => '01911223344',
-                'allergies' => 'Penicillin, Shellfish',
-                'conditions' => ['Asthma / Respiratory'],
-=======
                 'nationality' => 'Bangladeshi',
                 'role_category' => 'student',
                 'department' => 'Computer Science & Engineering',
@@ -138,7 +119,6 @@ class DatabaseSeeder extends Seeder
                 'address' => 'Room 312, Fazlul Huq Hall, University Campus',
                 'allergies' => 'Penicillin, Shellfish',
                 'conditions' => ['Asthma / Respiratory', 'Allergic Rhinitis'],
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
                 'medications' => 'Salbutamol Inhaler as needed',
                 'is_verified' => true,
             ]
@@ -152,178 +132,288 @@ class DatabaseSeeder extends Seeder
                 'dob' => '2003-08-22',
                 'gender' => 'Female',
                 'blood_group' => 'O+',
-<<<<<<< HEAD
-                'role_category' => 'student',
-                'department' => 'Business Administration',
-=======
                 'nationality' => 'Bangladeshi',
                 'role_category' => 'student',
                 'department' => 'Business Administration',
                 'year_semester' => 'Year 2, Semester 3',
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
                 'email' => 'nadia.akter@bu.edu.bd',
-                'phone' => '01755667788',
+                'phone' => '01811998877',
+                'emergency_name' => 'Farhana Akter (Mother)',
+                'emergency_phone' => '01811998800',
+                'address' => 'Begum Rokeya Hall, Campus',
+                'allergies' => 'None',
+                'conditions' => ['Anxiety / Depression'],
+                'medications' => 'None',
                 'is_verified' => true,
             ]
         );
 
         $p3 = Patient::updateOrCreate(
-            ['university_id' => '2021-EEE-089'],
+            ['university_id' => '2021-CSE-078'],
             [
-                'first_name' => 'Tanvir',
-                'last_name' => 'Ahmed',
-                'dob' => '2001-11-03',
+                'first_name' => 'Tariq',
+                'last_name' => 'Hossain',
+                'dob' => '2001-11-09',
                 'gender' => 'Male',
                 'blood_group' => 'A+',
-<<<<<<< HEAD
-                'role_category' => 'student',
-                'department' => 'Electrical & Electronic Engineering',
-=======
                 'nationality' => 'Bangladeshi',
                 'role_category' => 'student',
-                'department' => 'Electrical & Electronic Engineering',
+                'department' => 'Computer Science & Engineering',
                 'year_semester' => 'Year 4, Semester 8',
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
-                'email' => 'tanvir.eee@bu.edu.bd',
-                'phone' => '01633445566',
+                'email' => 'tariq.hossain@bu.edu.bd',
+                'phone' => '01722883344',
+                'emergency_name' => 'Abul Hossain (Uncle)',
+                'emergency_phone' => '01722883300',
+                'address' => 'Shahidullah Hall, Campus',
+                'allergies' => 'Sulfa drugs',
+                'conditions' => [],
+                'medications' => 'None',
                 'is_verified' => true,
             ]
         );
 
-<<<<<<< HEAD
-        // Medicines catalog for doctor builder
-        $meds = [
-            ['name' => 'Paracetamol 500mg', 'generic_name' => 'Paracetamol', 'category' => 'Analgesic', 'dosage_form' => 'Tablet', 'strength' => '500mg', 'batch_number' => 'PARA-2026-A', 'stock_quantity' => 1200, 'reorder_level' => 200, 'unit' => 'strips', 'expiry_date' => Carbon::now()->addMonths(18)],
-            ['name' => 'Cetirizine 10mg', 'generic_name' => 'Cetirizine Hydrochloride', 'category' => 'Antihistamine', 'dosage_form' => 'Tablet', 'strength' => '10mg', 'batch_number' => 'CET-2026-B', 'stock_quantity' => 500, 'reorder_level' => 100, 'unit' => 'strips', 'expiry_date' => Carbon::now()->addMonths(14)],
-            ['name' => 'Omeprazole 20mg', 'generic_name' => 'Omeprazole', 'category' => 'Antacid / PPI', 'dosage_form' => 'Capsule', 'strength' => '20mg', 'batch_number' => 'OMEP-2026-C', 'stock_quantity' => 800, 'reorder_level' => 150, 'unit' => 'capsules', 'expiry_date' => Carbon::now()->addMonths(20)],
-            ['name' => 'Amoxicillin 500mg', 'generic_name' => 'Amoxicillin Trihydrate', 'category' => 'Antibiotic', 'dosage_form' => 'Capsule', 'strength' => '500mg', 'batch_number' => 'AMOX-2026-D', 'stock_quantity' => 450, 'reorder_level' => 100, 'unit' => 'capsules', 'expiry_date' => Carbon::now()->addMonths(12)],
-            ['name' => 'Salbutamol Inhaler 100mcg', 'generic_name' => 'Salbutamol', 'category' => 'Respiratory', 'dosage_form' => 'Inhaler', 'strength' => '100mcg / puff', 'batch_number' => 'SALB-2026-E', 'stock_quantity' => 85, 'reorder_level' => 25, 'unit' => 'bottles', 'expiry_date' => Carbon::now()->addMonths(16)],
-            ['name' => 'Antacid Suspension 200ml', 'generic_name' => 'Aluminium & Magnesium Hydroxide', 'category' => 'Antacid', 'dosage_form' => 'Syrup', 'strength' => '200ml', 'batch_number' => 'ANT-2026-F', 'stock_quantity' => 60, 'reorder_level' => 20, 'unit' => 'bottles', 'expiry_date' => Carbon::now()->addMonths(10)],
+        $p4 = Patient::updateOrCreate(
+            ['university_id' => 'FAC-ENG-009'],
+            [
+                'first_name' => 'Sumaiya',
+                'last_name' => 'Begum',
+                'dob' => '1988-04-12',
+                'gender' => 'Female',
+                'blood_group' => 'AB+',
+                'nationality' => 'Bangladeshi',
+                'role_category' => 'faculty',
+                'department' => 'English Language & Literature',
+                'year_semester' => 'Associate Professor',
+                'email' => 'sumaiya.b@bu.edu.bd',
+                'phone' => '01633554433',
+                'emergency_name' => 'Dr. Kamrul Hasan (Spouse)',
+                'emergency_phone' => '01633554400',
+                'address' => 'Faculty Quarter Building B-4, Campus',
+                'allergies' => 'Aspirin',
+                'conditions' => ['Hypertension / High BP'],
+                'medications' => 'Amlodipine 5mg daily',
+                'is_verified' => true,
+            ]
+        );
+
+        // 3. Medicines Inventory
+        $medicines = [
+            [
+                'name' => 'Paracetamol 500mg',
+                'generic_name' => 'Acetaminophen',
+                'category' => 'Analgesic / Antipyretic',
+                'dosage_form' => 'Tablet',
+                'strength' => '500mg',
+                'batch_number' => 'BCH-2026-081',
+                'stock_quantity' => 240,
+                'reorder_level' => 50,
+                'unit' => 'tablets',
+                'expiry_date' => $today->copy()->addMonths(18),
+                'manufacturer' => 'Square Pharmaceuticals Ltd.',
+                'instructions_default' => 'Take 1 tablet after meals for fever or pain.',
+            ],
+            [
+                'name' => 'Amoxicillin 500mg',
+                'generic_name' => 'Amoxicillin Trihydrate',
+                'category' => 'Antibiotic',
+                'dosage_form' => 'Capsule',
+                'strength' => '500mg',
+                'batch_number' => 'BCH-2026-112',
+                'stock_quantity' => 95,
+                'reorder_level' => 30,
+                'unit' => 'capsules',
+                'expiry_date' => $today->copy()->addMonths(12),
+                'manufacturer' => 'Beximco Pharma',
+                'instructions_default' => '1 capsule every 8 hours after food. Complete the full course.',
+            ],
+            [
+                'name' => 'Ciprofloxacin 500mg',
+                'generic_name' => 'Ciprofloxacin',
+                'category' => 'Antibiotic (Fluoroquinolone)',
+                'dosage_form' => 'Tablet',
+                'strength' => '500mg',
+                'batch_number' => 'BCH-2025-045',
+                'stock_quantity' => 45,
+                'reorder_level' => 25,
+                'unit' => 'tablets',
+                'expiry_date' => $today->copy()->addDays(28), // NEAR EXPIRY (< 30 days)
+                'manufacturer' => 'Incepta Pharmaceuticals',
+                'instructions_default' => '1 tablet twice daily for 5-7 days. Drink plenty of water.',
+            ],
+            [
+                'name' => 'Omeprazole 20mg',
+                'generic_name' => 'Omeprazole',
+                'category' => 'Antacid / PPI',
+                'dosage_form' => 'Capsule',
+                'strength' => '20mg',
+                'batch_number' => 'BCH-2026-204',
+                'stock_quantity' => 180,
+                'reorder_level' => 40,
+                'unit' => 'capsules',
+                'expiry_date' => $today->copy()->addMonths(20),
+                'manufacturer' => 'Square Pharmaceuticals Ltd.',
+                'instructions_default' => '1 capsule 30 minutes before breakfast.',
+            ],
+            [
+                'name' => 'Antacid Suspension 200ml',
+                'generic_name' => 'Magaldrate + Simethicone',
+                'category' => 'Antacid',
+                'dosage_form' => 'Syrup',
+                'strength' => '400mg + 20mg / 5ml',
+                'batch_number' => 'BCH-2026-099',
+                'stock_quantity' => 8, // LOW STOCK (<= 20)
+                'reorder_level' => 20,
+                'unit' => 'bottles',
+                'expiry_date' => $today->copy()->addMonths(8),
+                'manufacturer' => 'Renata Limited',
+                'instructions_default' => '2 teaspoonfuls 1 hour after meals and at bedtime.',
+            ],
+            [
+                'name' => 'Cetirizine 10mg',
+                'generic_name' => 'Cetirizine Hydrochloride',
+                'category' => 'Antihistamine / Allergy',
+                'dosage_form' => 'Tablet',
+                'strength' => '10mg',
+                'batch_number' => 'BCH-2026-150',
+                'stock_quantity' => 140,
+                'reorder_level' => 30,
+                'unit' => 'tablets',
+                'expiry_date' => $today->copy()->addMonths(14),
+                'manufacturer' => 'Eskayef Pharmaceuticals',
+                'instructions_default' => '1 tablet at bedtime for allergy, runny nose, or itching.',
+            ],
+            [
+                'name' => 'Salbutamol Inhaler 100mcg',
+                'generic_name' => 'Salbutamol',
+                'category' => 'Bronchodilator (Asthma)',
+                'dosage_form' => 'Inhaler',
+                'strength' => '100mcg/puff',
+                'batch_number' => 'BCH-2025-077',
+                'stock_quantity' => 6, // LOW STOCK & NEAR EXPIRY (< 45 days)
+                'reorder_level' => 15,
+                'unit' => 'inhalers',
+                'expiry_date' => $today->copy()->addDays(42),
+                'manufacturer' => 'Beximco Pharma',
+                'instructions_default' => '1-2 puffs as needed for shortness of breath or wheezing.',
+            ],
+            [
+                'name' => 'Metformin 500mg',
+                'generic_name' => 'Metformin Hydrochloride',
+                'category' => 'Antidiabetic',
+                'dosage_form' => 'Tablet',
+                'strength' => '500mg',
+                'batch_number' => 'BCH-2026-310',
+                'stock_quantity' => 160,
+                'reorder_level' => 35,
+                'unit' => 'tablets',
+                'expiry_date' => $today->copy()->addMonths(16),
+                'manufacturer' => 'Square Pharmaceuticals Ltd.',
+                'instructions_default' => '1 tablet with or after meals.',
+            ],
+            [
+                'name' => 'Azithromycin 500mg',
+                'generic_name' => 'Azithromycin',
+                'category' => 'Macrolide Antibiotic',
+                'dosage_form' => 'Tablet',
+                'strength' => '500mg',
+                'batch_number' => 'BCH-2026-402',
+                'stock_quantity' => 70,
+                'reorder_level' => 25,
+                'unit' => 'tablets',
+                'expiry_date' => $today->copy()->addMonths(15),
+                'manufacturer' => 'Square Pharmaceuticals Ltd.',
+                'instructions_default' => '1 tablet daily for 3 days 1 hour before or 2 hours after meals.',
+            ],
+            [
+                'name' => 'Oral Rehydration Salts (ORS)',
+                'generic_name' => 'Sodium Chloride + Potassium Chloride + Glucose',
+                'category' => 'Electrolyte Replacement',
+                'dosage_form' => 'Sachet',
+                'strength' => '20.5g/sachet',
+                'batch_number' => 'BCH-2026-550',
+                'stock_quantity' => 320,
+                'reorder_level' => 50,
+                'unit' => 'sachets',
+                'expiry_date' => $today->copy()->addMonths(24),
+                'manufacturer' => 'SMC Enterprise',
+                'instructions_default' => 'Dissolve 1 sachet in 500ml drinking water. Drink after every loose stool.',
+            ],
         ];
 
         $medicineModels = [];
-        foreach ($meds as $m) {
-            $medicineModels[$m['name']] = Medicine::updateOrCreate(['batch_number' => $m['batch_number']], $m);
+        foreach ($medicines as $med) {
+            $medicineModels[$med['name']] = Medicine::updateOrCreate(
+                ['batch_number' => $med['batch_number']],
+                $med
+            );
         }
 
-        // Live Queue for doctor desk
-        $q1 = MedicalQueue::updateOrCreate(
-            ['token_number' => 'T-101', 'queue_date' => $today],
-=======
-        // 3. Appointments
+        // 4. Appointments
         $apt1 = Appointment::updateOrCreate(
-            ['appointment_number' => 'APT-2026-0001'],
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
+            ['appointment_number' => 'APT-2026-0041'],
             [
                 'patient_id' => $p1->id,
                 'doctor_id' => $doctor1->id,
                 'department' => 'General Medicine',
-<<<<<<< HEAD
-                'status' => 'waiting',
-            ]
-        );
-
-        $q2 = MedicalQueue::updateOrCreate(
-            ['token_number' => 'T-102', 'queue_date' => $today],
-=======
                 'appointment_date' => $today,
-                'time_slot' => '10:00 AM - 10:30 AM',
-                'reason' => 'Persistent seasonal dry cough, mild sore throat and fever for 2 days.',
+                'time_slot' => '09:00',
+                'reason' => 'Persistent cough, sore throat, and low-grade fever for 3 days.',
                 'status' => 'confirmed',
+                'admin_notes' => 'Token generated for walk-in consultation.',
             ]
         );
 
         $apt2 = Appointment::updateOrCreate(
-            ['appointment_number' => 'APT-2026-0002'],
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
+            ['appointment_number' => 'APT-2026-0042'],
             [
                 'patient_id' => $p2->id,
                 'doctor_id' => $doctor1->id,
                 'department' => 'General Medicine',
-<<<<<<< HEAD
-                'status' => 'in_consultation',
-                'called_at' => Carbon::now()->subMinutes(5),
-            ]
-        );
-
-        $q3 = MedicalQueue::updateOrCreate(
-            ['token_number' => 'T-103', 'queue_date' => $today],
-            [
-                'patient_id' => $p3->id,
-                'doctor_id' => $doctor1->id,
-=======
                 'appointment_date' => $today,
-                'time_slot' => '10:30 AM - 11:00 AM',
-                'reason' => 'Severe acute migraine headache with nausea.',
+                'time_slot' => '09:30',
+                'reason' => 'Severe headache and dizziness following exam stress.',
                 'status' => 'confirmed',
             ]
         );
 
         $apt3 = Appointment::updateOrCreate(
-            ['appointment_number' => 'APT-2026-0003'],
+            ['appointment_number' => 'APT-2026-0043'],
             [
                 'patient_id' => $p3->id,
                 'doctor_id' => $doctor3->id,
                 'department' => 'Dental',
                 'appointment_date' => $today,
-                'time_slot' => '11:00 AM - 11:30 AM',
-                'reason' => 'Tooth cavity check-up.',
+                'time_slot' => '10:00',
+                'reason' => 'Molar toothache and gum bleeding.',
                 'status' => 'confirmed',
             ]
         );
 
-        // 4. Medical Queues for today
+        $apt4 = Appointment::updateOrCreate(
+            ['appointment_number' => 'APT-2026-0044'],
+            [
+                'patient_id' => $p4->id,
+                'doctor_id' => $doctor2->id,
+                'department' => 'Gynaecology',
+                'appointment_date' => $today->copy()->addDays(1),
+                'time_slot' => '11:00',
+                'reason' => 'Routine follow-up and blood pressure check.',
+                'status' => 'confirmed',
+            ]
+        );
+
+        // 5. Medical Queues for today
         MedicalQueue::updateOrCreate(
             ['token_number' => 'T-101', 'queue_date' => $today],
             [
                 'patient_id' => $p1->id,
                 'doctor_id' => $doctor1->id,
                 'appointment_id' => $apt1->id,
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
                 'department' => 'General Medicine',
                 'status' => 'waiting',
             ]
         );
 
-<<<<<<< HEAD
-        // Past prescriptions for history viewer & PDF
-        $rx1 = Prescription::updateOrCreate(
-            ['prescription_number' => 'RX-2026-0041'],
-            [
-                'patient_id' => $p1->id,
-                'doctor_id' => $doctor1->id,
-                'diagnosis' => 'Acute Upper Respiratory Tract Infection (Pharyngitis)',
-                'bp' => '120/80 mmHg',
-                'pulse' => '76 bpm',
-                'temperature' => '100.2 °F',
-                'weight' => '68 kg',
-                'clinical_advice' => "Drink warm fluids, saline gargle 3 times daily.\nAvoid cold drinks and dusty environments.\nRest for 3 days.",
-                'status' => 'active',
-            ]
-        );
-
-        PrescriptionItem::updateOrCreate(
-            ['prescription_id' => $rx1->id, 'medicine_name' => 'Paracetamol 500mg'],
-            [
-                'medicine_id' => $medicineModels['Paracetamol 500mg']->id,
-                'dosage' => '1+0+1',
-                'duration' => '5 days',
-                'instructions' => 'After meal',
-                'quantity' => 10,
-                'is_dispensed' => false,
-            ]
-        );
-
-        PrescriptionItem::updateOrCreate(
-            ['prescription_id' => $rx1->id, 'medicine_name' => 'Cetirizine 10mg'],
-            [
-                'medicine_id' => $medicineModels['Cetirizine 10mg']->id,
-                'dosage' => '0+0+1',
-                'duration' => '5 days',
-                'instructions' => 'At bedtime',
-                'quantity' => 5,
-                'is_dispensed' => false,
-=======
         MedicalQueue::updateOrCreate(
             ['token_number' => 'T-102', 'queue_date' => $today],
             [
@@ -332,7 +422,7 @@ class DatabaseSeeder extends Seeder
                 'appointment_id' => $apt2->id,
                 'department' => 'General Medicine',
                 'status' => 'in_consultation',
-                'called_at' => Carbon::now()->subMinutes(8),
+                'called_at' => Carbon::now()->subMinutes(10),
             ]
         );
 
@@ -344,7 +434,101 @@ class DatabaseSeeder extends Seeder
                 'appointment_id' => $apt3->id,
                 'department' => 'Dental',
                 'status' => 'waiting',
->>>>>>> 89f1da0eeaa079b35aebdcbfa8937613c3330e4e
+            ]
+        );
+
+        // 6. Prescriptions & Prescription Items
+        $rx1 = Prescription::updateOrCreate(
+            ['prescription_number' => 'RX-2026-0041'],
+            [
+                'patient_id' => $p1->id,
+                'doctor_id' => $doctor1->id,
+                'appointment_id' => $apt1->id,
+                'diagnosis' => 'Acute Upper Respiratory Tract Infection (Pharyngitis)',
+                'bp' => '120/80 mmHg',
+                'pulse' => '76 bpm',
+                'temperature' => '100.2 °F',
+                'weight' => '68 kg',
+                'clinical_advice' => "Drink warm fluids, saline gargle 3 times daily.\nAvoid cold drinks and dusty environments.\nRest for 3 days. Return if fever persists beyond 72 hours.",
+                'status' => 'active', // Ready for dispensing
+            ]
+        );
+
+        PrescriptionItem::updateOrCreate(
+            [
+                'prescription_id' => $rx1->id,
+                'medicine_name' => 'Paracetamol 500mg',
+            ],
+            [
+                'medicine_id' => $medicineModels['Paracetamol 500mg']->id,
+                'dosage' => '1+0+1',
+                'duration' => '5 days',
+                'instructions' => 'After meal',
+                'quantity' => 10,
+                'is_dispensed' => false,
+            ]
+        );
+
+        PrescriptionItem::updateOrCreate(
+            [
+                'prescription_id' => $rx1->id,
+                'medicine_name' => 'Cetirizine 10mg',
+            ],
+            [
+                'medicine_id' => $medicineModels['Cetirizine 10mg']->id,
+                'dosage' => '0+0+1',
+                'duration' => '5 days',
+                'instructions' => 'At bedtime',
+                'quantity' => 5,
+                'is_dispensed' => false,
+            ]
+        );
+
+        PrescriptionItem::updateOrCreate(
+            [
+                'prescription_id' => $rx1->id,
+                'medicine_name' => 'Omeprazole 20mg',
+            ],
+            [
+                'medicine_id' => $medicineModels['Omeprazole 20mg']->id,
+                'dosage' => '1+0+0',
+                'duration' => '7 days',
+                'instructions' => 'Before breakfast',
+                'quantity' => 7,
+                'is_dispensed' => false,
+            ]
+        );
+
+        // A second prescription (already dispensed in the past for history)
+        $rx2 = Prescription::updateOrCreate(
+            ['prescription_number' => 'RX-2026-0035'],
+            [
+                'patient_id' => $p1->id,
+                'doctor_id' => $doctor1->id,
+                'diagnosis' => 'Mild Bronchial Spasm / Asthmatic Cough',
+                'bp' => '118/78 mmHg',
+                'pulse' => '80 bpm',
+                'temperature' => '98.6 °F',
+                'weight' => '67 kg',
+                'clinical_advice' => 'Keep inhaler with you at all times during cold mornings.',
+                'status' => 'dispensed',
+                'dispensed_at' => Carbon::now()->subDays(15),
+                'dispensed_by' => $pharmacist->id,
+            ]
+        );
+
+        PrescriptionItem::updateOrCreate(
+            [
+                'prescription_id' => $rx2->id,
+                'medicine_name' => 'Salbutamol Inhaler 100mcg',
+            ],
+            [
+                'medicine_id' => $medicineModels['Salbutamol Inhaler 100mcg']->id,
+                'dosage' => '2 puffs',
+                'duration' => 'As needed',
+                'instructions' => 'Inhale through spacer when feeling wheezy',
+                'quantity' => 1,
+                'is_dispensed' => true,
             ]
         );
     }

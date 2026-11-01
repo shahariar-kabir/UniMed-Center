@@ -64,7 +64,7 @@
     </div>
 @endif
 
-<form action="{{ Route::has('doctor.prescriptions.store') ? route('doctor.prescriptions.store') : '#' }}" method="POST" id="prescriptionForm">
+<form action="{{ route('doctor.prescriptions.store') }}" method="POST" id="prescriptionForm">
     @csrf
     @if($queueId)
         <input type="hidden" name="queue_id" value="{{ $queueId }}">
@@ -194,7 +194,7 @@
             </div>
 
             <div style="display:flex;justify-content:flex-end;gap:.8rem;">
-                <a href="{{ Route::has('doctor.queue') ? route('doctor.queue') : '#' }}" class="btn btn-outline">Cancel</a>
+                <a href="{{ route('doctor.queue') }}" class="btn btn-outline">Cancel</a>
                 <button type="submit" class="btn btn-green" style="font-size:14px;padding:.6rem 1.6rem;">Issue &amp; Generate Prescription</button>
             </div>
         </div>

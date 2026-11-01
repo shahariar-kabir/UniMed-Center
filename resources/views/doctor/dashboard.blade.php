@@ -46,9 +46,9 @@
                 </div>
             </div>
             <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-                <a href="{{ Route::has('doctor.patients.history') ? route('doctor.patients.history', $activePatientQueue->patient_id) : '#' }}" class="btn btn-outline btn-sm">View Medical History</a>
-                <a href="{{ Route::has('doctor.prescriptions.create') ? route('doctor.prescriptions.create', ['queue_id' => $activePatientQueue->id, 'patient_id' => $activePatientQueue->patient_id]) : '#' }}" class="btn btn-green btn-sm">Generate Digital Prescription</a>
-                <form action="{{ Route::has('doctor.queue.complete') ? route('doctor.queue.complete', $activePatientQueue->id) : '#' }}" method="POST" style="display:inline;">
+                <a href="{{ route('doctor.patients.history', $activePatientQueue->patient_id) }}" class="btn btn-outline btn-sm">View Medical History</a>
+                <a href="{{ route('doctor.prescriptions.create', ['queue_id' => $activePatientQueue->id, 'patient_id' => $activePatientQueue->patient_id]) }}" class="btn btn-green btn-sm">Generate Digital Prescription</a>
+                <form action="{{ route('doctor.queue.complete', $activePatientQueue->id) }}" method="POST" style="display:inline;">
                     @csrf
                     <button type="submit" class="btn btn-gold btn-sm">Complete Consultation</button>
                 </form>
@@ -86,7 +86,7 @@
         <div class="card" style="margin-bottom:1.4rem;">
             <div class="card-header">
                 <span>Today's Consultation Queue &mdash; {{ $doctor->department }}</span>
-                <a href="{{ Route::has('doctor.queue') ? route('doctor.queue') : '#' }}" style="color:#fff;font-size:11px;text-decoration:underline;">Manage Queue &rarr;</a>
+                <a href="{{ route('doctor.queue') }}" style="color:#fff;font-size:11px;text-decoration:underline;">Manage Queue &rarr;</a>
             </div>
             <div class="card-body" style="padding:0;">
                 <table class="data-table">
@@ -119,12 +119,12 @@
                                 <td>
                                     <div style="display:flex;gap:4px;">
                                         @if($q->status === 'waiting')
-                                            <form action="{{ Route::has('doctor.queue.call') ? route('doctor.queue.call', $q->id) : '#' }}" method="POST">
+                                            <form action="{{ route('doctor.queue.call', $q->id) }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="btn btn-green btn-sm">Call Patient</button>
                                             </form>
                                         @elseif($q->status === 'in_consultation')
-                                            <a href="{{ Route::has('doctor.prescriptions.create') ? route('doctor.prescriptions.create', ['queue_id' => $q->id, 'patient_id' => $q->patient_id]) : '#' }}" class="btn btn-gold btn-sm">Write Rx</a>
+                                            <a href="{{ route('doctor.prescriptions.create', ['queue_id' => $q->id, 'patient_id' => $q->patient_id]) }}" class="btn btn-gold btn-sm">Write Rx</a>
                                         @else
                                             <span style="color:var(--muted);font-size:11px;">Completed</span>
                                         @endif
@@ -171,7 +171,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="{{ Route::has('patient.prescriptions.show') ? route('patient.prescriptions.show', $rx->id) : '#' }}" class="btn btn-outline btn-sm">View Rx</a>
+                                    <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-sm">View Rx</a>
                                 </td>
                             </tr>
                         @empty
@@ -190,9 +190,9 @@
         <div class="card" style="margin-bottom:1.4rem;">
             <div class="card-header">Clinical Quick Actions</div>
             <div class="card-body" style="display:flex;flex-direction:column;gap:.6rem;">
-                <a href="{{ Route::has('doctor.prescriptions.create') ? route('doctor.prescriptions.create') : '#' }}" class="btn btn-green" style="width:100%;">Generate Digital Prescription</a>
-                <a href="{{ Route::has('doctor.queue') ? route('doctor.queue') : '#' }}" class="btn btn-outline" style="width:100%;">Open Full Queue Desk</a>
-                <a href="{{ Route::has('pharmacy.inventory') ? route('pharmacy.inventory') : '#' }}" class="btn btn-outline" style="width:100%;">Check Medicine Inventory</a>
+                <a href="{{ route('doctor.prescriptions.create') }}" class="btn btn-green" style="width:100%;">Generate Digital Prescription</a>
+                <a href="{{ route('doctor.queue') }}" class="btn btn-outline" style="width:100%;">Open Full Queue Desk</a>
+                <a href="{{ route('pharmacy.inventory') }}" class="btn btn-outline" style="width:100%;">Check Medicine Inventory</a>
             </div>
         </div>
 

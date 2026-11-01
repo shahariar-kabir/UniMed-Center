@@ -90,4 +90,52 @@ class User extends Authenticatable
     {
         return $this->role === 'patient';
     }
+
+    public function dashboardRoute(): string
+    {
+        return match ($this->role) {
+            'admin' => 'admin.dashboard',
+            'doctor' => 'doctor.dashboard',
+            'pharmacist' => 'pharmacy.dashboard',
+            'patient' => 'patient.dashboard',
+            default => 'home',
+        };
+    }
+
+    public function getOrCreatePatient(): Patient
+    {
+        if ($this->patient) {
+            return $this->patient;
+        }
+
+        $existing = Patient::where('email', $this->email)
+            ->orWhere('university_id', $this->university_id)
+            ->first();
+
+        if ($existing) {
+            if (! $existing->user_id) {
+                $existing->update(['user_id' => $this->id]);
+            }
+
+            return $existing;
+        }
+
+        $nameParts = explode(' ', $this->name, 2);
+
+        return Patient::create([
+            'user_id' => $this->id,
+            'first_name' => $nameParts[0],
+            'last_name' => $nameParts[1] ?? 'User',
+            'university_id' => $this->university_id ?? 'STU-'.str_pad((string) $this->id, 4, '0', STR_PAD_LEFT),
+            'dob' => '2002-01-01',
+            'gender' => 'Male',
+            'blood_group' => 'B+',
+            'nationality' => 'Bangladeshi',
+            'role_category' => 'student',
+            'department' => $this->department ?? 'General',
+            'email' => $this->email,
+            'phone' => $this->phone ?? '0188888888',
+            'is_verified' => true,
+        ]);
+    }
 }

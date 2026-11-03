@@ -35,7 +35,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="form-label">Full Name &amp; Title <span class="req">*</span></label>
-                        <input type="text" name="name" class="form-control" placeholder="Dr. Anisur Rahman" value="{{ old('name') }}" required autofocus>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Dr. Full Name" value="{{ old('name') }}" required autofocus>
                     </div>
 
                     <div>

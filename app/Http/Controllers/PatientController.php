@@ -177,8 +177,9 @@ class PatientController extends Controller
 
         $doctors = User::where('role', 'doctor')->where('is_active', true)->get();
         $recentAppointments = Appointment::with(['doctor', 'patient'])->latest()->take(6)->get();
+        $takenSlots = Appointment::whereDate('appointment_date', date('Y-m-d'))->pluck('time_slot')->toArray();
 
-        return view('appointments.index', compact('doctors', 'recentAppointments'));
+        return view('appointments.index', compact('doctors', 'recentAppointments', 'takenSlots'));
     }
 
     public function publicStoreAppointment(Request $request): RedirectResponse

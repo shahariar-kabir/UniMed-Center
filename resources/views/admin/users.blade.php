@@ -129,7 +129,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="form-label">Full Name <span class="req">*</span></label>
-                    <input type="text" name="name" class="form-control" placeholder="e.g. Dr. Mahfuzur Rahman" required>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. Dr. Full Name" required>
                 </div>
                 <div>
                     <label class="form-label">Email Address <span class="req">*</span></label>

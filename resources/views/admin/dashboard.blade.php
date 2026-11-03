@@ -1,23 +1,11 @@
 @extends('layouts.app')
 @section('title', 'System Reporting & Analytics')
 
-@push('styles')
-<style>
-    .admin-grid {
-        display: grid;
-        grid-template-columns: 1fr 340px;
-        gap: 1.5rem;
-        align-items: start;
-    }
-    @media (max-width: 860px) {
-        .admin-grid { grid-template-columns: 1fr; }
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="page-title">University Medical Centre &mdash; Executive Analytics Dashboard</div>
-<div class="page-subtitle">Centralized operational reporting, department clinical load, medicine inventory monitoring, and user authorization controls.</div>
+<div class="mb-6">
+    <h1 class="page-title">Executive Analytics Dashboard</h1>
+    <p class="page-subtitle">Centralized operational reporting, department clinical load, medicine inventory monitoring, and user authorization controls.</p>
+</div>
 
 {{-- Operational Key Metrics --}}
 <div class="stats-grid">
@@ -53,42 +41,45 @@
     </div>
 </div>
 
-<div class="admin-grid">
-    {{-- Left: Department Breakdown & Recent Activity --}}
-    <div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    {{-- Left 2 cols: Department Breakdown & Recent Activity --}}
+    <div class="lg:col-span-2 space-y-6">
         {{-- Department Utilization --}}
-        <div class="card" style="margin-bottom:1.5rem;">
-            <div class="card-header">Department Clinical Load &amp; Utilization</div>
-            <div class="card-body" style="padding:0;">
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden">
+            <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider">Department Clinical Load &amp; Utilization</span>
+                <span class="badge badge-green">Operational Metrics</span>
+            </div>
+            <div class="overflow-x-auto">
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th>Department / Specialty</th>
                             <th>Total Visits Booked</th>
                             <th>Utilization Share</th>
-                            <th>Operational Status</th>
+                            <th class="text-right">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($departmentStats as $dept)
                             <tr>
-                                <td><strong>{{ $dept->department }}</strong></td>
-                                <td><strong>{{ $dept->count }}</strong> consultations</td>
+                                <td><strong class="text-slate-900">{{ $dept->department }}</strong></td>
+                                <td><strong class="text-slate-800">{{ $dept->count }}</strong> consultations</td>
                                 <td>
                                     @php
                                         $totalApts = max(1, $stats['appointments_month']);
                                         $percent = round(($dept->count / $totalApts) * 100);
                                     @endphp
-                                    <div style="background:#e8f5ee;border-radius:10px;height:14px;width:100%;overflow:hidden;">
-                                        <div style="background:var(--green);height:100%;width:{{ min(100, $percent) }}%;"></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                        <div class="bg-[#1a6b3a] h-2.5 rounded-full" style="width: {{ min(100, $percent) }}%;"></div>
                                     </div>
-                                    <div style="font-size:10px;color:var(--muted);margin-top:2px;">{{ $percent }}% of total</div>
+                                    <div class="text-[11px] text-gray-500 mt-1">{{ $percent }}% of monthly volume</div>
                                 </td>
-                                <td><span class="badge badge-green">Operational</span></td>
+                                <td class="text-right"><span class="badge badge-green">Operational</span></td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" style="text-align:center;padding:1.2rem;color:var(--muted);">No department statistics recorded yet.</td>
+                                <td colspan="4" class="text-center py-6 text-gray-400 text-xs">No department statistics recorded yet.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -97,63 +88,56 @@
         </div>
 
         {{-- Recent Prescriptions Stream --}}
-        <div class="card">
-            <div class="card-header">
-                <span>Recent System Prescriptions</span>
-                <span style="font-size:11px;font-weight:400;text-transform:none;">Live audit trail</span>
+        <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+            <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider">Recent System Prescriptions</span>
+                <span class="text-xs text-emerald-200 font-normal">Live Audit Trail</span>
             </div>
-            <div class="card-body" style="padding:0;">
+            <div class="overflow-x-auto">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Rx ID</th>
+                            <th>Rx Ref</th>
                             <th>Patient</th>
                             <th>Prescribing Doctor</th>
                             <th>Diagnosis</th>
-                            <th>Status</th>
+                            <th class="text-right">Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($recentPrescriptions as $rx)
+                        @forelse($recentPrescriptions as $rx)
                             <tr>
-                                <td><strong>{{ $rx->prescription_number }}</strong></td>
-                                <td>{{ $rx->patient->full_name }}</td>
-                                <td>{{ $rx->doctor->name }}</td>
-                                <td>{{ Str::limit($rx->diagnosis, 35) }}</td>
-                                <td>
+                                <td class="font-mono text-xs font-bold text-slate-800">{{ $rx->prescription_number }}</td>
+                                <td class="font-medium text-slate-900">{{ $rx->patient->full_name }}</td>
+                                <td class="text-xs text-slate-700">{{ $rx->doctor->name }}</td>
+                                <td class="text-xs text-gray-600 truncate max-w-[200px]">{{ Str::limit($rx->diagnosis, 35) }}</td>
+                                <td class="text-right">
                                     <span class="badge {{ $rx->status === 'dispensed' ? 'badge-green' : 'badge-yellow' }}">
                                         {{ ucfirst($rx->status) }}
                                     </span>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-6 text-gray-400 text-xs">No prescriptions recorded yet.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    {{-- Right Sidebar: Administrative Controls & Quick Links --}}
-    <div>
-        <div class="card" style="margin-bottom:1.4rem;">
-            <div class="card-header">User &amp; Security Management</div>
-            <div class="card-body" style="display:flex;flex-direction:column;gap:.6rem;">
-                <a href="{{ route('admin.users') }}" class="btn btn-green" style="width:100%;">Manage Users &amp; Role Authorization &rarr;</a>
-                <a href="{{ route('pharmacy.inventory') }}" class="btn btn-outline" style="width:100%;">Medicine Inventory Control</a>
-                <a href="{{ route('doctor.queue') }}" class="btn btn-outline" style="width:100%;">View Live Consultation Queues</a>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">System Health Status</div>
-            <div class="card-body" style="font-size:12px;line-height:1.7;">
-                <div><strong>Framework:</strong> Laravel {{ app()->version() }}</div>
-                <div><strong>PHP Version:</strong> {{ phpversion() }}</div>
-                <div><strong>Database:</strong> SQLite Local Medical Database</div>
-                <div><strong>PDF Engine:</strong> DomPDF v3.1 (Printable Export Active)</div>
-                <div style="margin-top:.8rem;border-top:1px solid #ecf2ee;padding-top:.5rem;">
-                    <strong>Security Mode:</strong> Role-Based Access Control (RBAC) Active
-                </div>
+    {{-- Right 1 col: Admin Controls & Health Status --}}
+    <div class="space-y-6">
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl p-5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
+                User &amp; Security Controls
+            </h3>
+            <div class="space-y-2">
+                <a href="{{ route('admin.users') }}" class="btn btn-green w-full text-center">Manage Users &amp; Roles &rarr;</a>
+                <a href="{{ route('pharmacy.inventory') }}" class="btn btn-outline w-full text-center">Medicine Inventory Control</a>
+                <a href="{{ route('doctor.queue') }}" class="btn btn-outline w-full text-center">View Live Consultation Queues</a>
             </div>
         </div>
     </div>

@@ -1,114 +1,27 @@
 @extends('layouts.app')
 @section('title', 'Patient Registration')
 
-@push('styles')
-<style>
-    .reg-layout {
-        display: grid;
-        grid-template-columns: 1fr 260px;
-        gap: 1.4rem;
-        align-items: start;
-    }
-
-    /* form sections */
-    .form-card {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        margin-bottom: 1rem;
-    }
-    .form-card-head {
-        background: var(--green);
-        color: #fff;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .07em;
-        padding: .5rem .9rem;
-    }
-    .form-card-body { padding: 1rem; }
-
-    .field-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: .8rem;
-        margin-bottom: .75rem;
-    }
-    .field-row.three { grid-template-columns: 1fr 1fr 1fr; }
-    .field-row.full  { grid-template-columns: 1fr; }
-    .field-group { display: flex; flex-direction: column; gap: 3px; }
-
-    .radio-inline { display: flex; gap: 1.2rem; flex-wrap: wrap; padding-top: 3px; }
-    .radio-inline label { display: flex; align-items: center; gap: .3rem; font-size: 13px; cursor: pointer; font-weight: 400; }
-    .radio-inline input { accent-color: var(--green); }
-
-    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; margin-top: 4px; }
-    .check-grid label { display: flex; align-items: center; gap: .3rem; font-size: 12px; cursor: pointer; font-weight: 400; }
-    .check-grid input { accent-color: var(--green); }
-
-    .form-actions {
-        background: #f4f8f5;
-        border-top: 1px solid var(--border);
-        padding: .75rem 1rem;
-        display: flex;
-        justify-content: flex-end;
-        gap: .6rem;
-        align-items: center;
-    }
-    .form-actions small { font-size: 11px; color: var(--muted); font-weight: 400; margin-right: auto; }
-
-    /* sidebar info */
-    .info-card {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        margin-bottom: 1rem;
-    }
-    .info-card-head {
-        background: var(--green-dk);
-        color: #fff;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .07em;
-        padding: .45rem .75rem;
-    }
-    .info-card-body {
-        padding: .75rem;
-        font-size: 12px;
-        color: var(--muted);
-        font-weight: 400;
-        line-height: 1.6;
-    }
-    .info-card-body ul { padding-left: 1rem; }
-    .info-card-body li { margin-bottom: .3rem; }
-    .info-card-body strong { color: var(--text); }
-
-    .required-note { font-size: 11px; color: var(--muted); font-weight: 400; margin-bottom: 1rem; }
-
-    @media (max-width: 820px) {
-        .reg-layout { grid-template-columns: 1fr; }
-        .field-row, .field-row.three { grid-template-columns: 1fr; }
-    }
-</style>
-@endpush
-
 @section('content')
 
-<div class="page-title">Patient Registration</div>
-<div class="page-subtitle">Complete the form below to register as a patient of the University Medical Centre. Please fill in all required fields accurately. Your information will be treated in strict confidence.</div>
+<div class="mb-6">
+    <h1 class="page-title">Patient Registration</h1>
+    <p class="page-subtitle">Complete the form below to register as a patient of the University Medical Centre. Please fill in all required fields accurately. Your clinical records are kept in strict confidentiality.</p>
+</div>
 
 @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="bg-teal-50 border-t-2 border-teal-500 rounded-lg p-4 mb-5 shadow-xs flex items-center gap-x-3 text-sm text-teal-800" role="alert">
+        <svg class="shrink-0 size-4 text-teal-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <span>{{ session('success') }}</span>
+    </div>
 @endif
+
 @if($errors->any())
-    <div class="alert alert-error">
-        <strong>Please correct the following errors:</strong>
-        <ul style="padding-left:1.2rem;margin-top:4px;">
+    <div class="bg-red-50 border-s-4 border-red-500 p-4 mb-5 rounded-md text-xs text-red-800 shadow-xs" role="alert">
+        <div class="font-bold mb-1 flex items-center gap-x-2">
+            <svg class="shrink-0 size-4 text-red-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            <span>Please correct the following errors:</span>
+        </div>
+        <ul class="list-disc list-inside space-y-0.5 ml-6">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
@@ -116,54 +29,57 @@
     </div>
 @endif
 
-<div class="reg-layout">
-    {{-- Main Form --}}
-    <div>
-        <p class="required-note">Fields marked <span style="color:#c0392b;">*</span> are required.</p>
-
-        <form method="POST" action="{{ url('/patients/register') }}" novalidate>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    {{-- Main Form (2 cols) --}}
+    <div class="lg:col-span-2 space-y-6">
+        <form method="POST" action="{{ url('/patients/register') }}" novalidate class="space-y-6">
             @csrf
 
-            {{-- Personal Details --}}
-            <div class="form-card">
-                <div class="form-card-head">Section 1 &mdash; Personal Details</div>
-                <div class="form-card-body">
-                    <div class="field-row">
-                        <div class="field-group">
+            {{-- Section 1: Personal Details --}}
+            <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider">Section 1 &mdash; Personal Details</span>
+                    <span class="badge badge-gold">Identity</span>
+                </div>
+                <div class="p-5 sm:p-6 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
                             <label class="form-label">First Name <span class="req">*</span></label>
                             <input type="text" name="first_name" class="form-control" value="{{ old('first_name') }}" required>
                         </div>
-                        <div class="field-group">
+                        <div>
                             <label class="form-label">Last Name <span class="req">*</span></label>
                             <input type="text" name="last_name" class="form-control" value="{{ old('last_name') }}" required>
                         </div>
                     </div>
-                    <div class="field-row three">
-                        <div class="field-group">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
                             <label class="form-label">Date of Birth <span class="req">*</span></label>
                             <input type="date" name="dob" class="form-control" value="{{ old('dob') }}" required>
                         </div>
-                        <div class="field-group">
+                        <div>
                             <label class="form-label">Blood Group</label>
                             <select name="blood_group" class="form-control">
-                                <option value="">— Select —</option>
+                                <option value="">&mdash; Select &mdash;</option>
                                 @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)
                                     <option value="{{ $bg }}" {{ old('blood_group') === $bg ? 'selected' : '' }}>{{ $bg }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="field-group">
+                        <div>
                             <label class="form-label">Nationality</label>
                             <input type="text" name="nationality" class="form-control" value="{{ old('nationality', 'Bangladeshi') }}">
                         </div>
                     </div>
-                    <div class="field-group">
+
+                    <div>
                         <label class="form-label">Gender <span class="req">*</span></label>
-                        <div class="radio-inline">
+                        <div class="flex items-center gap-4 flex-wrap pt-1 text-xs">
                             @foreach(['Male','Female','Other','Prefer not to say'] as $g)
-                                <label>
-                                    <input type="radio" name="gender" value="{{ $g }}" {{ old('gender') === $g ? 'checked' : '' }} required>
-                                    {{ $g }}
+                                <label class="flex items-center gap-x-2 cursor-pointer text-slate-700">
+                                    <input type="radio" name="gender" value="{{ $g }}" {{ old('gender') === $g ? 'checked' : '' }} required class="text-emerald-600 focus:ring-emerald-500">
+                                    <span>{{ $g }}</span>
                                 </label>
                             @endforeach
                         </div>
@@ -171,19 +87,22 @@
                 </div>
             </div>
 
-            {{-- University Details --}}
-            <div class="form-card">
-                <div class="form-card-head">Section 2 &mdash; University Details</div>
-                <div class="form-card-body">
-                    <div class="field-row">
-                        <div class="field-group">
+            {{-- Section 2: University Details --}}
+            <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider">Section 2 &mdash; University Affiliation</span>
+                    <span class="badge badge-gold">Academic</span>
+                </div>
+                <div class="p-5 sm:p-6 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
                             <label class="form-label">University ID / Employee ID <span class="req">*</span></label>
-                            <input type="text" name="university_id" class="form-control" placeholder="e.g. 2021-CSE-042" value="{{ old('university_id') }}" required>
+                            <input type="text" name="university_id" class="form-control" placeholder="e.g. 0802000000000000" value="{{ old('university_id') }}" required>
                         </div>
-                        <div class="field-group">
+                        <div>
                             <label class="form-label">Category <span class="req">*</span></label>
                             <select name="role" class="form-control" required>
-                                <option value="">— Select —</option>
+                                <option value="">&mdash; Select Category &mdash;</option>
                                 <option value="student"  {{ old('role') === 'student'  ? 'selected' : '' }}>Student (Undergraduate)</option>
                                 <option value="postgrad" {{ old('role') === 'postgrad' ? 'selected' : '' }}>Student (Postgraduate)</option>
                                 <option value="faculty"  {{ old('role') === 'faculty'  ? 'selected' : '' }}>Faculty / Academic Staff</option>
@@ -191,133 +110,154 @@
                             </select>
                         </div>
                     </div>
-                    <div class="field-row">
-                        <div class="field-group">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
                             <label class="form-label">Department / Faculty</label>
-                            <input type="text" name="department" class="form-control" placeholder="e.g. Computer Science & Engineering" value="{{ old('department') }}">
+                            <input type="text" name="department" class="form-control" placeholder="e.g. CSE" value="{{ old('department') }}">
                         </div>
-                        <div class="field-group">
-                            <label class="form-label">Year / Semester (Students only)</label>
-                            <input type="text" name="year" class="form-control" placeholder="e.g. Year 3, Semester 5" value="{{ old('year') }}">
+                        <div>
+                            <label class="form-label">Semester &amp; Year (Students only)</label>
+                            <input type="text" name="year" class="form-control" placeholder="e.g. Summer 26" value="{{ old('year') }}">
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Contact --}}
-            <div class="form-card">
-                <div class="form-card-head">Section 3 &mdash; Contact Information</div>
-                <div class="form-card-body">
-                    <div class="field-row">
-                        <div class="field-group">
+            {{-- Section 3: Contact & Emergency --}}
+            <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider">Section 3 &mdash; Contact &amp; Emergency Details</span>
+                    <span class="badge badge-gold">Contact</span>
+                </div>
+                <div class="p-5 sm:p-6 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
                             <label class="form-label">University Email <span class="req">*</span></label>
-                            <input type="email" name="email" class="form-control" placeholder="yourname@bu.edu.bd" value="{{ old('email') }}" required>
+                            <input type="email" name="email" class="form-control" placeholder="yourname@university.edu.bd" value="{{ old('email') }}" required>
                         </div>
-                        <div class="field-group">
+                        <div>
                             <label class="form-label">Mobile Number <span class="req">*</span></label>
                             <input type="tel" name="phone" class="form-control" placeholder="01XXXXXXXXX" value="{{ old('phone') }}" required>
                         </div>
                     </div>
-                    <div class="field-row">
-                        <div class="field-group">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
                             <label class="form-label">Emergency Contact Name</label>
-                            <input type="text" name="emergency_name" class="form-control" placeholder="Parent / Guardian name" value="{{ old('emergency_name') }}">
+                            <input type="text" name="emergency_name" class="form-control" placeholder="Parent / Guardian Name" value="{{ old('emergency_name') }}">
                         </div>
-                        <div class="field-group">
+                        <div>
                             <label class="form-label">Emergency Contact Number</label>
                             <input type="tel" name="emergency_phone" class="form-control" placeholder="01XXXXXXXXX" value="{{ old('emergency_phone') }}">
                         </div>
                     </div>
-                    <div class="field-row full">
-                        <div class="field-group">
-                            <label class="form-label">Current Address (Hall / Dormitory or Home)</label>
-                            <textarea name="address" class="form-control" rows="2">{{ old('address') }}</textarea>
-                        </div>
+
+                    <div>
+                        <label class="form-label">Current Address (Hall / Dormitory or Campus Residence)</label>
+                        <textarea name="address" class="form-control" rows="2">{{ old('address') }}</textarea>
                     </div>
                 </div>
             </div>
 
-            {{-- Medical History --}}
-            <div class="form-card">
-                <div class="form-card-head">Section 4 &mdash; Medical History</div>
-                <div class="form-card-body">
-                    <div class="field-row full" style="margin-bottom:.75rem;">
-                        <div class="field-group">
-                            <label class="form-label">Known Allergies (drugs, food, other)</label>
-                            <input type="text" name="allergies" class="form-control" placeholder="e.g. Penicillin, Shellfish — leave blank if none" value="{{ old('allergies') }}">
-                        </div>
+            {{-- Section 4: Medical History --}}
+            <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider">Section 4 &mdash; Medical Profile &amp; Allergies</span>
+                    <span class="badge badge-gold">Clinical</span>
+                </div>
+                <div class="p-5 sm:p-6 space-y-4">
+                    <div>
+                        <label class="form-label">Known Allergies (drugs, food, other)</label>
+                        <input type="text" name="allergies" class="form-control" placeholder="e.g. Penicillin, Sulfa, Dust — leave blank if none" value="{{ old('allergies') }}">
                     </div>
-                    <div class="field-group" style="margin-bottom:.75rem;">
-                        <label class="form-label">Pre-existing Conditions <small style="text-transform:none;font-weight:400;">(tick all that apply)</small></label>
-                        <div class="check-grid">
+
+                    <div>
+                        <label class="form-label">Pre-existing Health Conditions <small class="text-gray-400 font-normal lowercase">(select all that apply)</small></label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
                             @foreach(['Diabetes (Type 1 or 2)','Hypertension / High BP','Asthma / Respiratory','Heart Disease','Epilepsy / Seizures','Thyroid Disorder','Anaemia','Anxiety / Depression','Kidney Disease','None of the above'] as $cond)
-                                <label>
+                                <label class="flex items-center gap-x-2 text-xs text-slate-700 cursor-pointer">
                                     <input type="checkbox" name="conditions[]" value="{{ $cond }}"
-                                        {{ in_array($cond, old('conditions', [])) ? 'checked' : '' }}>
-                                    {{ $cond }}
+                                        {{ in_array($cond, old('conditions', [])) ? 'checked' : '' }}
+                                        class="rounded text-emerald-600 focus:ring-emerald-500">
+                                    <span>{{ $cond }}</span>
                                 </label>
                             @endforeach
                         </div>
                     </div>
-                    <div class="field-row full">
-                        <div class="field-group">
-                            <label class="form-label">Current Medications (name, dose, frequency)</label>
-                            <textarea name="medications" class="form-control" placeholder="e.g. Metformin 500mg twice daily — leave blank if none">{{ old('medications') }}</textarea>
-                        </div>
+
+                    <div>
+                        <label class="form-label">Current Medications (name, dose, frequency)</label>
+                        <textarea name="medications" class="form-control" rows="2" placeholder="e.g. Paracetamol as needed, Inhaler daily — leave blank if none">{{ old('medications') }}</textarea>
                     </div>
                 </div>
             </div>
 
-            {{-- Declaration --}}
-            <div class="form-card">
-                <div class="form-card-head">Declaration</div>
-                <div class="form-card-body">
-                    <p style="font-size:12px;color:var(--muted);font-weight:400;line-height:1.7;margin-bottom:.75rem;">
+            {{-- Section 5: Declaration & Submission --}}
+            <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider">Patient Declaration</span>
+                    <span class="badge badge-green">Consent</span>
+                </div>
+                <div class="p-5 sm:p-6">
+                    <p class="text-xs text-gray-600 leading-relaxed mb-4">
                         I declare that the information provided above is accurate and complete to the best of my knowledge.
-                        I understand that providing false information may result in the termination of my access to Medical Centre services.
-                        I consent to the collection and processing of my personal and medical data for the purpose of healthcare delivery at University Medical Centre.
+                        I understand that providing false information may result in the suspension of Medical Centre services.
+                        I consent to the collection and processing of my medical data for the purpose of healthcare delivery at University Medical Centre.
                     </p>
-                    <label style="display:flex;align-items:flex-start;gap:.5rem;font-size:13px;cursor:pointer;font-weight:400;">
-                        <input type="checkbox" name="declaration" required style="accent-color:var(--green);margin-top:2px;flex-shrink:0;">
-                        I have read and agree to the declaration above. <span style="color:#c0392b;margin-left:2px;">*</span>
+
+                    <label class="flex items-start gap-x-2.5 text-xs text-slate-800 font-medium cursor-pointer">
+                        <input type="checkbox" name="declaration" required class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
+                        <span>I have read and agree to the patient consent declaration above. <span class="req">*</span></span>
                     </label>
                 </div>
-                <div class="form-actions">
-                    <small>All fields marked * are mandatory.</small>
-                    <button type="reset"  class="btn btn-outline">Clear Form</button>
-                    <button type="submit" class="btn btn-green">Submit Registration</button>
+                <div class="bg-slate-50 border-t border-gray-200 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                    <span class="text-[11px] text-gray-500">* All marked fields are mandatory.</span>
+                    <div class="flex items-center gap-2">
+                        <button type="reset" class="btn btn-outline btn-sm">Clear Form</button>
+                        <button type="submit" class="btn btn-green btn-sm">Complete Patient Registration &rarr;</button>
+                    </div>
                 </div>
             </div>
         </form>
     </div>
 
-    {{-- Sidebar --}}
-    <div>
-        <div class="info-card">
-            <div class="info-card-head">Before You Register</div>
-            <div class="info-card-body">
-                <ul>
-                    <li>You <strong>must</strong> be a current student or staff member of the University.</li>
-                    <li>Have your <strong>university ID card</strong> ready.</li>
-                    <li>Registration is a <strong>one-time process</strong>. Once submitted, visit the centre to collect your patient card.</li>
-                    <li>Your data is handled under the university's <strong>data protection policy</strong>.</li>
-                </ul>
+    {{-- Sidebar Information (1 col) --}}
+    <div class="space-y-6">
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl p-5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
+                Before You Register
+            </h3>
+            <ul class="space-y-2 text-xs text-gray-600 leading-relaxed list-disc list-inside">
+                <li>You <strong>must</strong> be a current student or staff member of the University.</li>
+                <li>Have your <strong>university ID card</strong> available.</li>
+                <li>Registration is a <strong>one-time procedure</strong>.</li>
+                <li>Your data is protected under institutional privacy policies.</li>
+            </ul>
+        </div>
+
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl p-5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
+                Need Assistance?
+            </h3>
+            <div class="text-xs text-gray-600 space-y-2">
+                <p>Medical Centre Reception Counter:</p>
+                <div class="p-2.5 bg-slate-50 rounded-lg space-y-1 font-mono text-[11px]">
+                    <div>Phone: <strong class="text-slate-800">01888-888888</strong></div>
+                    <div>Email: <strong class="text-slate-800">medcentre@university.edu.bd</strong></div>
+                    <div>Hours: <span class="text-slate-700">Mon&ndash;Fri 8:00am&ndash;8:00pm</span></div>
+                </div>
             </div>
         </div>
-        <div class="info-card">
-            <div class="info-card-head">Need Help?</div>
-            <div class="info-card-body">
-                Contact the Medical Centre reception:<br><br>
-                <strong>Phone:</strong> 0188888888<br>
-                <strong>Email:</strong> medcentre@bu.edu.bd<br>
-                <strong>Counter hours:</strong> Mon–Fri 8am–5pm
-            </div>
-        </div>
-        <div class="info-card">
-            <div class="info-card-head">Already Registered?</div>
-            <div class="info-card-body">
-                If you already have a patient record, do not re-register. Instead, <a href="{{ url('/appointments') }}" style="color:var(--green);">book an appointment</a> directly or visit the counter with your patient card.
-            </div>
+
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl p-5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
+                Already Registered?
+            </h3>
+            <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                If you already have a patient record in the system, you do not need to re-register.
+            </p>
+            <a href="{{ route('login') }}" class="btn btn-outline w-full text-center">Sign In to Patient Portal &rarr;</a>
         </div>
     </div>
 </div>

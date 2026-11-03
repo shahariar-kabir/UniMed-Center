@@ -1,66 +1,20 @@
 @extends('layouts.app')
 @section('title', 'Generate Digital Prescription')
 
-@push('styles')
-<style>
-    .rx-builder-grid {
-        display: grid;
-        grid-template-columns: 1fr 300px;
-        gap: 1.5rem;
-        align-items: start;
-    }
-    .med-row {
-        background: #f9fbfa;
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        padding: .85rem;
-        margin-bottom: .8rem;
-    }
-    .med-row-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: .6rem;
-    }
-    .vitals-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: .8rem;
-        margin-bottom: .9rem;
-    }
-    .dosage-chips {
-        display: flex;
-        gap: 4px;
-        margin-top: 3px;
-        flex-wrap: wrap;
-    }
-    .chip {
-        background: #e8f5ee;
-        border: 1px solid #b0c4b8;
-        border-radius: 3px;
-        padding: 1px 6px;
-        font-size: 10px;
-        font-weight: 700;
-        cursor: pointer;
-        color: var(--green-dk);
-    }
-    .chip:hover { background: var(--green); color: #fff; }
-    @media (max-width: 900px) {
-        .rx-builder-grid { grid-template-columns: 1fr; }
-        .vitals-grid { grid-template-columns: 1fr 1fr; }
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="page-title">Digital Prescription Generator</div>
-<div class="page-subtitle">Prescribe medicines directly from Central Pharmacy stock, specify dosages, duration, and clinical advice.</div>
+<div class="mb-6">
+    <h1 class="page-title">Digital Prescription Generator</h1>
+    <p class="page-subtitle">Prescribe medicines directly from Central Pharmacy stock, specify dosages, duration, and clinical advice.</p>
+</div>
 
 @if($errors->any())
-    <div class="alert alert-error">
-        @foreach($errors->all() as $error)
-            <div>{{ $error }}</div>
-        @endforeach
+    <div class="bg-red-50 border-s-4 border-red-500 p-4 mb-5 rounded-md text-xs text-red-800 shadow-xs" role="alert">
+        <div class="font-bold mb-1">Please correct the following errors:</div>
+        <ul class="list-disc list-inside space-y-0.5 ml-4">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
     </div>
 @endif
 
@@ -70,14 +24,17 @@
         <input type="hidden" name="queue_id" value="{{ $queueId }}">
     @endif
 
-    <div class="rx-builder-grid">
-        {{-- Main Builder --}}
-        <div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {{-- Main Prescription Builder (8 cols) --}}
+        <div class="lg:col-span-8 space-y-6">
             {{-- Patient Selection & Clinical Vitals --}}
-            <div class="card" style="margin-bottom:1.4rem;">
-                <div class="card-header">1. Patient &amp; Clinical Examination</div>
-                <div class="card-body">
-                    <div style="margin-bottom:1rem;">
+            <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden">
+                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider">1. Patient &amp; Clinical Examination</span>
+                    <span class="badge badge-gold">Patient Vitals</span>
+                </div>
+                <div class="p-5 sm:p-6 space-y-4">
+                    <div>
                         <label class="form-label">Consulting Patient <span class="req">*</span></label>
                         <select name="patient_id" id="patientSelect" class="form-control" required onchange="updatePatientInfo(this)">
                             <option value="">&mdash; Select Patient &mdash;</option>
@@ -87,14 +44,14 @@
                                     data-id="{{ $p->university_id }}"
                                     data-blood="{{ $p->blood_group }}"
                                     {{ (old('patient_id', $selectedPatient?->id) == $p->id) ? 'selected' : '' }}>
-                                    {{ $p->full_name }} ({{ $p->university_id }}) - Blood: {{ $p->blood_group ?? 'N/A' }}
+                                    {{ $p->full_name }} ({{ $p->university_id }}) &mdash; Blood: {{ $p->blood_group ?? 'N/A' }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
                     {{-- Vitals --}}
-                    <div class="vitals-grid">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                         <div>
                             <label class="form-label">BP (mmHg)</label>
                             <input type="text" name="bp" class="form-control" placeholder="120/80" value="{{ old('bp', '120/80') }}">
@@ -120,22 +77,23 @@
                 </div>
             </div>
 
-            {{-- Medicines from Stock --}}
-            <div class="card" style="margin-bottom:1.4rem;">
-                <div class="card-header">
-                    <span>2. Prescribed Medicines (From Pharmacy Stock)</span>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="addMedicineRow()" style="color:#fff;border-color:#fff;">+ Add Another Medicine</button>
+            {{-- Prescribed Medicines --}}
+            <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden">
+                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider">2. Prescribed Medicines (From Stock)</span>
+                    <button type="button" class="btn btn-outline btn-xs" onclick="addMedicineRow()">+ Add Medicine</button>
                 </div>
-                <div class="card-body">
-                    <div id="medicinesContainer">
-                        {{-- Row 1 --}}
-                        <div class="med-row" id="row_0">
-                            <div class="med-row-header">
-                                <strong style="color:var(--green);font-size:12px;">MEDICINE #1</strong>
-                                <button type="button" onclick="removeRow('row_0')" class="btn btn-outline btn-sm" style="color:#c0392b;border-color:#d99;padding:1px 6px;font-size:10px;">Remove</button>
+                <div class="p-5 sm:p-6 space-y-4">
+                    <div id="medicinesContainer" class="space-y-4">
+                        {{-- Row 0 --}}
+                        <div class="p-4 rounded-lg bg-slate-50 border border-gray-200 space-y-3 med-row" id="row_0">
+                            <div class="flex items-center justify-between border-b border-gray-200 pb-2">
+                                <strong class="text-xs font-bold text-[#1a6b3a] uppercase">Medicine Item #1</strong>
+                                <button type="button" onclick="removeRow('row_0')" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50">Remove</button>
                             </div>
-                            <div style="display:grid;grid-template-columns:2fr 1fr;gap:.6rem;margin-bottom:.5rem;">
-                                <div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="sm:col-span-2">
                                     <label class="form-label">Select Medicine from Stock <span class="req">*</span></label>
                                     <select name="medicines[0][medicine_id]" class="form-control med-select" required onchange="onMedSelect(this, 0)">
                                         <option value="">&mdash; Choose from Available Stock &mdash;</option>
@@ -153,76 +111,81 @@
                                 </div>
                             </div>
 
-                            <div style="display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:.6rem;">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div>
                                     <label class="form-label">Dosage (Pattern) <span class="req">*</span></label>
-                                    <input type="text" name="medicines[0][dosage]" id="dosage_0" class="form-control" placeholder="e.g. 1+0+1" value="1+0+1" required>
-                                    <div class="dosage-chips">
-                                        <span class="chip" onclick="setDosage(0, '1+0+1')">1+0+1</span>
-                                        <span class="chip" onclick="setDosage(0, '1+1+1')">1+1+1</span>
-                                        <span class="chip" onclick="setDosage(0, '1+0+0')">1+0+0</span>
-                                        <span class="chip" onclick="setDosage(0, '0+0+1')">0+0+1</span>
+                                    <input type="text" name="medicines[0][dosage]" id="dosage_0" class="form-control text-xs" placeholder="e.g. 1+0+1" value="1+0+1" required>
+                                    <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(0, '1+0+1')">1+0+1</span>
+                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(0, '1+1+1')">1+1+1</span>
+                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(0, '1+0+0')">1+0+0</span>
+                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(0, '0+0+1')">0+0+1</span>
                                     </div>
                                 </div>
                                 <div>
                                     <label class="form-label">Duration <span class="req">*</span></label>
-                                    <input type="text" name="medicines[0][duration]" id="dur_0" class="form-control" placeholder="e.g. 5 days" value="5 days" required>
-                                    <div class="dosage-chips">
-                                        <span class="chip" onclick="setDuration(0, '3 days')">3d</span>
-                                        <span class="chip" onclick="setDuration(0, '5 days')">5d</span>
-                                        <span class="chip" onclick="setDuration(0, '7 days')">7d</span>
+                                    <input type="text" name="medicines[0][duration]" id="dur_0" class="form-control text-xs" placeholder="e.g. 5 days" value="5 days" required>
+                                    <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(0, '3 days')">3d</span>
+                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(0, '5 days')">5d</span>
+                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(0, '7 days')">7d</span>
                                     </div>
                                 </div>
                                 <div>
                                     <label class="form-label">Instructions / Advice</label>
-                                    <input type="text" name="medicines[0][instructions]" id="inst_0" class="form-control" placeholder="e.g. After meal, drink warm water" value="After meal">
+                                    <input type="text" name="medicines[0][instructions]" id="inst_0" class="form-control text-xs" placeholder="e.g. After meal" value="After meal">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-outline btn-sm" onclick="addMedicineRow()" style="margin-top:.4rem;">+ Add Another Medicine Row</button>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="addMedicineRow()">+ Add Another Medicine Row</button>
                 </div>
             </div>
 
             {{-- Clinical Advice --}}
-            <div class="card" style="margin-bottom:1.4rem;">
-                <div class="card-header">3. Clinical Advice &amp; Follow-up Instructions</div>
-                <div class="card-body">
+            <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl overflow-hidden">
+                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider">3. Clinical Advice &amp; Follow-up Instructions</span>
+                    <span class="badge badge-gold">Patient Guidance</span>
+                </div>
+                <div class="p-5 sm:p-6">
                     <textarea name="clinical_advice" class="form-control" rows="3" placeholder="Dietary restrictions, rest instructions, follow-up date, or alarm symptoms...">Drink plenty of warm fluids. Take adequate bed rest. Avoid cold foods/drinks. Return to medical centre if symptoms worsen or fever persists past 3 days.</textarea>
                 </div>
             </div>
 
-            <div style="display:flex;justify-content:flex-end;gap:.8rem;">
+            <div class="flex items-center justify-end gap-3 pt-2">
                 <a href="{{ route('doctor.queue') }}" class="btn btn-outline">Cancel</a>
-                <button type="submit" class="btn btn-green" style="font-size:14px;padding:.6rem 1.6rem;">Issue &amp; Generate Prescription</button>
+                <button type="submit" class="btn btn-green py-2.5 px-6">Issue &amp; Generate Prescription &rarr;</button>
             </div>
         </div>
 
-        {{-- Right: Patient Alert Box & Stock Helper --}}
-        <div>
-            <div class="card" style="margin-bottom:1.2rem;border-left:4px solid #c0392b;">
-                <div class="card-header" style="background:#c0392b;">Patient Allergy Alert</div>
-                <div class="card-body" style="font-size:12px;line-height:1.6;">
-                    <div id="patientAllergyAlert">
-                        @if($selectedPatient)
-                            <strong>Patient:</strong> {{ $selectedPatient->full_name }}<br>
-                            <strong>Allergies:</strong> <span style="color:#c0392b;font-weight:700;">{{ $selectedPatient->allergies ?: 'None reported' }}</span><br>
-                            <strong>Blood Group:</strong> {{ $selectedPatient->blood_group ?? 'Not Set' }}
-                        @else
-                            <span style="color:var(--muted);">Select a patient to inspect their drug allergies.</span>
-                        @endif
-                    </div>
+        {{-- Right Alerts & Dosage Legend (4 cols) --}}
+        <div class="lg:col-span-4 space-y-6">
+            <div class="bg-white border border-gray-200 border-t-4 border-t-red-600 shadow-sm rounded-xl p-5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-red-700 border-b border-gray-200 pb-2 mb-3">
+                    Patient Allergy Alert
+                </h3>
+                <div id="patientAllergyAlert" class="text-xs text-gray-600 leading-relaxed">
+                    @if($selectedPatient)
+                        <div><strong>Patient:</strong> {{ $selectedPatient->full_name }}</div>
+                        <div class="mt-1"><strong>Allergies:</strong> <span class="text-red-700 font-bold">{{ $selectedPatient->allergies ?: 'None reported' }}</span></div>
+                        <div class="mt-1"><strong>Blood Group:</strong> {{ $selectedPatient->blood_group ?? 'Not Set' }}</div>
+                    @else
+                        <span class="text-gray-400">Select a patient above to inspect their clinical drug allergies.</span>
+                    @endif
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-header">Dosage Legend</div>
-                <div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.6;">
-                    <div><code>1+0+1</code> : Morning + Night (Twice daily)</div>
-                    <div><code>1+1+1</code> : Morning + Noon + Night (Thrice daily)</div>
-                    <div><code>1+0+0</code> : Morning only (Before/after breakfast)</div>
-                    <div><code>0+0+1</code> : Night only (At bedtime)</div>
+            <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl p-5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
+                    Dosage Pattern Legend
+                </h3>
+                <div class="text-xs text-gray-600 space-y-2">
+                    <div class="flex items-center justify-between"><code class="bg-slate-100 px-1.5 py-0.5 rounded font-bold text-slate-800">1+0+1</code> <span class="text-gray-500">Morning + Night</span></div>
+                    <div class="flex items-center justify-between"><code class="bg-slate-100 px-1.5 py-0.5 rounded font-bold text-slate-800">1+1+1</code> <span class="text-gray-500">Morning + Noon + Night</span></div>
+                    <div class="flex items-center justify-between"><code class="bg-slate-100 px-1.5 py-0.5 rounded font-bold text-slate-800">1+0+0</code> <span class="text-gray-500">Morning only</span></div>
+                    <div class="flex items-center justify-between"><code class="bg-slate-100 px-1.5 py-0.5 rounded font-bold text-slate-800">0+0+1</code> <span class="text-gray-500">Night only</span></div>
                 </div>
             </div>
         </div>
@@ -231,13 +194,14 @@
 
 {{-- Hidden Template for Dynamic Rows --}}
 <template id="medicineRowTemplate">
-    <div class="med-row" id="row_INDEX">
-        <div class="med-row-header">
-            <strong style="color:var(--green);font-size:12px;">MEDICINE #INDEX_PLUS</strong>
-            <button type="button" onclick="removeRow('row_INDEX')" class="btn btn-outline btn-sm" style="color:#c0392b;border-color:#d99;padding:1px 6px;font-size:10px;">Remove</button>
+    <div class="p-4 rounded-lg bg-slate-50 border border-gray-200 space-y-3 med-row" id="row_INDEX">
+        <div class="flex items-center justify-between border-b border-gray-200 pb-2">
+            <strong class="text-xs font-bold text-[#1a6b3a] uppercase">Medicine Item #INDEX_PLUS</strong>
+            <button type="button" onclick="removeRow('row_INDEX')" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50">Remove</button>
         </div>
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:.6rem;margin-bottom:.5rem;">
-            <div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
                 <label class="form-label">Select Medicine from Stock <span class="req">*</span></label>
                 <select name="medicines[INDEX][medicine_id]" class="form-control med-select" required onchange="onMedSelect(this, INDEX)">
                     <option value="">&mdash; Choose from Available Stock &mdash;</option>
@@ -255,29 +219,29 @@
             </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:.6rem;">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
                 <label class="form-label">Dosage (Pattern) <span class="req">*</span></label>
-                <input type="text" name="medicines[INDEX][dosage]" id="dosage_INDEX" class="form-control" placeholder="e.g. 1+0+1" value="1+0+1" required>
-                <div class="dosage-chips">
-                    <span class="chip" onclick="setDosage(INDEX, '1+0+1')">1+0+1</span>
-                    <span class="chip" onclick="setDosage(INDEX, '1+1+1')">1+1+1</span>
-                    <span class="chip" onclick="setDosage(INDEX, '1+0+0')">1+0+0</span>
-                    <span class="chip" onclick="setDosage(INDEX, '0+0+1')">0+0+1</span>
+                <input type="text" name="medicines[INDEX][dosage]" id="dosage_INDEX" class="form-control text-xs" placeholder="e.g. 1+0+1" value="1+0+1" required>
+                <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(INDEX, '1+0+1')">1+0+1</span>
+                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(INDEX, '1+1+1')">1+1+1</span>
+                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(INDEX, '1+0+0')">1+0+0</span>
+                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(INDEX, '0+0+1')">0+0+1</span>
                 </div>
             </div>
             <div>
                 <label class="form-label">Duration <span class="req">*</span></label>
-                <input type="text" name="medicines[INDEX][duration]" id="dur_INDEX" class="form-control" placeholder="e.g. 5 days" value="5 days" required>
-                <div class="dosage-chips">
-                    <span class="chip" onclick="setDuration(INDEX, '3 days')">3d</span>
-                    <span class="chip" onclick="setDuration(INDEX, '5 days')">5d</span>
-                    <span class="chip" onclick="setDuration(INDEX, '7 days')">7d</span>
+                <input type="text" name="medicines[INDEX][duration]" id="dur_INDEX" class="form-control text-xs" placeholder="e.g. 5 days" value="5 days" required>
+                <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(INDEX, '3 days')">3d</span>
+                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(INDEX, '5 days')">5d</span>
+                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(INDEX, '7 days')">7d</span>
                 </div>
             </div>
             <div>
                 <label class="form-label">Instructions / Advice</label>
-                <input type="text" name="medicines[INDEX][instructions]" id="inst_INDEX" class="form-control" placeholder="e.g. After meal" value="After meal">
+                <input type="text" name="medicines[INDEX][instructions]" id="inst_INDEX" class="form-control text-xs" placeholder="e.g. After meal" value="After meal">
             </div>
         </div>
     </div>
@@ -337,7 +301,7 @@
         const opt = selectEl.options[selectEl.selectedIndex];
         const alertBox = document.getElementById('patientAllergyAlert');
         if (!opt.value) {
-            alertBox.innerHTML = '<span style="color:var(--muted);">Select a patient to inspect their drug allergies.</span>';
+            alertBox.innerHTML = '<span class="text-gray-400">Select a patient above to inspect their clinical drug allergies.</span>';
             return;
         }
 
@@ -346,13 +310,12 @@
         const id = opt.getAttribute('data-id');
 
         alertBox.innerHTML = `
-            <strong>Patient ID:</strong> ${id}<br>
-            <strong>Allergies:</strong> <span style="color:#c0392b;font-weight:700;">${allergies}</span><br>
-            <strong>Blood Group:</strong> ${blood}
+            <div><strong>Patient ID:</strong> ${id}</div>
+            <div class="mt-1"><strong>Allergies:</strong> <span class="text-red-700 font-bold">${allergies}</span></div>
+            <div class="mt-1"><strong>Blood Group:</strong> ${blood}</div>
         `;
     }
 
-    // Auto-sync first select on load if pre-selected
     document.addEventListener('DOMContentLoaded', function() {
         const sel = document.querySelector('.med-select');
         if (sel && sel.selectedIndex > 0) {

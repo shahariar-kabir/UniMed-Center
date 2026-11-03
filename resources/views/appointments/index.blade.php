@@ -1,153 +1,27 @@
 @extends('layouts.app')
-@section('title', 'Appointments')
-
-@push('styles')
-<style>
-    .appt-layout {
-        display: grid;
-        grid-template-columns: 360px 1fr;
-        gap: 1.4rem;
-        align-items: start;
-    }
-
-    /* Booking form */
-    .book-card {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        position: sticky; top: 120px;
-    }
-    .book-head {
-        background: var(--green);
-        color: #fff;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .07em;
-        padding: .5rem .9rem;
-    }
-    .book-body { padding: 1rem; }
-    .field-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: .7rem; }
-    .book-foot {
-        background: #f4f8f5;
-        border-top: 1px solid var(--border);
-        padding: .65rem .9rem;
-        display: flex;
-        gap: .5rem;
-        justify-content: flex-end;
-    }
-
-    /* time slots */
-    .slot-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 4px;
-        margin-top: 4px;
-    }
-    .slot {
-        border: 1px solid #b0c4b8;
-        border-radius: 3px;
-        padding: .32rem .2rem;
-        text-align: center;
-        font-size: 11px;
-        font-weight: 700;
-        cursor: pointer;
-        background: #fff;
-        color: var(--text);
-        transition: all .12s;
-        font-family: Arial, Helvetica, sans-serif;
-        letter-spacing: .02em;
-    }
-    .slot:hover    { border-color: var(--green); color: var(--green); background: var(--green-pale); }
-    .slot.sel      { border-color: var(--green); background: var(--green); color: #fff; }
-    .slot.taken    { background: #f0f0f0; color: #bbb; border-color: #ddd; cursor: not-allowed; text-decoration: line-through; font-weight: 400; }
-
-    /* appointment list */
-    .list-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: .7rem;
-        flex-wrap: wrap;
-        gap: .5rem;
-    }
-    .list-head h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--green); }
-
-    .filter-row { display: flex; gap: 3px; }
-    .f-btn {
-        padding: 3px 10px;
-        border-radius: 3px;
-        font-size: 11px;
-        font-weight: 700;
-        cursor: pointer;
-        border: 1px solid var(--border);
-        background: #fff;
-        color: var(--muted);
-        font-family: Arial, Helvetica, sans-serif;
-        transition: all .12s;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-    }
-    .f-btn.on { background: var(--green); color: #fff; border-color: var(--green); }
-    .f-btn:hover:not(.on) { border-color: var(--green); color: var(--green); }
-
-    .appt-table {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-    }
-    .appt-table table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-    }
-    .appt-table thead th {
-        background: var(--green-dk);
-        color: #fff;
-        padding: .5rem .75rem;
-        text-align: left;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        font-weight: 700;
-    }
-    .appt-table tbody td {
-        padding: .55rem .75rem;
-        border-bottom: 1px solid #ecf2ee;
-        vertical-align: middle;
-    }
-    .appt-table tbody tr:last-child td { border-bottom: none; }
-    .appt-table tbody tr:nth-child(even) td { background: #f9fbfa; }
-    .appt-table tbody tr:hover td { background: #f0f8f3; }
-
-    .appt-table .patient-name { font-weight: 700; display: block; }
-    .appt-table .patient-id   { font-size: 11px; color: var(--muted); }
-
-    @media (max-width: 900px) {
-        .appt-layout { grid-template-columns: 1fr; }
-        .book-card { position: static; }
-        .slot-grid { grid-template-columns: repeat(4,1fr); }
-    }
-</style>
-@endpush
+@section('title', 'Emergency Booking')
 
 @section('content')
 
-<div class="page-title">Appointment Booking</div>
-<div class="page-subtitle">Use the form to book a new appointment. If you do not yet have a patient record, please <a href="{{ url('/patients/register') }}" style="color:var(--green);">register first</a>. Bring your university ID card on the day of your appointment.</div>
+<div class="mb-6">
+    <h1 class="page-title">Emergency Booking</h1>
+    <p class="page-subtitle">Schedule an urgent or advance consultation with a university medical officer. Bring your University ID card on the day of your appointment.</p>
+</div>
 
 @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="bg-teal-50 border-t-2 border-teal-500 rounded-lg p-4 mb-5 shadow-xs flex items-center gap-x-3 text-sm text-teal-800" role="alert">
+        <svg class="shrink-0 size-4 text-teal-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <span>{{ session('success') }}</span>
+    </div>
 @endif
 
 @if($errors->any())
-    <div class="alert alert-error">
-        <strong>Unable to complete booking. Please correct the following:</strong>
-        <ul style="padding-left:1.2rem;margin-top:4px;">
+    <div class="bg-red-50 border-s-4 border-red-500 p-4 mb-5 rounded-md text-xs text-red-800 shadow-xs" role="alert">
+        <div class="font-bold mb-1 flex items-center gap-x-2">
+            <svg class="shrink-0 size-4 text-red-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            <span>Unable to complete booking. Please correct the following:</span>
+        </div>
+        <ul class="list-disc list-inside space-y-0.5 ml-6">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
@@ -155,26 +29,30 @@
     </div>
 @endif
 
-<div class="appt-layout">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-    {{-- Booking Form --}}
-    <div class="book-card">
-        <div class="book-head">New Appointment Request</div>
-        <div class="book-body">
-            <form method="POST" action="{{ url('/appointments') }}">
-                @csrf
+    {{-- Booking Form Card (5 cols) --}}
+    <div class="lg:col-span-5 bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+        <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider">Emergency Booking Request</span>
+            <span class="badge badge-gold">Emergency Desk</span>
+        </div>
 
-                <div class="field-group">
+        <form method="POST" action="{{ url('/appointments') }}">
+            @csrf
+
+            <div class="p-5 space-y-4">
+                <div>
                     <label class="form-label">University / Patient ID <span class="req">*</span></label>
-                    <input type="text" name="university_id" class="form-control" placeholder="e.g. 2021-CSE-042" value="{{ old('university_id', Auth::check() ? Auth::user()->university_id : '') }}" required>
+                    <input type="text" name="university_id" class="form-control" placeholder="e.g. 0802000000000000" value="{{ old('university_id', Auth::check() ? Auth::user()->university_id : '') }}" required>
                 </div>
 
-                <div class="field-group">
+                <div>
                     <label class="form-label">Full Name <span class="req">*</span></label>
                     <input type="text" name="patient_name" class="form-control" value="{{ old('patient_name', Auth::check() ? Auth::user()->name : '') }}" required>
                 </div>
 
-                <div class="field-group">
+                <div>
                     <label class="form-label">Department / Clinic <span class="req">*</span></label>
                     <select name="department" class="form-control" required>
                         <option value="General Medicine" {{ old('department') === 'General Medicine' ? 'selected' : '' }}>General Medicine (Walk-in + Appt)</option>
@@ -185,10 +63,10 @@
                     </select>
                 </div>
 
-                <div class="field-group">
+                <div>
                     <label class="form-label">Preferred Doctor</label>
                     <select name="doctor" class="form-control">
-                        <option value="">— Any available Medical Officer —</option>
+                        <option value="">&mdash; Any available Medical Officer &mdash;</option>
                         @if(isset($doctors) && count($doctors) > 0)
                             @foreach($doctors as $d)
                                 <option value="{{ $d->id }}" {{ old('doctor') == $d->id ? 'selected' : '' }}>{{ $d->name }} ({{ $d->department }})</option>
@@ -201,123 +79,160 @@
                     </select>
                 </div>
 
-                <div class="field-group">
+                <div>
                     <label class="form-label">Appointment Date <span class="req">*</span></label>
                     <input type="date" name="date" class="form-control" min="{{ date('Y-m-d') }}" value="{{ old('date', date('Y-m-d')) }}" required>
                 </div>
 
-                <div class="field-group">
-                    <label class="form-label">Time Slot <span class="req">*</span> <span style="font-size:10px;color:var(--muted);text-transform:none;font-weight:400;">(greyed = taken)</span></label>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="form-label mb-0">Select Time Slot <span class="req">*</span></label>
+                        <span class="text-[11px] text-gray-500">Selected: <strong id="selectedSlotText" class="text-emerald-700 font-bold">{{ old('time', '09:30') }}</strong></span>
+                    </div>
+
                     @php
-                        $slots = ['8:00','8:30','9:00','9:30','10:00','10:30','11:00','11:30','12:00','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];
-                        $taken = ['9:00','10:00','14:00','16:00'];
+                        $regularSlots = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+                        $emergencySlots = ['20:00','21:00','22:00','23:00','00:00','02:00','04:00','06:00'];
+                        $taken = ['10:00','14:00','16:00'];
                         $currentSlot = old('time', '09:30');
                     @endphp
-                    <div class="slot-grid">
-                        @foreach($slots as $slot)
+
+                    {{-- Standard OPD Hours (08:00 - 20:00) --}}
+                    <div class="text-[11px] font-bold text-gray-700 mb-1 flex items-center justify-between">
+                        <span>Standard OPD Shifts (08:00 &ndash; 20:00)</span>
+                        <span class="text-gray-400 font-normal">Daytime Consultations</span>
+                    </div>
+                    <div class="grid grid-cols-4 sm:grid-cols-6 gap-1.5 pt-0.5 mb-3">
+                        @foreach($regularSlots as $slot)
+                            @php
+                                $isTaken = in_array($slot, $taken);
+                                $isSelected = ($currentSlot === $slot);
+                            @endphp
                             <button type="button"
-                                class="slot {{ in_array($slot, $taken) ? 'taken' : '' }} {{ $currentSlot === $slot ? 'sel' : '' }}"
-                                onclick="{{ in_array($slot, $taken) ? 'void(0)' : "pickSlot(this,'{$slot}')" }}">
+                                class="time-slot-btn py-1.5 px-2 rounded-md text-xs font-semibold border transition-all text-center
+                                {{ $isTaken ? 'bg-gray-100 text-gray-400 border-gray-200 line-through cursor-not-allowed' : ($isSelected ? 'bg-[#1a6b3a] text-white border-[#1a6b3a] shadow-xs' : 'bg-white text-slate-700 border-gray-300 hover:border-emerald-600 hover:text-emerald-700 cursor-pointer') }}"
+                                data-slot="{{ $slot }}"
+                                data-is-emergency="false"
+                                onclick="{{ $isTaken ? 'void(0)' : "pickSlot(this,'{$slot}')" }}">
                                 {{ $slot }}
                             </button>
                         @endforeach
                     </div>
+
+                    {{-- Emergency Night Shifts (20:00 - 08:00) --}}
+                    <div class="p-2.5 rounded-lg bg-red-50/70 border border-red-200/60 mb-2">
+                        <div class="text-[11px] font-bold text-red-800 mb-1.5 flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <span class="size-2 rounded-full bg-red-600 animate-pulse"></span>
+                                Emergency Shift Slots (20:00 &ndash; 08:00)
+                            </span>
+                            <span class="badge badge-red text-[10px]">Emergency Booking Access</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-1.5">
+                            @foreach($emergencySlots as $slot)
+                                @php
+                                    $isSelected = ($currentSlot === $slot);
+                                @endphp
+                                <button type="button"
+                                    class="time-slot-btn py-1.5 px-2 rounded-md text-xs font-semibold border transition-all text-center cursor-pointer
+                                    {{ $isSelected ? 'bg-red-700 text-white border-red-700 shadow-xs font-bold' : 'bg-white text-red-700 border-red-300 hover:bg-red-700 hover:text-white' }}"
+                                    data-slot="{{ $slot }}"
+                                    data-is-emergency="true"
+                                    onclick="pickSlot(this,'{{ $slot }}')">
+                                    {{ $slot }}
+                                </button>
+                            @endforeach
+                        </div>
+                        <p class="text-[10px] text-red-700/80 mt-1.5">
+                            * Emergency slots route directly to the active On-Call Medical Officer and prioritize queue triage.
+                        </p>
+                    </div>
+
                     <input type="hidden" name="time" id="timeInput" value="{{ $currentSlot }}" required>
-                    <p style="font-size:10px;color:var(--muted);margin-top:4px;font-weight:400;">Times are 24h. Selected time slot: <strong id="selectedSlotText">{{ $currentSlot }}</strong></p>
                 </div>
 
-                <div class="field-group">
+                <div>
                     <label class="form-label">Reason for Visit</label>
-                    <textarea name="reason" class="form-control" rows="3" placeholder="Brief description of symptoms or reason. This helps the doctor prepare.">{{ old('reason') }}</textarea>
+                    <textarea name="reason" class="form-control" rows="3" placeholder="Brief description of symptoms or reason for consultation...">{{ old('reason') }}</textarea>
                 </div>
+            </div>
 
-        </div>
-        <div class="book-foot">
-            <button type="reset"  class="btn btn-outline" style="font-size:12px;padding:.38rem .8rem;">Clear</button>
-            <button type="submit" class="btn btn-green"   style="font-size:12px;padding:.38rem .8rem;">Confirm Booking</button>
-        </div>
+            <div class="bg-slate-50 border-t border-gray-200 px-5 py-3.5 flex items-center justify-end gap-2.5">
+                <button type="reset" class="btn btn-outline btn-sm">Clear Form</button>
+                <button type="submit" class="btn btn-green btn-sm">Confirm Booking &rarr;</button>
+            </div>
         </form>
     </div>
 
-    {{-- Appointment List --}}
-    <div>
-        <div class="list-head">
-            <h2>Appointment Schedule</h2>
-            <div class="filter-row">
-                <button class="f-btn on">All</button>
-                <button class="f-btn">Today</button>
-                <button class="f-btn">This Week</button>
-                <button class="f-btn">Pending</button>
+    {{-- Appointment List Table Card (7 cols) --}}
+    <div class="lg:col-span-7 space-y-4">
+        <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+            <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider">Appointment Schedule</span>
+                <span class="badge badge-gold">{{ isset($recentAppointments) ? $recentAppointments->count() : 0 }} Records</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Patient</th>
+                            <th>Clinic &amp; Doctor</th>
+                            <th>Date &amp; Time</th>
+                            <th class="text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $badge = [
+                                'Confirmed' => 'badge-green',
+                                'Pending' => 'badge-yellow',
+                                'Cancelled' => 'badge-red',
+                                'confirmed' => 'badge-green',
+                                'pending' => 'badge-yellow',
+                                'cancelled' => 'badge-red',
+                                'completed' => 'badge-blue',
+                            ];
+                        @endphp
+                        @forelse($recentAppointments ?? [] as $a)
+                            <tr>
+                                <td class="font-mono text-xs text-gray-500 font-semibold">{{ $a->appointment_number }}</td>
+                                <td>
+                                    <div class="font-bold text-slate-900">{{ $a->patient ? $a->patient->full_name : 'Patient' }}</div>
+                                    <div class="text-[11px] text-gray-500">ID: {{ $a->patient ? $a->patient->university_id : 'N/A' }}</div>
+                                </td>
+                                <td>
+                                    <div class="font-semibold text-slate-800">{{ $a->department }}</div>
+                                    <div class="text-[11px] text-gray-500">{{ $a->doctor ? $a->doctor->name : 'Attending Officer' }}</div>
+                                </td>
+                                <td>
+                                    <div class="text-xs text-slate-800 font-medium">{{ $a->appointment_date->format('d M Y') }}</div>
+                                    <div class="text-[11px] font-bold text-emerald-700">{{ $a->time_slot }}</div>
+                                </td>
+                                <td class="text-right">
+                                    <span class="badge {{ $badge[$a->status] ?? 'badge-green' }}">{{ ucfirst($a->status) }}</span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-10 text-gray-400">
+                                    <div class="text-xs">No scheduled appointments found.</div>
+                                    <div class="text-[11px] text-gray-400 mt-1">Use the booking form on the left to schedule your visit.</div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="appt-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Patient</th>
-                        <th>Clinic / Doctor</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php
-                        $badge = ['Confirmed'=>'badge-green','Pending'=>'badge-yellow','Cancelled'=>'badge-red','confirmed'=>'badge-green','pending'=>'badge-yellow','cancelled'=>'badge-red','completed'=>'badge-blue'];
-                    @endphp
-                    @if(isset($recentAppointments) && $recentAppointments->count() > 0)
-                        @foreach($recentAppointments as $a)
-                            <tr>
-                                <td style="font-size:11px;color:var(--muted);">{{ $a->appointment_number }}</td>
-                                <td>
-                                    <span class="patient-name">{{ $a->patient ? $a->patient->full_name : 'Patient' }}</span>
-                                    <span class="patient-id">{{ $a->patient ? $a->patient->university_id : 'N/A' }}</span>
-                                </td>
-                                <td>
-                                    <span style="font-weight:700;font-size:12px;">{{ $a->department }}</span><br>
-                                    <span style="font-size:11px;color:var(--muted);">{{ $a->doctor ? $a->doctor->name : 'Attending Officer' }}</span>
-                                </td>
-                                <td style="font-size:12px;">{{ $a->appointment_date->format('d M Y') }}</td>
-                                <td style="font-size:12px;font-weight:700;">{{ $a->time_slot }}</td>
-                                <td><span class="badge {{ $badge[$a->status] ?? 'badge-green' }}">{{ ucfirst($a->status) }}</span></td>
-                            </tr>
-                        @endforeach
-                    @else
-                        @php
-                            $list = [
-                                ['id'=>'APT-2026-0041','name'=>'Rahman Al-Hasan',  'uid'=>'2022-CSE-011','dept'=>'General Medicine',   'doctor'=>'Dr. Anisur Rahman', 'date'=>'Today','time'=>'09:00', 'status'=>'Confirmed'],
-                                ['id'=>'APT-2026-0042','name'=>'Nadia Akter',       'uid'=>'2023-BBA-044','dept'=>'General Medicine',   'doctor'=>'Dr. Anisur Rahman',  'date'=>'Today','time'=>'09:30','status'=>'Confirmed'],
-                                ['id'=>'APT-2026-0043','name'=>'Tariq Hossain',     'uid'=>'2021-CSE-078','dept'=>'Dental',             'doctor'=>'Dr. Abdur Karim',   'date'=>'Today','time'=>'10:00','status'=>'Confirmed'],
-                                ['id'=>'APT-2026-0044','name'=>'Sumaiya Begum',     'uid'=>'FAC-ENG-009', 'dept'=>'Gynaecology',        'doctor'=>'Dr. Nusrat Sultana','date'=>'Tomorrow','time'=>'11:00','status'=>'Confirmed'],
-                            ];
-                        @endphp
-                        @foreach($list as $i => $a)
-                        <tr>
-                            <td style="font-size:11px;color:var(--muted);">{{ $a['id'] }}</td>
-                            <td>
-                                <span class="patient-name">{{ $a['name'] }}</span>
-                                <span class="patient-id">{{ $a['uid'] }}</span>
-                            </td>
-                            <td>
-                                <span style="font-weight:700;font-size:12px;">{{ $a['dept'] }}</span><br>
-                                <span style="font-size:11px;color:var(--muted);">{{ $a['doctor'] }}</span>
-                            </td>
-                            <td style="font-size:12px;">{{ $a['date'] }}</td>
-                            <td style="font-size:12px;font-weight:700;">{{ $a['time'] }}</td>
-                            <td><span class="badge {{ $badge[$a['status']] }}">{{ $a['status'] }}</span></td>
-                        </tr>
-                        @endforeach
-                    @endif
-                </tbody>
-            </table>
+        <div class="p-3.5 rounded-lg bg-white border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
+            <span>To cancel or reschedule an appointment, contact the Medical Centre counter.</span>
+            <span class="font-semibold text-emerald-800">Hotline: 01888-888888</span>
         </div>
-
-        <p style="font-size:11px;color:var(--muted);margin-top:.6rem;font-weight:400;">
-            Showing {{ (isset($recentAppointments) && $recentAppointments->count() > 0) ? $recentAppointments->count() : (isset($list) ? count($list) : 0) }} appointments. To cancel or reschedule, please contact the Medical Centre counter or call 0188888888.
-        </p>
     </div>
+
 </div>
 
 @endsection
@@ -325,11 +240,25 @@
 @push('scripts')
 <script>
     function pickSlot(el, val) {
-        document.querySelectorAll('.slot:not(.taken)').forEach(s => s.classList.remove('sel'));
-        el.classList.add('sel');
+        document.querySelectorAll('.time-slot-btn:not(.line-through)').forEach(s => {
+            if (s.dataset.isEmergency === 'true') {
+                s.className = 'time-slot-btn py-1.5 px-2 rounded-md text-xs font-semibold border transition-all text-center cursor-pointer bg-white text-red-700 border-red-300 hover:bg-red-700 hover:text-white';
+            } else {
+                s.className = 'time-slot-btn py-1.5 px-2 rounded-md text-xs font-semibold border transition-all text-center bg-white text-slate-700 border-gray-300 hover:border-emerald-600 hover:text-emerald-700 cursor-pointer';
+            }
+        });
+
+        if (el.dataset.isEmergency === 'true') {
+            el.className = 'time-slot-btn py-1.5 px-2 rounded-md text-xs font-bold border transition-all text-center bg-red-700 text-white border-red-700 shadow-xs cursor-pointer';
+        } else {
+            el.className = 'time-slot-btn py-1.5 px-2 rounded-md text-xs font-semibold border transition-all text-center bg-[#1a6b3a] text-white border-[#1a6b3a] shadow-xs cursor-pointer';
+        }
+
         document.getElementById('timeInput').value = val;
         var txt = document.getElementById('selectedSlotText');
-        if (txt) txt.textContent = val;
+        if (txt) {
+            txt.textContent = val + (el.dataset.isEmergency === 'true' ? ' (Emergency Shift)' : '');
+        }
     }
 </script>
 @endpush

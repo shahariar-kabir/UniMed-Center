@@ -1,23 +1,11 @@
 @extends('layouts.app')
 @section('title', 'Pharmacy & Inventory Desk')
 
-@push('styles')
-<style>
-    .pharma-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    @media (max-width: 860px) {
-        .pharma-grid { grid-template-columns: 1fr; }
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="page-title">Central Pharmacy &amp; Inventory Desk</div>
-<div class="page-subtitle">Monitor medicine inventory, track near-expiry batches, receive digital prescriptions, and fulfill patient dispensations.</div>
+<div class="mb-6">
+    <h1 class="page-title">Central Pharmacy &amp; Inventory Desk</h1>
+    <p class="page-subtitle">Monitor medicine inventory, track near-expiry batches, receive digital prescriptions, and fulfill patient dispensations.</p>
+</div>
 
 <div class="stats-grid">
     <div class="stat-card">
@@ -42,20 +30,20 @@
     </div>
 </div>
 
-<div style="display:flex;gap:.8rem;margin-bottom:1.4rem;flex-wrap:wrap;">
+<div class="flex items-center gap-3 mb-6 flex-wrap">
     <a href="{{ route('pharmacy.inventory') }}" class="btn btn-green">Full Medicine Inventory</a>
     <a href="{{ route('pharmacy.dispense') }}" class="btn btn-gold">Dispense Pending Prescriptions ({{ $pendingPrescriptions->count() }})</a>
 </div>
 
 {{-- Two Alert Tables --}}
-<div class="pharma-grid">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     {{-- Near Expiry Alerts --}}
-    <div class="card" style="border-top:3px solid var(--gold);">
-        <div class="card-header" style="background:#856404;">
-            <span>Near-Expiry Stock Alerts (&lt; 60 Days)</span>
-            <span style="font-size:11px;">{{ $nearExpiryMedicines->count() }} Batches</span>
+    <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl overflow-hidden">
+        <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider">Near-Expiry Stock Alerts (&lt; 60 Days)</span>
+            <span class="badge badge-gold">{{ $nearExpiryMedicines->count() }} Batches</span>
         </div>
-        <div class="card-body" style="padding:0;">
+        <div class="overflow-x-auto">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -70,12 +58,12 @@
                     @forelse($nearExpiryMedicines as $med)
                         <tr>
                             <td>
-                                <strong>{{ $med->name }}</strong>
-                                <div style="font-size:11px;color:var(--muted);">{{ $med->dosage_form }} ({{ $med->strength }})</div>
+                                <strong class="text-slate-900">{{ $med->name }}</strong>
+                                <div class="text-[11px] text-gray-500">{{ $med->dosage_form }} ({{ $med->strength }})</div>
                             </td>
-                            <td><code>{{ $med->batch_number }}</code></td>
-                            <td><strong>{{ $med->stock_quantity }}</strong> {{ $med->unit }}</td>
-                            <td>{{ $med->expiry_date->format('d M Y') }}</td>
+                            <td class="font-mono text-xs">{{ $med->batch_number }}</td>
+                            <td><strong class="text-slate-900">{{ $med->stock_quantity }}</strong> {{ $med->unit }}</td>
+                            <td class="text-xs text-slate-700">{{ $med->expiry_date->format('d M Y') }}</td>
                             <td>
                                 @if($med->isExpired())
                                     <span class="badge badge-red">EXPIRED</span>
@@ -88,7 +76,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" style="text-align:center;padding:1.4rem;color:var(--muted);">No near-expiry batches detected.</td>
+                            <td colspan="5" class="text-center py-6 text-gray-400 text-xs">No near-expiry batches detected.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -97,12 +85,12 @@
     </div>
 
     {{-- Low Stock Alerts --}}
-    <div class="card" style="border-top:3px solid #c0392b;">
-        <div class="card-header" style="background:#721c24;">
-            <span>Low Stock Alerts (Stock &le; Reorder Level)</span>
-            <span style="font-size:11px;">{{ $lowStockMedicines->count() }} Items</span>
+    <div class="bg-white border border-gray-200 border-t-4 border-t-red-600 shadow-sm rounded-xl overflow-hidden">
+        <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider">Low Stock Alerts (&le; Reorder Level)</span>
+            <span class="badge badge-red">{{ $lowStockMedicines->count() }} Items</span>
         </div>
-        <div class="card-body" style="padding:0;">
+        <div class="overflow-x-auto">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -116,25 +104,25 @@
                     @forelse($lowStockMedicines as $med)
                         <tr>
                             <td>
-                                <strong>{{ $med->name }}</strong>
-                                <div style="font-size:11px;color:var(--muted);">{{ $med->category }}</div>
+                                <strong class="text-slate-900">{{ $med->name }}</strong>
+                                <div class="text-[11px] text-gray-500">{{ $med->category }}</div>
                             </td>
                             <td>
-                                <strong style="color:#c0392b;font-size:14px;">{{ $med->stock_quantity }}</strong> {{ $med->unit }}
+                                <strong class="text-red-700 text-sm">{{ $med->stock_quantity }}</strong> {{ $med->unit }}
                             </td>
-                            <td>{{ $med->reorder_level }} {{ $med->unit }}</td>
+                            <td class="text-xs text-gray-600">{{ $med->reorder_level }} {{ $med->unit }}</td>
                             <td>
-                                <form action="{{ route('pharmacy.inventory.stock', $med->id) }}" method="POST" style="display:flex;gap:4px;">
+                                <form action="{{ route('pharmacy.inventory.stock', $med->id) }}" method="POST" class="flex items-center gap-1.5">
                                     @csrf
                                     <input type="hidden" name="action" value="add">
-                                    <input type="number" name="adjustment" value="50" style="width:55px;padding:2px 4px;font-size:11px;border:1px solid #ccc;border-radius:3px;">
-                                    <button type="submit" class="btn btn-outline btn-sm" style="padding:2px 6px;font-size:10px;">Restock</button>
+                                    <input type="number" name="adjustment" value="50" class="w-16 py-1 px-2 text-xs border border-gray-300 rounded">
+                                    <button type="submit" class="btn btn-outline btn-xs">Restock</button>
                                 </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" style="text-align:center;padding:1.4rem;color:var(--muted);">All medicine stocks are above minimum threshold.</td>
+                            <td colspan="4" class="text-center py-6 text-gray-400 text-xs">All medicine stocks are above minimum threshold.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -144,12 +132,12 @@
 </div>
 
 {{-- Pending Prescriptions Queue --}}
-<div class="card">
-    <div class="card-header">
-        <span>Prescriptions Ready for Dispensation ({{ $pendingPrescriptions->count() }})</span>
-        <a href="{{ route('pharmacy.dispense') }}" style="color:#fff;font-size:11px;text-decoration:underline;">Full Dispensing Counter &rarr;</a>
+<div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden">
+    <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider">Prescriptions Ready for Dispensation ({{ $pendingPrescriptions->count() }})</span>
+        <a href="{{ route('pharmacy.dispense') }}" class="text-xs text-emerald-200 hover:underline">Full Dispensing Counter &rarr;</a>
     </div>
-    <div class="card-body" style="padding:0;">
+    <div class="overflow-x-auto">
         <table class="data-table">
             <thead>
                 <tr>
@@ -164,30 +152,30 @@
             <tbody>
                 @forelse($pendingPrescriptions as $rx)
                     <tr>
-                        <td><strong style="color:var(--green);">{{ $rx->prescription_number }}</strong></td>
+                        <td><strong class="text-[#1a6b3a] font-mono">{{ $rx->prescription_number }}</strong></td>
                         <td>
-                            <strong>{{ $rx->patient->full_name }}</strong><br>
-                            <small style="color:var(--muted);">ID: {{ $rx->patient->university_id }}</small>
+                            <strong class="text-slate-900">{{ $rx->patient->full_name }}</strong>
+                            <div class="text-[11px] text-gray-500">ID: {{ $rx->patient->university_id }}</div>
                         </td>
-                        <td>{{ $rx->doctor->name }}</td>
+                        <td class="text-xs text-slate-800 font-medium">{{ $rx->doctor->name }}</td>
                         <td>
-                            <ul style="padding-left:1rem;margin:0;font-size:12px;">
+                            <ul class="text-xs text-gray-700 list-disc list-inside space-y-0.5">
                                 @foreach($rx->items as $item)
                                     <li>{{ $item->medicine_name }} &times; <strong>{{ $item->quantity }}</strong> ({{ $item->dosage }})</li>
                                 @endforeach
                             </ul>
                         </td>
-                        <td style="font-size:11px;color:var(--muted);">{{ $rx->created_at->diffForHumans() }}</td>
+                        <td class="text-xs text-gray-500">{{ $rx->created_at->diffForHumans() }}</td>
                         <td>
                             <form action="{{ route('pharmacy.dispense.store', $rx->id) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-gold btn-sm">Dispense &amp; Deduct Stock</button>
+                                <button type="submit" class="btn btn-gold btn-sm">Dispense &amp; Deduct</button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:1.4rem;color:var(--muted);">All current prescriptions have been dispensed.</td>
+                        <td colspan="6" class="text-center py-8 text-gray-400 text-xs">All current prescriptions have been dispensed.</td>
                     </tr>
                 @endforelse
             </tbody>

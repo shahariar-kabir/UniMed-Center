@@ -159,6 +159,11 @@ class PatientController extends Controller
             'reason' => 'nullable|string|max:500',
         ]);
 
+        $emergencySlots = ['20:00', '21:00', '22:00', '23:00', '00:00', '02:00', '04:00', '06:00'];
+        if (in_array($validated['time_slot'], $emergencySlots, true)) {
+            return back()->withInput()->with('error', 'Emergency shift slots (8:00pm–8:00am) are reserved for Emergency Bookings only.');
+        }
+
         $appointment = $this->createAppointmentRecord($patient, $validated);
 
         return redirect()->route('patient.appointments')->with('success', "Appointment booked successfully! Reference: {$appointment->appointment_number}");

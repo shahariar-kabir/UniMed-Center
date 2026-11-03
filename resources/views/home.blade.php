@@ -1,309 +1,273 @@
 @extends('layouts.app')
 @section('title', 'Home')
 
-@push('styles')
-<style>
-    /* ── Hero Banner ── */
-    .hero-banner {
-        background: linear-gradient(135deg, var(--green-dk) 0%, var(--green) 100%);
-        color: #fff;
-        border-radius: var(--radius);
-        padding: 2rem 2.2rem;
-        margin-bottom: 1.4rem;
-        border-left: 5px solid var(--gold);
-        display: grid;
-        grid-template-columns: 1fr 270px;
-        gap: 1.8rem;
-        align-items: center;
-    }
-    .hero-banner h1 {
-        font-size: 1.7rem;
-        font-weight: 700;
-        margin-bottom: .6rem;
-        letter-spacing: -.01em;
-    }
-    .hero-banner p {
-        font-size: 13px;
-        line-height: 1.6;
-        color: rgba(255,255,255,.9);
-        margin-bottom: 1.2rem;
-    }
-    .hero-note {
-        font-size: 11px;
-        color: rgba(255,255,255,.68);
-        margin-top: .6rem;
-    }
-    .hero-right {
-        background: rgba(0,0,0,.22);
-        border: 1px solid rgba(255,255,255,.18);
-        border-radius: 5px;
-        padding: 1.1rem;
-        font-size: 12px;
-        line-height: 1.7;
-    }
-    .hero-right strong { display: block; font-size: 13px; color: #fff; margin-bottom: 4px; }
-
-    /* ── 4 Module Gateways ── */
-    .module-gateways {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.6rem;
-    }
-    .module-card {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 1.1rem;
-        box-shadow: var(--shadow);
-        border-top: 4px solid var(--green);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    .module-card.gold  { border-top-color: var(--gold); }
-    .module-card.blue  { border-top-color: #2980b9; }
-    .module-card.red   { border-top-color: #c0392b; }
-    .module-card h3 { font-size: 14px; font-weight: 700; color: var(--green-dk); margin-bottom: .4rem; }
-    .module-card p  { font-size: 12px; color: var(--muted); margin-bottom: .9rem; line-height: 1.5; flex-grow: 1; }
-
-    /* ── Two Column Content ── */
-    .home-grid {
-        display: grid;
-        grid-template-columns: 1fr 310px;
-        gap: 1.5rem;
-        align-items: start;
-    }
-    .section-head {
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .06em;
-        color: var(--green);
-        border-bottom: 2px solid var(--green);
-        padding-bottom: 4px;
-        margin-bottom: .9rem;
-    }
-
-    .services-list {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        margin-bottom: 1.4rem;
-    }
-    .svc-row {
-        padding: .75rem 1rem;
-        border-bottom: 1px solid #ecf2ee;
-    }
-    .svc-row:last-child { border-bottom: none; }
-    .svc-row:nth-child(even) { background: #f9fbfa; }
-    .svc-info h4 { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-    .svc-info p  { font-size: 12px; color: var(--muted); font-weight: 400; }
-
-    @media (max-width: 860px) {
-        .hero-banner { grid-template-columns: 1fr; }
-        .home-grid { grid-template-columns: 1fr; }
-    }
-</style>
-@endpush
-
 @section('content')
 
-{{-- Hero Banner --}}
-<div class="hero-banner">
-    <div>
-        <h1>University Medical Centre</h1>
-        <p>Centralized digital healthcare platform for students, faculty, and university personnel. Manage your patient profile, book doctor consultations, track live waiting queues, view and download prescriptions, and access pharmacy dispensing services.</p>
-        <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:center;">
-            @auth
-                @if(Auth::user()->isPatient())
-                    <a href="{{ route('patient.dashboard') }}" class="btn btn-gold">Go to My Patient Dashboard</a>
-                    <a href="{{ route('patient.queue') }}" class="btn btn-outline" style="border-color:rgba(255,255,255,.6);color:#fff;">View Live Queue</a>
-                @elseif(Auth::user()->isDoctor())
-                    <a href="{{ route('doctor.dashboard') }}" class="btn btn-gold">Doctor Consultation Desk</a>
-                    <a href="{{ route('doctor.queue') }}" class="btn btn-outline" style="border-color:rgba(255,255,255,.6);color:#fff;">Patient Queue</a>
-                @elseif(Auth::user()->isPharmacist())
-                    <a href="{{ route('pharmacy.dashboard') }}" class="btn btn-gold">Pharmacy Desk</a>
-                    <a href="{{ route('pharmacy.inventory') }}" class="btn btn-outline" style="border-color:rgba(255,255,255,.6);color:#fff;">Inventory Control</a>
-                @elseif(Auth::user()->isAdmin())
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-gold">Admin Analytics Panel</a>
-                    <a href="{{ route('admin.users') }}" class="btn btn-outline" style="border-color:rgba(255,255,255,.6);color:#fff;">User Management</a>
-                @endif
-            @else
-                <a href="{{ route('patients.register') }}" class="btn btn-gold">Register as a Patient</a>
-                <a href="{{ route('login') }}" class="btn btn-outline" style="border-color:rgba(255,255,255,.6);color:#fff;">Portal Sign In</a>
-            @endauth
+{{-- Preline Balanced Hero Section --}}
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#134d2a] via-[#1a6b3a] to-[#228448] text-white p-6 sm:p-8 lg:p-10 mb-8 shadow-sm border border-emerald-900/20">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        {{-- Left Hero Text & Actions --}}
+        <div class="lg:col-span-7">
+            <div class="inline-flex items-center gap-x-2 py-1 px-3 rounded-full bg-white/10 backdrop-blur border border-white/20 text-xs font-semibold text-emerald-100 mb-3">
+                <span class="size-2 rounded-full bg-[#c8922a]"></span> University Health Services
+            </div>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-3 text-white">
+                University Medical Centre
+            </h1>
+            <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 font-normal max-w-2xl">
+                Centralized digital healthcare platform for students, faculty, and university personnel. Manage your patient profile, book doctor consultations, track live waiting queues, view and download prescriptions, and access pharmacy dispensing services.
+            </p>
+
+            <div class="flex flex-wrap items-center gap-3">
+                @auth
+                    @if(Auth::user()->isPatient())
+                        <a href="{{ route('patient.dashboard') }}" class="btn btn-gold">Go to My Patient Dashboard</a>
+                        <a href="{{ route('patient.queue') }}" class="btn btn-outline">View Live Queue</a>
+                    @elseif(Auth::user()->isDoctor())
+                        <a href="{{ route('doctor.dashboard') }}" class="btn btn-gold">Doctor Consultation Desk</a>
+                        <a href="{{ route('doctor.queue') }}" class="btn btn-outline">Patient Queue</a>
+                    @elseif(Auth::user()->isPharmacist())
+                        <a href="{{ route('pharmacy.dashboard') }}" class="btn btn-gold">Pharmacy Desk</a>
+                        <a href="{{ route('pharmacy.inventory') }}" class="btn btn-outline">Inventory Control</a>
+                    @elseif(Auth::user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-gold">Admin Analytics Panel</a>
+                        <a href="{{ route('admin.users') }}" class="btn btn-outline">User Management</a>
+                    @endif
+                @else
+                    <a href="{{ route('patients.register') }}" class="btn btn-gold">Register as a Patient</a>
+                    <a href="{{ route('login') }}" class="btn btn-outline">Portal Sign In</a>
+                @endauth
+            </div>
+
+            <p class="text-xs text-emerald-100/80 mt-4 font-medium">
+                * Subsidized primary medical care with valid University Student or Employee ID card.
+            </p>
         </div>
-        <p class="hero-note">* Subsidized primary medical care with valid University Student or Employee ID card.</p>
-    </div>
-    <div class="hero-right">
-        <strong>Emergency: 0188888888</strong>
-        Mon &ndash; Fri &nbsp;8:00am &ndash; 8:00pm<br>
-        Saturday &nbsp;9:00am &ndash; 2:00pm<br>
-        Sunday &nbsp;Emergency Counter Only<br><br>
-        UNIMED CENTER BUILDING,<br>
-        UNKNOWN
+
+        {{-- Right Hero Quick Overview Card --}}
+        <div class="lg:col-span-5">
+            <div class="bg-black/20 backdrop-blur-md border border-white/15 rounded-xl p-5 text-white shadow-inner">
+                <div class="flex items-center justify-between pb-3 mb-3 border-b border-white/15">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-100">Healthcare Pillars</span>
+                    <span class="text-[11px] text-[#c8922a] font-semibold">Campus Clinical Network</span>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    <div class="flex items-start gap-x-3 p-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                        <div class="size-7 rounded-md bg-[#c8922a]/20 border border-[#c8922a]/40 flex items-center justify-center shrink-0 text-[#c8922a] font-bold">
+                            1
+                        </div>
+                        <div>
+                            <div class="font-bold text-white">Outpatient Consultations</div>
+                            <div class="text-emerald-100/80 text-[11px]">Walk-in triage &amp; scheduled visits with university medical officers.</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-x-3 p-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                        <div class="size-7 rounded-md bg-emerald-400/20 border border-emerald-400/40 flex items-center justify-center shrink-0 text-emerald-300 font-bold">
+                            2
+                        </div>
+                        <div>
+                            <div class="font-bold text-white">Digital Prescriptions</div>
+                            <div class="text-emerald-100/80 text-[11px]">Direct electronic transmission from doctor desk to dispensary.</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-x-3 p-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                        <div class="size-7 rounded-md bg-amber-400/20 border border-amber-400/40 flex items-center justify-center shrink-0 text-amber-300 font-bold">
+                            3
+                        </div>
+                        <div>
+                            <div class="font-bold text-white">Central Dispensary</div>
+                            <div class="text-emerald-100/80 text-[11px]">On-campus medicine inventory with batch &amp; expiry tracking.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-{{-- Real-time System Statistics --}}
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-val">{{ $stats['patient_count'] ?? 0 }}</div>
-        <div class="stat-label">Registered Patients</div>
-        <div class="stat-sub">Verified university members</div>
-    </div>
-    <div class="stat-card blue">
-        <div class="stat-val">{{ $stats['staff_count'] ?? 0 }}</div>
-        <div class="stat-label">Medical Staff</div>
-        <div class="stat-sub">Doctors &amp; Pharmacists on roster</div>
-    </div>
-    <div class="stat-card gold">
-        <div class="stat-val">{{ $stats['appointments_month'] ?? 0 }}</div>
-        <div class="stat-label">Appointments This Month</div>
-        <div class="stat-sub">Scheduled &amp; attended visits</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-val">{{ $stats['medicines_count'] ?? 0 }}</div>
-        <div class="stat-label">Medicines In Stock</div>
-        <div class="stat-sub">Tracked in Central Pharmacy</div>
-    </div>
-</div>
-
-{{-- 4 Core Modules Gateways --}}
-<div class="module-gateways">
-    <div class="module-card">
-        <div>
-            <h3>3.1 Patient Module</h3>
-            <p>Profile management, identity verification, appointment booking, live queue tracking, and dedicated portal to view and download printable PDF prescriptions.</p>
-        </div>
-        <a href="{{ route('patient.dashboard') }}" class="btn btn-green btn-sm">Access Patient Portal &rarr;</a>
-    </div>
-
-    <div class="module-card blue">
-        <div>
-            <h3>3.2 Doctor Module</h3>
-            <p>Patient consultation queue management, medical history access for authorized consultations, and digital prescription generation with stock selection and dosage specifications.</p>
-        </div>
-        <a href="{{ route('doctor.dashboard') }}" class="btn btn-outline btn-sm">Doctor Consultation Desk &rarr;</a>
-    </div>
-
-    <div class="module-card gold">
-        <div>
-            <h3>3.3 Pharmacy Module</h3>
-            <p>Medicine inventory control, stock monitoring, near-expiry alerts (&lt;60 days), and prescription fulfillment with automated inventory deductions.</p>
-        </div>
-        <a href="{{ route('pharmacy.dashboard') }}" class="btn btn-gold btn-sm">Pharmacy Desk &rarr;</a>
-    </div>
-
-    <div class="module-card red">
-        <div>
-            <h3>3.4 Admin &amp; Reports</h3>
-            <p>User management, role authorization (Admin, Doctor, Pharmacist, Patient), and operational analytics across departments and medical services.</p>
-        </div>
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline btn-sm">System Administration &rarr;</a>
-    </div>
-</div>
-
-<div class="home-grid">
-    {{-- Left: Available Services + Duty Roster --}}
-    <div>
-        <div class="section-head">Core Medical Centre Services</div>
-        <div class="services-list">
-            <div class="svc-row">
-                <div class="svc-info">
-                    <h4>General Medicine &amp; Consultation</h4>
-                    <p>Walk-in and appointment consultations for common illnesses, clinical assessments, and referral letters.</p>
-                </div>
+{{-- Preline Two Column Content Grid --}}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    {{-- Left 2 Columns: Services + Duty Roster --}}
+    <div class="lg:col-span-2 space-y-6">
+        {{-- Core Services --}}
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl p-6">
+            <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800">
+                    Core Medical Centre Services
+                </h2>
+                <span class="badge badge-green">Available On Campus</span>
             </div>
-            <div class="svc-row">
-                <div class="svc-info">
-                    <h4>Dental Clinic</h4>
-                    <p>Dental check-ups, scaling, extractions, fillings, and emergency oral care.</p>
+
+            <div class="divide-y divide-gray-100">
+                <div class="py-3.5 first:pt-0 last:pb-0 hover:bg-slate-50/80 px-2 rounded-lg transition-colors">
+                    <h4 class="text-sm font-semibold text-slate-900 mb-0.5">General Medicine &amp; Consultation</h4>
+                    <p class="text-xs text-gray-600 leading-relaxed">Walk-in and appointment consultations for common illnesses, clinical assessments, and referral letters.</p>
                 </div>
-            </div>
-            <div class="svc-row">
-                <div class="svc-info">
-                    <h4>Counselling &amp; Mental Health</h4>
-                    <p>Confidential mental health guidance and professional psychological counselling.</p>
+
+                <div class="py-3.5 hover:bg-slate-50/80 px-2 rounded-lg transition-colors">
+                    <h4 class="text-sm font-semibold text-slate-900 mb-0.5">Dental Clinic</h4>
+                    <p class="text-xs text-gray-600 leading-relaxed">Dental check-ups, scaling, extractions, fillings, and emergency oral care.</p>
                 </div>
-            </div>
-            <div class="svc-row">
-                <div class="svc-info">
-                    <h4>Laboratory &amp; Diagnostics</h4>
-                    <p>Routine diagnostic tests, blood work, urinalysis, and glucose screening with rapid turnaround.</p>
+
+                <div class="py-3.5 hover:bg-slate-50/80 px-2 rounded-lg transition-colors">
+                    <h4 class="text-sm font-semibold text-slate-900 mb-0.5">Counselling &amp; Mental Health</h4>
+                    <p class="text-xs text-gray-600 leading-relaxed">Confidential mental health guidance and professional psychological counselling.</p>
                 </div>
-            </div>
-            <div class="svc-row">
-                <div class="svc-info">
-                    <h4>Central Pharmacy &amp; Dispensary</h4>
-                    <p>Subsidized dispensing of prescribed medications directly from the medical centre inventory.</p>
+
+                <div class="py-3.5 hover:bg-slate-50/80 px-2 rounded-lg transition-colors">
+                    <h4 class="text-sm font-semibold text-slate-900 mb-0.5">Laboratory &amp; Diagnostics</h4>
+                    <p class="text-xs text-gray-600 leading-relaxed">Routine diagnostic tests, blood work, urinalysis, and glucose screening with rapid turnaround.</p>
+                </div>
+
+                <div class="py-3.5 first:pt-0 last:pb-0 hover:bg-slate-50/80 px-2 rounded-lg transition-colors">
+                    <h4 class="text-sm font-semibold text-slate-900 mb-0.5">Central Pharmacy &amp; Dispensary</h4>
+                    <p class="text-xs text-gray-600 leading-relaxed">Subsidized dispensing of prescribed medications directly from the medical centre inventory.</p>
                 </div>
             </div>
         </div>
 
-        <div class="section-head">Doctors on Duty Today</div>
-        <div class="card" style="margin-bottom: 1.4rem;">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Doctor</th>
-                        <th>Department</th>
-                        <th>Designation</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($doctors as $doc)
-                        <tr>
-                            <td><strong>{{ $doc->name }}</strong></td>
-                            <td>{{ $doc->department ?? 'General Medicine' }}</td>
-                            <td style="font-size:11px;color:var(--muted);">{{ $doc->designation ?? 'Medical Officer' }}</td>
-                            <td><span class="badge badge-green">On Duty</span></td>
+        {{-- Doctors on Duty --}}
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl p-6">
+            <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800">
+                    Doctors on Duty Today
+                </h2>
+                <span class="badge badge-blue">Live Roster</span>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200 text-xs">
+                    <thead class="bg-gray-50">
+                        <tr class="text-gray-500 uppercase font-semibold">
+                            <th class="py-3 px-4 text-left">Doctor</th>
+                            <th class="py-3 px-4 text-left">Department</th>
+                            <th class="py-3 px-4 text-left">Designation</th>
+                            <th class="py-3 px-4 text-left">Duty Shift &amp; Timings</th>
+                            <th class="py-3 px-4 text-right">Status</th>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">Doctor schedule is being refreshed.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    {{-- Right: Notice Board & Operating Hours --}}
-    <div>
-        <div class="section-head">Notice Board</div>
-        <div class="card" style="margin-bottom: 1.4rem;">
-            <div class="card-body" style="font-size:12px;line-height:1.5;">
-                <div style="border-bottom:1px solid #ecf2ee;padding-bottom:.5rem;margin-bottom:.5rem;">
-                    <span class="badge badge-red" style="font-size:10px;">URGENT</span>
-                    <strong>Annual Health Screening</strong>
-                    <div style="color:var(--muted);font-size:11px;margin-top:2px;">Free routine checkups for all 1st year students at Room 102.</div>
-                </div>
-                <div style="border-bottom:1px solid #ecf2ee;padding-bottom:.5rem;margin-bottom:.5rem;">
-                    <span class="badge badge-blue" style="font-size:10px;">VACCINATION</span>
-                    <strong>Seasonal Flu Vaccine Drive</strong>
-                    <div style="color:var(--muted);font-size:11px;margin-top:2px;">Available at Pharmacy counter. Walk-ins accepted with student ID.</div>
-                </div>
-                <div>
-                    <span class="badge badge-gray" style="font-size:10px;">GENERAL</span>
-                    <strong>Emergency Hotline 24/7</strong>
-                    <div style="color:var(--muted);font-size:11px;margin-top:2px;">Call <strong>0188888888</strong> for on-campus medical transport.</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-head">Operating Hours</div>
-        <div class="card">
-            <div class="card-body">
-                <table style="width:100%;font-size:12px;border-collapse:collapse;">
-                    <tr style="border-bottom:1px solid #ecf2ee;"><td style="padding:.35rem 0;font-weight:700;">Monday &ndash; Friday</td><td style="text-align:right;">8:00am &ndash; 8:00pm</td></tr>
-                    <tr style="border-bottom:1px solid #ecf2ee;"><td style="padding:.35rem 0;font-weight:700;">Saturday</td><td style="text-align:right;">9:00am &ndash; 2:00pm</td></tr>
-                    <tr><td style="padding:.35rem 0;font-weight:700;color:#c0392b;">Sunday</td><td style="text-align:right;color:#c0392b;">Emergency Only</td></tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse($doctors as $index => $doc)
+                            @php
+                                $shifts = [
+                                    ['name' => 'Morning Shift', 'time' => '08:00am &ndash; 02:00pm', 'badge' => 'badge-blue', 'status' => 'On Duty', 'status_badge' => 'badge-green'],
+                                    ['name' => 'Evening Shift', 'time' => '02:00pm &ndash; 08:00pm', 'badge' => 'badge-gold', 'status' => 'On Duty', 'status_badge' => 'badge-green'],
+                                    ['name' => 'Emergency Shift', 'time' => '08:00pm &ndash; 08:00am', 'badge' => 'badge-red', 'status' => 'Emergency On-Call', 'status_badge' => 'badge-red'],
+                                ];
+                                $shift = $shifts[$index % count($shifts)];
+                            @endphp
+                            <tr class="hover:bg-slate-50">
+                                <td class="font-bold py-3 px-4 text-slate-900">{{ $doc->name }}</td>
+                                <td class="py-3 px-4 text-gray-600">{{ $doc->department ?? 'General Medicine' }}</td>
+                                <td class="py-3 px-4 text-gray-500">{{ $doc->designation ?? 'Medical Officer' }}</td>
+                                <td class="py-3 px-4">
+                                    <div class="font-semibold text-slate-800">{!! $shift['time'] !!}</div>
+                                    <span class="badge {{ $shift['badge'] }} text-[10px] mt-0.5">{{ $shift['name'] }}</span>
+                                </td>
+                                <td class="py-3 px-4 text-right">
+                                    <span class="badge {{ $shift['status_badge'] }}">{{ $shift['status'] }}</span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center text-gray-400 py-6">Doctor roster is being refreshed. Emergency Medical Officer on duty 24/7 at Room 101.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    {{-- Right 1 Column: Notice Board & Operating Hours --}}
+    <div class="space-y-6">
+        {{-- Notice Board --}}
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl p-6">
+            <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800">
+                    Campus Notice Board
+                </h2>
+                <span class="badge badge-gold">Health Alerts</span>
+            </div>
+
+            <div class="space-y-3.5">
+                <div class="p-3.5 rounded-r-lg border border-red-200/80 border-l-4 border-l-red-500 bg-red-50/50">
+                    <div class="flex items-center gap-x-2 mb-1">
+                        <span class="badge badge-red">URGENT</span>
+                        <span class="font-bold text-xs text-red-950">Annual Health Screening</span>
+                    </div>
+                    <p class="text-xs text-red-900/80 leading-relaxed">Free routine checkups for all 1st year students at Room 102.</p>
+                </div>
+
+                <div class="p-3.5 rounded-r-lg border border-amber-200/80 border-l-4 border-l-[#c8922a] bg-amber-50/50">
+                    <div class="flex items-center gap-x-2 mb-1">
+                        <span class="badge badge-gold">VACCINATION</span>
+                        <span class="font-bold text-xs text-amber-950">Seasonal Flu Vaccine Drive</span>
+                    </div>
+                    <p class="text-xs text-amber-900/80 leading-relaxed">Available at Pharmacy counter. Walk-ins accepted with student ID.</p>
+                </div>
+
+                <div class="p-3.5 rounded-r-lg border border-emerald-200/80 border-l-4 border-l-[#1a6b3a] bg-emerald-50/50">
+                    <div class="flex items-center gap-x-2 mb-1">
+                        <span class="badge badge-green">GENERAL</span>
+                        <span class="font-bold text-xs text-emerald-950">Emergency Hotline 24/7</span>
+                    </div>
+                    <p class="text-xs text-emerald-900/80 leading-relaxed">Call <strong class="text-emerald-800 font-bold">01888-888888</strong> for on-campus medical transport.</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Operating Hours --}}
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl p-6">
+            <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800">
+                    Operating Hours
+                </h2>
+                <span class="badge badge-green">Standard &amp; Emergency</span>
+            </div>
+
+            <div class="divide-y divide-gray-100 text-xs">
+                {{-- Monday - Friday --}}
+                <div class="py-3 first:pt-0 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-slate-800">Monday &ndash; Friday (Standard OPD)</span>
+                        <span class="text-slate-900 font-bold">8:00am &ndash; 8:00pm</span>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px] text-red-700 bg-red-50/80 px-2.5 py-1 rounded-md border border-red-200/60">
+                        <span class="font-semibold flex items-center gap-1.5">
+                            <span class="size-1.5 rounded-full bg-red-600 animate-pulse"></span>Emergency Shift (Mon&ndash;Fri):
+                        </span>
+                        <span class="font-bold">8:00pm &ndash; 8:00am (On-Call)</span>
+                    </div>
+                </div>
+
+                {{-- Saturday --}}
+                <div class="py-3 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-slate-800">Saturday (Standard OPD)</span>
+                        <span class="text-slate-900 font-bold">9:00am &ndash; 2:00pm</span>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px] text-red-700 bg-red-50/80 px-2.5 py-1 rounded-md border border-red-200/60">
+                        <span class="font-semibold flex items-center gap-1.5">
+                            <span class="size-1.5 rounded-full bg-red-600 animate-pulse"></span>Emergency Shift (Saturday):
+                        </span>
+                        <span class="font-bold">2:00pm &ndash; 8:00am (On-Call)</span>
+                    </div>
+                </div>
+
+                {{-- Sunday --}}
+                <div class="py-3 last:pb-0 space-y-1">
+                    <div class="flex items-center justify-between text-red-700 font-bold">
+                        <span>Sunday</span>
+                        <span class="badge badge-red">24 Hours Emergency Only</span>
+                    </div>
+                    <div class="text-[11px] text-gray-500">
+                        Trauma, on-call medical officer &amp; campus ambulance active 24/7.
+                    </div>
+                </div>
             </div>
         </div>
     </div>

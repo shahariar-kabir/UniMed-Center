@@ -1,115 +1,81 @@
 @extends('layouts.app')
 @section('title', 'Patient Profile & Verification')
 
-@push('styles')
-<style>
-    .profile-layout {
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 1.5rem;
-        align-items: start;
-    }
-    .id-badge-card {
-        background: #fff;
-        border: 2px solid var(--green);
-        border-radius: var(--radius);
-        padding: 1.4rem;
-        text-align: center;
-        box-shadow: var(--shadow);
-    }
-    .verified-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: #d4edda;
-        color: #155724;
-        font-weight: 700;
-        font-size: 11px;
-        padding: 4px 12px;
-        border-radius: 20px;
-        letter-spacing: .05em;
-        text-transform: uppercase;
-        margin-top: .6rem;
-    }
-    .form-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: .8rem;
-        margin-bottom: .8rem;
-    }
-    @media (max-width: 820px) {
-        .profile-layout { grid-template-columns: 1fr; }
-        .form-grid-2 { grid-template-columns: 1fr; }
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="page-title">Patient Profile &amp; Identity Verification</div>
-<div class="page-subtitle">Manage your verified university health profile, pre-existing medical conditions, emergency contacts, and allergies.</div>
+<div class="mb-6">
+    <h1 class="page-title">Patient Profile &amp; Identity Verification</h1>
+    <p class="page-subtitle">Manage your verified university health profile, pre-existing medical conditions, emergency contacts, and allergies.</p>
+</div>
 
-<div class="profile-layout">
-    {{-- Left: Identity Verification Card --}}
-    <div>
-        <div class="id-badge-card">
-            <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.08em;text-transform:uppercase;">University Identity Card</div>
-            <h3 style="font-size:16px;color:var(--green-dk);margin-top:.4rem;">{{ $patient->full_name }}</h3>
-            <div style="font-size:12px;color:var(--muted);margin-top:2px;">{{ $patient->university_id }}</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    {{-- Left: Identity Verification Card (4 cols) --}}
+    <div class="lg:col-span-4 space-y-6">
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl p-5 text-center">
+            <div class="text-[11px] font-bold text-[#1a6b3a] tracking-wider uppercase">University Identity Card</div>
+            <h3 class="text-base font-bold text-[#134d2a] mt-1">{{ $patient->full_name }}</h3>
+            <div class="text-xs text-gray-500 mt-0.5">{{ $patient->university_id }}</div>
 
-            <div class="verified-badge">
-                Verified Student Identity
+            <div class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 font-bold text-[11px] py-1 px-3 rounded-full uppercase tracking-wider my-3 border border-emerald-200">
+                Verified Identity
             </div>
 
-            <div style="text-align:left;font-size:12px;margin-top:1.4rem;line-height:1.7;border-top:1px solid #ecf2ee;padding-top:1rem;">
-                <div><strong>Category:</strong> {{ ucfirst($patient->role_category) }}</div>
-                <div><strong>Department:</strong> {{ $patient->department ?? 'General' }}</div>
-                <div><strong>Semester / Year:</strong> {{ $patient->year_semester ?? 'N/A' }}</div>
-                <div><strong>Blood Group:</strong> <span class="badge badge-red">{{ $patient->blood_group ?? 'Not Set' }}</span></div>
-                <div><strong>Nationality:</strong> {{ $patient->nationality }}</div>
-                <div><strong>Member Since:</strong> {{ $patient->created_at->format('M Y') }}</div>
+            <div class="text-left text-xs text-gray-600 space-y-2 pt-3 border-t border-gray-100">
+                <div class="flex items-center justify-between"><span class="text-gray-500">Category:</span> <strong class="text-slate-800">{{ ucfirst($patient->role_category) }}</strong></div>
+                <div class="flex items-center justify-between"><span class="text-gray-500">Department:</span> <strong class="text-slate-800">{{ $patient->department ?? 'General' }}</strong></div>
+                <div class="flex items-center justify-between"><span class="text-gray-500">Semester / Year:</span> <strong class="text-slate-800">{{ $patient->year_semester ?? 'N/A' }}</strong></div>
+                <div class="flex items-center justify-between"><span class="text-gray-500">Blood Group:</span> <span class="badge badge-red">{{ $patient->blood_group ?? 'Not Set' }}</span></div>
+                <div class="flex items-center justify-between"><span class="text-gray-500">Nationality:</span> <strong class="text-slate-800">{{ $patient->nationality }}</strong></div>
+                <div class="flex items-center justify-between"><span class="text-gray-500">Member Since:</span> <strong class="text-slate-800">{{ $patient->created_at->format('M Y') }}</strong></div>
             </div>
         </div>
 
-        <div class="card" style="margin-top:1.2rem;">
-            <div class="card-header">Medical Alert Summary</div>
-            <div class="card-body" style="font-size:12px;line-height:1.6;">
-                <strong style="color:#c0392b;">Allergies:</strong>
-                <p>{{ $patient->allergies ?: 'No drug or food allergies on record.' }}</p>
-                <div style="margin-top:.6rem;">
-                    <strong>Pre-existing Conditions:</strong>
+        <div class="bg-white border border-gray-200 border-t-4 border-t-red-600 shadow-sm rounded-xl p-5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-red-700 border-b border-gray-200 pb-2 mb-3">
+                Medical Alert Summary
+            </h3>
+            <div class="text-xs text-gray-600 space-y-3">
+                <div>
+                    <strong class="text-red-700 block mb-0.5">Allergies:</strong>
+                    <p class="leading-relaxed">{{ $patient->allergies ?: 'No drug or food allergies on record.' }}</p>
+                </div>
+                <div>
+                    <strong class="text-slate-800 block mb-0.5">Pre-existing Conditions:</strong>
                     @if(!empty($patient->conditions) && is_array($patient->conditions))
-                        <ul style="padding-left:1.1rem;margin-top:3px;">
+                        <ul class="list-disc list-inside space-y-0.5">
                             @foreach($patient->conditions as $cond)
                                 <li>{{ $cond }}</li>
                             @endforeach
                         </ul>
                     @else
-                        <p style="color:var(--muted);margin-top:2px;">None reported.</p>
+                        <p class="text-gray-400">None reported.</p>
                     @endif
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Right: Edit Details Form --}}
-    <div class="card">
-        <div class="card-header">Update Contact &amp; Emergency Information</div>
-        <div class="card-body">
-            <form action="{{ route('patient.profile.update') }}" method="POST">
+    {{-- Right: Edit Details Form (8 cols) --}}
+    <div class="lg:col-span-8 bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl overflow-hidden">
+        <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider">Update Contact &amp; Emergency Information</span>
+            <span class="badge badge-gold">Profile Settings</span>
+        </div>
+        <div class="p-5 sm:p-6">
+            <form action="{{ route('patient.profile.update') }}" method="POST" class="space-y-4">
                 @csrf
 
-                <div class="form-grid-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="form-label">Phone Number <span class="req">*</span></label>
                         <input type="text" name="phone" class="form-control" value="{{ old('phone', $patient->phone) }}" required>
                     </div>
                     <div>
-                        <label class="form-label">Email (Official University Email)</label>
-                        <input type="email" class="form-control" value="{{ $patient->email }}" disabled style="background:#f4f8f5;">
+                        <label class="form-label">Official University Email</label>
+                        <input type="email" class="form-control bg-slate-50 text-gray-500 cursor-not-allowed" value="{{ $patient->email }}" disabled>
                     </div>
                 </div>
 
-                <div class="form-grid-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="form-label">Emergency Contact Person</label>
                         <input type="text" name="emergency_name" class="form-control" placeholder="e.g. Guardian / Parent Name" value="{{ old('emergency_name', $patient->emergency_name) }}">
@@ -120,24 +86,24 @@
                     </div>
                 </div>
 
-                <div style="margin-bottom:.8rem;">
+                <div>
                     <label class="form-label">Current Hall / Residence Address</label>
                     <textarea name="address" class="form-control" rows="2">{{ old('address', $patient->address) }}</textarea>
                 </div>
 
-                <div style="margin-bottom:.8rem;">
+                <div>
                     <label class="form-label">Drug / Food Allergies</label>
                     <input type="text" name="allergies" class="form-control" placeholder="e.g. Penicillin, Sulfa drugs, Shellfish" value="{{ old('allergies', $patient->allergies) }}">
-                    <small style="color:var(--muted);font-size:11px;">Crucial for doctor digital prescription warnings.</small>
+                    <span class="text-[11px] text-gray-400 mt-1 block">Crucial for doctor digital prescription warnings.</span>
                 </div>
 
-                <div style="margin-bottom:1.2rem;">
+                <div>
                     <label class="form-label">Current Long-term Medications</label>
                     <textarea name="medications" class="form-control" rows="2" placeholder="e.g. Salbutamol Inhaler, Metformin 500mg">{{ old('medications', $patient->medications) }}</textarea>
                 </div>
 
-                <div style="display:flex;justify-content:flex-end;">
-                    <button type="submit" class="btn btn-green">Save Profile Changes</button>
+                <div class="flex justify-end pt-2">
+                    <button type="submit" class="btn btn-green">Save Profile Changes &rarr;</button>
                 </div>
             </form>
         </div>

@@ -13,12 +13,12 @@ beforeEach(function () {
     $this->seed(DatabaseSeeder::class);
 });
 
-test('home page renders successfully with statistics', function () {
+test('home page renders successfully with services', function () {
     $response = $this->get('/');
 
     $response->assertStatus(200);
     $response->assertSee('University Medical Centre');
-    $response->assertSee('Registered Patients');
+    $response->assertSee('Core Medical Centre Services');
 });
 
 test('login page renders with quick demo role buttons', function () {
@@ -179,4 +179,217 @@ test('admin can access operational analytics and user management', function () {
     $this->get(route('admin.users'))
         ->assertStatus(200)
         ->assertSee('User Management & Role Authorization');
+});
+
+test('admin registration page renders successfully', function () {
+    $response = $this->get(route('admin.register'));
+
+    $response->assertStatus(200);
+    $response->assertSee('Administrator Registration');
+});
+
+test('administrator can register and is logged into admin dashboard', function () {
+    $response = $this->post(route('admin.register.post'), [
+        'name' => 'Prof. Dr. Zahidul Islam',
+        'email' => 'zahidul.admin@bu.edu.bd',
+        'university_id' => 'EMP-ADM-777',
+        'phone' => '01711223344',
+        'designation' => 'Chief Medical Officer',
+        'department' => 'Medical Administration',
+        'password' => 'secret123',
+        'password_confirmation' => 'secret123',
+    ]);
+
+    $response->assertRedirect(route('admin.dashboard'));
+    $this->assertAuthenticated();
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'zahidul.admin@bu.edu.bd',
+        'role' => 'admin',
+        'university_id' => 'EMP-ADM-777',
+    ]);
+});
+
+test('registered admin can log in via login page', function () {
+    User::create([
+        'name' => 'Dr. Farhana Yasmin',
+        'email' => 'farhana.admin@bu.edu.bd',
+        'password' => Hash::make('password123'),
+        'role' => 'admin',
+        'university_id' => 'EMP-ADM-888',
+        'phone' => '01888112233',
+        'designation' => 'Health Services Director',
+        'is_active' => true,
+    ]);
+
+    $response = $this->post(route('login.post'), [
+        'email' => 'farhana.admin@bu.edu.bd',
+        'password' => 'password123',
+    ]);
+
+    $response->assertRedirect(route('admin.dashboard'));
+    $this->assertAuthenticated();
+});
+
+test('doctor can register and is logged into doctor dashboard', function () {
+    $response = $this->post(route('doctor.register.post'), [
+        'name' => 'Dr. Rafiqul Hassan',
+        'email' => 'rafiqul.doctor@bu.edu.bd',
+        'university_id' => 'DOC-MED-999',
+        'phone' => '01711998877',
+        'department' => 'General Medicine',
+        'designation' => 'Senior Medical Officer',
+        'password' => 'secret123',
+        'password_confirmation' => 'secret123',
+    ]);
+
+    $response->assertRedirect(route('doctor.dashboard'));
+    $this->assertAuthenticated();
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'rafiqul.doctor@bu.edu.bd',
+        'role' => 'doctor',
+        'university_id' => 'DOC-MED-999',
+    ]);
+});
+
+test('pharmacist can register and is logged into pharmacy dashboard', function () {
+    $response = $this->post(route('pharmacy.register.post'), [
+        'name' => 'Kazi Kamrul',
+        'email' => 'kamrul.pharma@bu.edu.bd',
+        'university_id' => 'PHARM-888',
+        'phone' => '01888776655',
+        'designation' => 'Clinical Pharmacist',
+        'password' => 'secret123',
+        'password_confirmation' => 'secret123',
+    ]);
+
+    $response->assertRedirect(route('pharmacy.dashboard'));
+    $this->assertAuthenticated();
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'kamrul.pharma@bu.edu.bd',
+        'role' => 'pharmacist',
+        'university_id' => 'PHARM-888',
+    ]);
+});
+
+test('emergency booking allows reserving an emergency shift slot', function () {
+    $doctor = User::create([
+        'name' => 'Dr. Emergency MO',
+        'email' => 'emergency.mo@bu.edu.bd',
+        'password' => Hash::make('password123'),
+        'role' => 'doctor',
+        'department' => 'General Medicine',
+        'is_active' => true,
+    ]);
+
+    $response = $this->post('/appointments', [
+        'patient_name' => 'Tariq Emergency',
+        'university_id' => 'EMERG-STU-001',
+        'department' => 'General Medicine',
+        'doctor' => $doctor->id,
+        'date' => now()->toDateString(),
+        'time' => '22:00',
+        'reason' => 'Acute chest pain and severe asthma attack',
+    ]);
+
+    $response->assertRedirect('/appointments');
+    $this->assertDatabaseHas('appointments', [
+        'time_slot' => '22:00',
+        'department' => 'General Medicine',
+    ]);
+});
+
+test('regular patient appointment booking blocks emergency shift slot', function () {
+    $user = User::create([
+        'name' => 'Nabila Regular',
+        'email' => 'nabila.reg@bu.edu.bd',
+        'password' => Hash::make('password123'),
+        'role' => 'patient',
+        'university_id' => 'REG-STU-002',
+    ]);
+
+    Patient::create([
+        'user_id' => $user->id,
+        'first_name' => 'Nabila',
+        'last_name' => 'Regular',
+        'university_id' => 'REG-STU-002',
+        'email' => 'nabila.reg@bu.edu.bd',
+        'role_category' => 'student',
+        'dob' => '2002-05-15',
+        'gender' => 'Female',
+        'phone' => '01700112233',
+        'is_verified' => true,
+    ]);
+
+    $response = $this->actingAs($user)->post(route('patient.appointments.store'), [
+        'department' => 'General Medicine',
+        'appointment_date' => now()->addDay()->toDateString(),
+        'time_slot' => '22:00',
+        'reason' => 'Routine checkup',
+    ]);
+
+    $response->assertSessionHas('error');
+    $this->assertDatabaseMissing('appointments', [
+        'time_slot' => '22:00',
+        'reason' => 'Routine checkup',
+    ]);
+});
+
+test('same email can be registered and used for multiple roles', function () {
+    $sharedEmail = 'dual.identity@bu.edu.bd';
+
+    // 1. Register as Doctor
+    $docResponse = $this->post(route('doctor.register.post'), [
+        'name' => 'Dr. Dual Role',
+        'email' => $sharedEmail,
+        'university_id' => 'DOC-DUAL-001',
+        'department' => 'General Medicine',
+        'designation' => 'Medical Officer',
+        'phone' => '01711223399',
+        'password' => 'secret123',
+        'password_confirmation' => 'secret123',
+    ]);
+    $docResponse->assertRedirect(route('doctor.dashboard'));
+    $this->assertEquals('doctor', Auth::user()->role);
+
+    Auth::logout();
+
+    // 2. Register as Patient with the EXACT SAME EMAIL
+    $patResponse = $this->post(route('patients.register.post'), [
+        'first_name' => 'Dual',
+        'last_name' => 'Patient',
+        'university_id' => '0802000000000001',
+        'dob' => '2000-01-01',
+        'gender' => 'Male',
+        'role' => 'student',
+        'department' => 'CSE',
+        'year' => 'Summer 26',
+        'email' => $sharedEmail,
+        'phone' => '01711223399',
+        'declaration' => '1',
+    ]);
+    $patResponse->assertRedirect(route('patient.dashboard'));
+    $this->assertEquals('patient', Auth::user()->role);
+
+    // Verify both records coexist in the database with the same email
+    $this->assertDatabaseHas('users', ['email' => $sharedEmail, 'role' => 'doctor']);
+    $this->assertDatabaseHas('users', ['email' => $sharedEmail, 'role' => 'patient']);
+
+    // 3. Test switching roles while logged in
+    $switchResponse = $this->post(route('role.switch', 'doctor'));
+    $switchResponse->assertRedirect(route('doctor.dashboard'));
+    $this->assertEquals('doctor', Auth::user()->role);
+
+    Auth::logout();
+
+    // 4. Test login with explicit role selection
+    $loginDoc = $this->post(route('login.post'), [
+        'email' => $sharedEmail,
+        'password' => 'secret123',
+        'role' => 'doctor',
+    ]);
+    $loginDoc->assertRedirect(route('doctor.dashboard'));
+    $this->assertEquals('doctor', Auth::user()->role);
 });

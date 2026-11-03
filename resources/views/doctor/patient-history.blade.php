@@ -2,33 +2,33 @@
 @section('title', 'Patient Medical History - ' . $patient->full_name)
 
 @section('content')
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.5rem;">
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-200">
     <div>
-        <div class="page-title">Medical Record &amp; History &mdash; {{ $patient->full_name }}</div>
-        <div class="page-subtitle" style="margin-bottom:0;border-bottom:none;padding-bottom:0;">
-            University ID: <strong>{{ $patient->university_id }}</strong> &bull;
-            Department: <strong>{{ $patient->department ?? 'General' }}</strong> &bull;
-            Blood Group: <strong style="color:#c0392b;">{{ $patient->blood_group ?? 'Not Set' }}</strong>
+        <h1 class="page-title">Medical Record &amp; History &mdash; {{ $patient->full_name }}</h1>
+        <div class="text-xs text-gray-600 flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+            <span>University ID: <strong>{{ $patient->university_id }}</strong></span>
+            <span>&bull;</span>
+            <span>Department: <strong>{{ $patient->department ?? 'General' }}</strong></span>
+            <span>&bull;</span>
+            <span>Blood Group: <strong class="text-red-700">{{ $patient->blood_group ?? 'Not Set' }}</strong></span>
         </div>
     </div>
-    <div>
+    <div class="flex items-center gap-2">
         <a href="{{ route('doctor.prescriptions.create', ['patient_id' => $patient->id]) }}" class="btn btn-green btn-sm">Generate New Prescription</a>
-        <a href="javascript:history.back()" class="btn btn-outline btn-sm">&larr; Back to Queue</a>
+        <a href="javascript:history.back()" class="btn btn-outline btn-sm">&larr; Back</a>
     </div>
 </div>
 
-<hr style="border:none;border-bottom:1px solid var(--border);margin:1rem 0 1.4rem 0;">
-
 {{-- Medical Alerts Banner --}}
-<div style="background:#fff;border:1px solid var(--border);border-left:4px solid #c0392b;border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:1.4rem;">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1rem;font-size:12px;">
+<div class="bg-white border border-gray-200 border-l-4 border-l-red-600 rounded-xl p-5 mb-6 shadow-sm">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
         <div>
-            <strong style="color:#c0392b;text-transform:uppercase;font-size:11px;">Known Allergies</strong>
-            <p style="margin-top:2px;font-weight:700;">{{ $patient->allergies ?: 'No known drug or food allergies' }}</p>
+            <strong class="text-red-700 uppercase tracking-wider text-[11px] block mb-1">Known Allergies</strong>
+            <p class="font-bold text-slate-800">{{ $patient->allergies ?: 'No known drug or food allergies' }}</p>
         </div>
         <div>
-            <strong style="color:var(--text);text-transform:uppercase;font-size:11px;">Pre-existing Medical Conditions</strong>
-            <p style="margin-top:2px;">
+            <strong class="text-slate-700 uppercase tracking-wider text-[11px] block mb-1">Pre-existing Medical Conditions</strong>
+            <p class="text-gray-600">
                 @if(!empty($patient->conditions) && is_array($patient->conditions))
                     {{ implode(', ', $patient->conditions) }}
                 @else
@@ -37,22 +37,23 @@
             </p>
         </div>
         <div>
-            <strong style="color:var(--text);text-transform:uppercase;font-size:11px;">Current Routine Medications</strong>
-            <p style="margin-top:2px;">{{ $patient->medications ?: 'None reported' }}</p>
+            <strong class="text-slate-700 uppercase tracking-wider text-[11px] block mb-1">Current Routine Medications</strong>
+            <p class="text-gray-600">{{ $patient->medications ?: 'None reported' }}</p>
         </div>
         <div>
-            <strong style="color:var(--text);text-transform:uppercase;font-size:11px;">Emergency Contact</strong>
-            <p style="margin-top:2px;">{{ $patient->emergency_name ?? 'N/A' }} ({{ $patient->emergency_phone ?? 'N/A' }})</p>
+            <strong class="text-slate-700 uppercase tracking-wider text-[11px] block mb-1">Emergency Contact</strong>
+            <p class="text-gray-600">{{ $patient->emergency_name ?? 'N/A' }} ({{ $patient->emergency_phone ?? 'N/A' }})</p>
         </div>
     </div>
 </div>
 
 {{-- Past Prescriptions History --}}
-<div class="card" style="margin-bottom:1.4rem;">
-    <div class="card-header">
-        <span>Prescription History ({{ $patient->prescriptions->count() }})</span>
+<div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden mb-6">
+    <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider">Prescription History ({{ $patient->prescriptions->count() }})</span>
+        <span class="badge badge-gold">Clinical Records</span>
     </div>
-    <div class="card-body" style="padding:0;">
+    <div class="overflow-x-auto">
         <table class="data-table">
             <thead>
                 <tr>
@@ -62,43 +63,45 @@
                     <th>Diagnosis &amp; Vitals</th>
                     <th>Prescribed Medicines</th>
                     <th>Clinical Advice</th>
-                    <th>Action</th>
+                    <th class="text-right">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($patient->prescriptions as $rx)
                     <tr>
                         <td>
-                            <strong style="color:var(--green);">{{ $rx->prescription_number }}</strong><br>
-                            <span class="badge {{ $rx->status === 'dispensed' ? 'badge-green' : 'badge-yellow' }}" style="font-size:9px;">
-                                {{ ucfirst($rx->status) }}
-                            </span>
+                            <strong class="text-[#1a6b3a] font-mono text-xs">{{ $rx->prescription_number }}</strong>
+                            <div class="mt-1">
+                                <span class="badge {{ $rx->status === 'dispensed' ? 'badge-green' : 'badge-yellow' }}">
+                                    {{ ucfirst($rx->status) }}
+                                </span>
+                            </div>
                         </td>
-                        <td>{{ $rx->created_at->format('d M Y') }}</td>
-                        <td>{{ $rx->doctor->name }}</td>
+                        <td class="text-xs text-gray-600">{{ $rx->created_at->format('d M Y') }}</td>
+                        <td class="text-xs font-medium text-slate-800">{{ $rx->doctor->name }}</td>
                         <td>
-                            <strong>{{ $rx->diagnosis }}</strong>
-                            <div style="font-size:11px;color:var(--muted);margin-top:2px;">
-                                BP: {{ $rx->bp ?: 'N/A' }} | Temp: {{ $rx->temperature ?: 'N/A' }} | Wt: {{ $rx->weight ?: 'N/A' }}
+                            <strong class="text-xs text-slate-900">{{ $rx->diagnosis }}</strong>
+                            <div class="text-[11px] text-gray-500 mt-0.5">
+                                BP: {{ $rx->bp ?: 'N/A' }} &bull; Temp: {{ $rx->temperature ?: 'N/A' }} &bull; Wt: {{ $rx->weight ?: 'N/A' }}
                             </div>
                         </td>
                         <td>
-                            <ul style="padding-left:1rem;margin:0;font-size:12px;">
+                            <ul class="text-xs text-gray-700 list-disc list-inside space-y-0.5">
                                 @foreach($rx->items as $item)
                                     <li><strong>{{ $item->medicine_name }}</strong> &mdash; {{ $item->dosage }} ({{ $item->duration }})</li>
                                 @endforeach
                             </ul>
                         </td>
-                        <td style="max-width:200px;font-size:12px;color:var(--muted);">
+                        <td class="text-xs text-gray-600 max-w-[200px] truncate">
                             {{ Str::limit($rx->clinical_advice, 60) }}
                         </td>
-                        <td>
-                            <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-sm">Full Rx</a>
+                        <td class="text-right">
+                            <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-xs">Full Rx</a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:1.4rem;color:var(--muted);">No past prescriptions recorded for this patient.</td>
+                        <td colspan="7" class="text-center py-8 text-gray-400 text-xs">No past prescriptions recorded for this patient.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -107,35 +110,39 @@
 </div>
 
 {{-- Past Appointments History --}}
-<div class="card">
-    <div class="card-header">
-        <span>Consultation &amp; Appointment History</span>
+<div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl overflow-hidden">
+    <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider">Consultation &amp; Appointment History</span>
+        <span class="badge badge-gold">Visits</span>
     </div>
-    <div class="card-body" style="padding:0;">
+    <div class="overflow-x-auto">
         <table class="data-table">
             <thead>
                 <tr>
                     <th>Ref #</th>
-                    <th>Date</th>
+                    <th>Date &amp; Time</th>
                     <th>Department</th>
                     <th>Doctor</th>
                     <th>Reason for Consultation</th>
-                    <th>Status</th>
+                    <th class="text-right">Status</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($patient->appointments as $apt)
                     <tr>
-                        <td><strong>{{ $apt->appointment_number }}</strong></td>
-                        <td>{{ $apt->appointment_date->format('d M Y') }} at {{ $apt->time_slot }}</td>
-                        <td>{{ $apt->department }}</td>
-                        <td>{{ $apt->doctor?->name ?? 'Attending Officer' }}</td>
-                        <td>{{ $apt->reason ?: 'General health evaluation' }}</td>
-                        <td><span class="badge badge-green">{{ ucfirst($apt->status) }}</span></td>
+                        <td><strong class="font-mono text-xs text-slate-800">{{ $apt->appointment_number }}</strong></td>
+                        <td>
+                            <div class="text-xs text-slate-800">{{ $apt->appointment_date->format('d M Y') }}</div>
+                            <div class="text-[11px] font-bold text-emerald-700">{{ $apt->time_slot }}</div>
+                        </td>
+                        <td class="text-xs text-slate-900 font-medium">{{ $apt->department }}</td>
+                        <td class="text-xs text-gray-600">{{ $apt->doctor?->name ?? 'Attending Officer' }}</td>
+                        <td class="text-xs text-gray-600">{{ $apt->reason ?: 'General health evaluation' }}</td>
+                        <td class="text-right"><span class="badge badge-green">{{ ucfirst($apt->status) }}</span></td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:1.2rem;color:var(--muted);">No previous appointments found.</td>
+                        <td colspan="6" class="text-center py-8 text-gray-400 text-xs">No previous appointments found.</td>
                     </tr>
                 @endforelse
             </tbody>

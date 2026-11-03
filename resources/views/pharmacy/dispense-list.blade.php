@@ -2,15 +2,17 @@
 @section('title', 'Prescription Dispensing Desk')
 
 @section('content')
-<div class="page-title">Prescription Dispensing &amp; Fulfillment Counter</div>
-<div class="page-subtitle">Verify doctor clinical orders, confirm stock availability, and dispense subsidised medicines to university members.</div>
+<div class="mb-6">
+    <h1 class="page-title">Prescription Dispensing &amp; Fulfillment Counter</h1>
+    <p class="page-subtitle">Verify doctor clinical orders, confirm stock availability, and dispense subsidised medicines to university members.</p>
+</div>
 
-<div class="card">
-    <div class="card-header">
-        <span>Prescriptions Awaiting Dispensation ({{ $prescriptions->total() }})</span>
-        <a href="{{ route('pharmacy.inventory') }}" style="color:#fff;font-size:11px;text-decoration:underline;">View Medicine Stock &rarr;</a>
+<div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden mb-6">
+    <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider">Prescriptions Awaiting Dispensation ({{ $prescriptions->total() }})</span>
+        <a href="{{ route('pharmacy.inventory') }}" class="text-xs text-emerald-200 hover:underline">View Medicine Stock &rarr;</a>
     </div>
-    <div class="card-body" style="padding:0;">
+    <div class="overflow-x-auto">
         <table class="data-table">
             <thead>
                 <tr>
@@ -19,37 +21,37 @@
                     <th>Prescribing Doctor</th>
                     <th>Items to Dispense</th>
                     <th>Stock Availability</th>
-                    <th>Action</th>
+                    <th class="text-right">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($prescriptions as $rx)
                     <tr>
                         <td>
-                            <strong style="color:var(--green);font-size:14px;">{{ $rx->prescription_number }}</strong>
-                            <div style="font-size:11px;color:var(--muted);">{{ $rx->created_at->format('d M Y, h:i A') }}</div>
+                            <strong class="text-[#1a6b3a] font-mono text-sm">{{ $rx->prescription_number }}</strong>
+                            <div class="text-[11px] text-gray-500">{{ $rx->created_at->format('d M Y, h:i A') }}</div>
                         </td>
                         <td>
-                            <strong>{{ $rx->patient->full_name }}</strong><br>
-                            <span style="font-size:11px;color:var(--muted);">{{ $rx->patient->university_id }} ({{ ucfirst($rx->patient->role_category) }})</span>
+                            <strong class="text-slate-900">{{ $rx->patient->full_name }}</strong>
+                            <div class="text-[11px] text-gray-500">{{ $rx->patient->university_id }} ({{ ucfirst($rx->patient->role_category) }})</div>
                             @if($rx->patient->allergies)
-                                <div style="font-size:10px;color:#c0392b;font-weight:700;">Allergy: {{ $rx->patient->allergies }}</div>
+                                <div class="text-[10px] text-red-700 font-bold mt-0.5">Allergy: {{ $rx->patient->allergies }}</div>
                             @endif
                         </td>
                         <td>
-                            {{ $rx->doctor->name }}<br>
-                            <small style="color:var(--muted);">{{ $rx->doctor->department }}</small>
+                            <div class="text-xs font-medium text-slate-800">{{ $rx->doctor->name }}</div>
+                            <div class="text-[11px] text-gray-500">{{ $rx->doctor->department }}</div>
                         </td>
                         <td>
-                            <table style="width:100%;font-size:12px;border-collapse:collapse;">
+                            <div class="space-y-1 text-xs">
                                 @foreach($rx->items as $item)
-                                    <tr style="border-bottom:1px dashed #eee;">
-                                        <td style="padding:3px 0;"><strong>{{ $item->medicine_name }}</strong></td>
-                                        <td style="padding:3px 6px;color:var(--muted);">{{ $item->dosage }} &bull; {{ $item->duration }}</td>
-                                        <td style="padding:3px 0;text-align:right;">Qty: <strong>{{ $item->quantity }}</strong></td>
-                                    </tr>
+                                    <div class="flex items-center justify-between pb-1 border-b border-gray-100 last:border-b-0 gap-3">
+                                        <span class="font-medium text-slate-800">{{ $item->medicine_name }}</span>
+                                        <span class="text-[11px] text-gray-500">{{ $item->dosage }} &bull; {{ $item->duration }}</span>
+                                        <span class="font-bold text-slate-900">Qty: {{ $item->quantity }}</span>
+                                    </div>
                                 @endforeach
-                            </table>
+                            </div>
                         </td>
                         <td>
                             @php
@@ -67,15 +69,15 @@
                                 <span class="badge badge-red">Partial / Low Stock</span>
                             @endif
                         </td>
-                        <td>
-                            <div style="display:flex;flex-direction:column;gap:5px;">
+                        <td class="text-right">
+                            <div class="flex flex-col gap-1 items-end">
                                 <form action="{{ route('pharmacy.dispense.store', $rx->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-green btn-sm" style="width:100%;">
-                                        Dispense &amp; Deduct Stock
+                                    <button type="submit" class="btn btn-green btn-xs w-full">
+                                        Dispense &amp; Deduct
                                     </button>
                                 </form>
-                                <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-sm" style="width:100%;text-align:center;">
+                                <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-xs w-full text-center">
                                     View Full Rx
                                 </a>
                             </div>
@@ -83,7 +85,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">
+                        <td colspan="6" class="text-center py-10 text-gray-400 text-xs">
                             All pending prescriptions have been dispensed! No active orders currently waiting.
                         </td>
                     </tr>
@@ -94,7 +96,7 @@
 </div>
 
 @if($prescriptions->hasPages())
-    <div style="margin-top:1rem;">
+    <div class="mb-6">
         {{ $prescriptions->links() }}
     </div>
 @endif

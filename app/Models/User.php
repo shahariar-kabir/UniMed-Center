@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -100,6 +101,17 @@ class User extends Authenticatable
             'patient' => 'patient.dashboard',
             default => 'home',
         };
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function otherRoleAccounts(): Collection
+    {
+        return self::where('email', $this->email)
+            ->where('id', '!=', $this->id)
+            ->where('is_active', true)
+            ->get();
     }
 
     public function getOrCreatePatient(): Patient

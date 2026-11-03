@@ -1,40 +1,23 @@
 @extends('layouts.app')
 @section('title', 'Medicine Inventory Management')
 
-@push('styles')
-<style>
-    .inv-top-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.2rem;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    .filter-bar {
-        display: flex;
-        gap: .5rem;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="page-title">Medicine Inventory Control &amp; Stock Monitoring</div>
-<div class="page-subtitle">Central Pharmacy stock records, batch numbers, manufacturer details, expiry tracking, and restock controls.</div>
+<div class="mb-6">
+    <h1 class="page-title">Medicine Inventory Control &amp; Stock Monitoring</h1>
+    <p class="page-subtitle">Central Pharmacy stock records, batch numbers, manufacturer details, expiry tracking, and restock controls.</p>
+</div>
 
 {{-- Top Controls --}}
-<div class="inv-top-bar">
-    <form action="{{ route('pharmacy.inventory') }}" method="GET" class="filter-bar">
-        <input type="text" name="search" class="form-control" style="width:220px;" placeholder="Search name, generic, batch..." value="{{ request('search') }}">
-        <select name="category" class="form-control" style="width:160px;">
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <form action="{{ route('pharmacy.inventory') }}" method="GET" class="flex flex-wrap items-center gap-2">
+        <input type="text" name="search" class="form-control w-56 text-xs" placeholder="Search name, generic, batch..." value="{{ request('search') }}">
+        <select name="category" class="form-control w-44 text-xs">
             <option value="">&mdash; All Categories &mdash;</option>
             @foreach($categories as $cat)
                 <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
             @endforeach
         </select>
-        <select name="filter" class="form-control" style="width:150px;">
+        <select name="filter" class="form-control w-44 text-xs">
             <option value="">&mdash; All Stock Status &mdash;</option>
             <option value="low_stock" {{ request('filter') === 'low_stock' ? 'selected' : '' }}>Low Stock Only</option>
             <option value="near_expiry" {{ request('filter') === 'near_expiry' ? 'selected' : '' }}>Near Expiry (&lt; 60d)</option>
@@ -51,76 +34,65 @@
 </div>
 
 {{-- Inventory Table --}}
-<div class="card" style="margin-bottom:1.8rem;">
-    <div class="card-header">
-        <span>Pharmacy Stock Catalog ({{ $medicines->total() }})</span>
-        <span style="font-size:11px;font-weight:400;text-transform:none;">Showing page {{ $medicines->currentPage() }} of {{ $medicines->lastPage() }}</span>
+<div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden mb-6">
+    <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider">Pharmacy Stock Catalog ({{ $medicines->total() }})</span>
+        <span class="text-xs text-emerald-200 font-normal">Page {{ $medicines->currentPage() }} of {{ $medicines->lastPage() }}</span>
     </div>
-    <div class="card-body" style="padding:0;">
+    <div class="overflow-x-auto">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Medicine Name</th>
-                    <th>Generic &amp; Category</th>
-                    <th>Form &amp; Strength</th>
+                    <th>Medicine &amp; Strength</th>
+                    <th>Generic Name</th>
+                    <th>Category</th>
                     <th>Batch #</th>
+                    <th>Stock Level</th>
                     <th>Expiry Date</th>
-                    <th>Current Stock</th>
                     <th>Status</th>
-                    <th>Quick Stock Adjust</th>
+                    <th>Restock</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($medicines as $med)
                     <tr>
                         <td>
-                            <strong style="color:var(--text);font-size:13px;">{{ $med->name }}</strong>
-                            <div style="font-size:11px;color:var(--muted);">{{ $med->manufacturer ?? 'Pharmaceutical Manufacturer' }}</div>
+                            <strong class="text-slate-900">{{ $med->name }}</strong>
+                            <div class="text-[11px] text-gray-500">{{ $med->dosage_form }} ({{ $med->strength }})</div>
                         </td>
+                        <td class="text-xs text-gray-700">{{ $med->generic_name ?? 'N/A' }}</td>
+                        <td class="text-xs text-gray-600">{{ $med->category }}</td>
+                        <td class="font-mono text-xs font-medium">{{ $med->batch_number }}</td>
                         <td>
-                            <div>{{ $med->generic_name }}</div>
-                            <span class="badge badge-gray" style="font-size:9px;">{{ $med->category }}</span>
+                            <strong class="{{ $med->isLowStock() ? 'text-red-700' : 'text-slate-900' }} text-sm">{{ $med->stock_quantity }}</strong> {{ $med->unit }}
+                            <div class="text-[10px] text-gray-400">Reorder at {{ $med->reorder_level }}</div>
                         </td>
-                        <td>{{ $med->dosage_form }} ({{ $med->strength }})</td>
-                        <td><code>{{ $med->batch_number }}</code></td>
-                        <td>
+                        <td class="text-xs text-slate-700">
                             {{ $med->expiry_date->format('d M Y') }}
-                            @if($med->isExpired())
-                                <br><span class="badge badge-red" style="font-size:9px;">EXPIRED</span>
-                            @elseif($med->isNearExpiry(60))
-                                <br><span class="badge badge-yellow" style="font-size:9px;">Near Expiry</span>
-                            @endif
-                        </td>
-                        <td>
-                            <strong style="font-size:14px;color:{{ $med->isLowStock() ? '#c0392b' : 'var(--green-dk)' }};">
-                                {{ $med->stock_quantity }}
-                            </strong>
-                            <span style="font-size:11px;color:var(--muted);">{{ $med->unit }}</span>
-                            <div style="font-size:10px;color:var(--muted);">Min: {{ $med->reorder_level }}</div>
                         </td>
                         <td>
                             @if($med->isExpired())
                                 <span class="badge badge-red">Expired</span>
                             @elseif($med->isLowStock())
                                 <span class="badge badge-red">Low Stock</span>
-                            @elseif($med->isNearExpiry(60))
-                                <span class="badge badge-yellow">Expiring Soon</span>
+                            @elseif($med->isNearExpiry())
+                                <span class="badge badge-yellow">Near Expiry</span>
                             @else
                                 <span class="badge badge-green">In Stock</span>
                             @endif
                         </td>
                         <td>
-                            <form action="{{ route('pharmacy.inventory.stock', $med->id) }}" method="POST" style="display:flex;gap:4px;align-items:center;">
+                            <form action="{{ route('pharmacy.inventory.stock', $med->id) }}" method="POST" class="flex items-center gap-1.5">
                                 @csrf
                                 <input type="hidden" name="action" value="add">
-                                <input type="number" name="adjustment" value="20" min="1" style="width:50px;padding:2px 4px;font-size:11px;border:1px solid #ccc;border-radius:3px;">
-                                <button type="submit" class="btn btn-outline btn-sm" style="padding:2px 6px;font-size:11px;" title="Add stock quantity">+ Add</button>
+                                <input type="number" name="adjustment" value="50" class="w-16 py-1 px-2 text-xs border border-gray-300 rounded">
+                                <button type="submit" class="btn btn-outline btn-xs">+Add</button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" style="text-align:center;padding:1.6rem;color:var(--muted);">No medicines matched your search criteria.</td>
+                        <td colspan="8" class="text-center py-8 text-gray-400 text-xs">No medicines matched your search criteria.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -129,19 +101,22 @@
 </div>
 
 @if($medicines->hasPages())
-    <div style="margin-bottom:1.5rem;">
+    <div class="mb-6">
         {{ $medicines->links() }}
     </div>
 @endif
 
 {{-- Add New Medicine Batch Form --}}
-<div class="card" id="newMedicineCard">
-    <div class="card-header">+ Register New Medicine / Stock Batch</div>
-    <div class="card-body">
-        <form action="{{ route('pharmacy.inventory.store') }}" method="POST">
+<div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl overflow-hidden" id="newMedicineCard">
+    <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider">Register New Medicine / Stock Batch</span>
+        <span class="badge badge-gold">Catalog Entry</span>
+    </div>
+    <div class="p-5 sm:p-6">
+        <form action="{{ route('pharmacy.inventory.store') }}" method="POST" class="space-y-4">
             @csrf
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:.8rem;">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="form-label">Brand / Trade Name <span class="req">*</span></label>
                     <input type="text" name="name" class="form-control" placeholder="e.g. Paracetamol 500mg" required>
@@ -156,7 +131,7 @@
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:.8rem;margin-bottom:.8rem;">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div>
                     <label class="form-label">Dosage Form <span class="req">*</span></label>
                     <select name="dosage_form" class="form-control" required>
@@ -184,7 +159,7 @@
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:.8rem;margin-bottom:1rem;">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div>
                     <label class="form-label">Initial Stock Quantity <span class="req">*</span></label>
                     <input type="number" name="stock_quantity" class="form-control" min="0" value="100" required>
@@ -203,8 +178,8 @@
                 </div>
             </div>
 
-            <div style="display:flex;justify-content:flex-end;">
-                <button type="submit" class="btn btn-green">Save Medicine to Inventory</button>
+            <div class="flex justify-end pt-2">
+                <button type="submit" class="btn btn-green">Save Medicine to Inventory &rarr;</button>
             </div>
         </form>
     </div>

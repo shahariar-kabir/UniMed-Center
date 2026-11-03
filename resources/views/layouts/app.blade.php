@@ -4,482 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'UMC') | University Medical Centre</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            --green:     #1a6b3a;
-            --green-dk:  #134d2a;
-            --green-lt:  #2d9156;
-            --green-pale:#e8f5ee;
-            --gold:      #c8922a;
-            --gold-lt:   #fdf6e7;
-            --bg:        #f4f8f5;
-            --card:      #ffffff;
-            --text:      #1c2b22;
-            --muted:     #56735f;
-            --border:    #c3dbc9;
-            --radius:    6px;
-            --shadow:    0 1px 4px rgba(0,0,0,.10);
-        }
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-weight: 400;
-            font-size: 14px;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            line-height: 1.5;
-        }
-
-        /* ── TOP DEMO SWITCHER / TICKER ── */
-        .top-bar {
-            background: #0f3d21;
-            color: #d1e7dd;
-            font-size: 11px;
-            padding: 5px 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: .5rem;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-        }
-        .demo-roles {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .demo-roles strong { color: #fff; margin-right: 4px; }
-        .demo-pill {
-            display: inline-block;
-            background: rgba(255,255,255,.12);
-            color: #fff;
-            padding: 2px 8px;
-            border-radius: 3px;
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: 700;
-            transition: all .15s;
-        }
-        .demo-pill:hover { background: var(--gold); color: #fff; }
-
-        /* ── HEADER ── */
-        .site-header {
-            background: var(--green);
-            padding: .9rem 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-            border-bottom: 3px solid var(--gold);
-        }
-        .site-header .logo-text { color: #fff; }
-        .site-header .logo-text strong {
-            display: block;
-            font-size: 1.15rem;
-            letter-spacing: .01em;
-            font-weight: 700;
-        }
-        .site-header .logo-text span {
-            font-size: 11px;
-            opacity: .82;
-            font-weight: 400;
-            letter-spacing: .05em;
-            text-transform: uppercase;
-        }
-        .header-right {
-            margin-left: auto;
-            color: rgba(255,255,255,.75);
-            font-size: 12px;
-            text-align: right;
-            line-height: 1.7;
-        }
-        .header-right strong { color: #fff; font-size: 13px; display: block; }
-
-        /* ── NAV BAR ── */
-        nav {
-            background: var(--green-dk);
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
-            position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 2px 6px rgba(0,0,0,.25);
-            flex-wrap: wrap;
-        }
-        .nav-links {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        nav a {
-            color: rgba(255,255,255,.82);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 700;
-            padding: .75rem 1rem;
-            display: block;
-            border-bottom: 3px solid transparent;
-            transition: color .15s, border-color .15s, background .15s;
-            letter-spacing: .02em;
-        }
-        nav a:hover { color: #fff; background: rgba(255,255,255,.07); }
-        nav a.active {
-            color: #fff;
-            border-bottom-color: var(--gold);
-            background: rgba(255,255,255,.06);
-        }
-
-        .nav-auth {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: .8rem;
-            padding: .4rem 0;
-        }
-        .user-tag {
-            color: #fff;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ── BREADCRUMB ── */
-        .breadcrumb {
-            background: #fff;
-            border-bottom: 1px solid var(--border);
-            padding: .45rem 2rem;
-            font-size: 12px;
-            color: var(--muted);
-            display: flex;
-            align-items: center;
-            gap: .4rem;
-        }
-        .breadcrumb a { color: var(--green); text-decoration: none; font-weight: 700; }
-        .breadcrumb a:hover { text-decoration: underline; }
-
-        /* ── MAIN ── */
-        main {
-            flex: 1;
-            padding: 1.8rem 2rem;
-            max-width: 1220px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* ── FOOTER ── */
-        footer {
-            background: var(--green-dk);
-            color: rgba(255,255,255,.65);
-            font-size: 12px;
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: auto;
-            border-top: 3px solid var(--gold);
-        }
-        footer .footer-links { display: flex; gap: 1.2rem; }
-        footer .footer-links a { color: rgba(255,255,255,.65); text-decoration: none; }
-        footer .footer-links a:hover { color: #fff; text-decoration: underline; }
-
-        /* ── SHARED COMPONENTS ── */
-        .page-title {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: var(--green);
-            margin-bottom: .25rem;
-        }
-        .page-subtitle {
-            font-size: 13px;
-            color: var(--muted);
-            margin-bottom: 1.4rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: .85rem;
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-        .card-header {
-            background: var(--green);
-            color: #fff;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            padding: .6rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .card-body { padding: 1rem; }
-
-        .btn {
-            display: inline-block;
-            padding: .45rem 1.1rem;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: 700;
-            font-family: Arial, Helvetica, sans-serif;
-            cursor: pointer; border: none;
-            text-decoration: none;
-            transition: background .15s, opacity .15s;
-            letter-spacing: .02em;
-            text-align: center;
-        }
-        .btn-green   { background: var(--green); color: #fff; }
-        .btn-green:hover { background: var(--green-dk); }
-        .btn-outline {
-            background: transparent;
-            color: var(--green);
-            border: 1.5px solid var(--green);
-        }
-        .btn-outline:hover { background: var(--green); color: #fff; }
-        .btn-gold { background: var(--gold); color: #fff; }
-        .btn-gold:hover { background: #ab791c; }
-        .btn-sm { padding: .25rem .65rem; font-size: 11px; }
-
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-        }
-        .badge-green  { background: #d4edda; color: #155724; }
-        .badge-yellow { background: #fff3cd; color: #856404; }
-        .badge-red    { background: #f8d7da; color: #721c24; }
-        .badge-blue   { background: #cce5ff; color: #004085; }
-        .badge-gray   { background: #e2e3e5; color: #383d41; }
-        .badge-gold   { background: #fbf1d8; color: #8c6114; }
-
-        .alert {
-            padding: .75rem 1rem;
-            border-radius: var(--radius);
-            font-size: 13px;
-            margin-bottom: 1.1rem;
-            border-left: 4px solid;
-        }
-        .alert-success { background: #d4edda; color: #155724; border-color: #28a745; }
-        .alert-error   { background: #f8d7da; color: #721c24; border-color: #dc3545; }
-        .alert-info    { background: #d1ecf1; color: #0c5460; border-color: #17a2b8; }
-
-        .form-label {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 3px;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-        }
-        .form-label .req { color: #c0392b; margin-left: 2px; }
-        .form-control {
-            width: 100%;
-            border: 1px solid #b0c4b8;
-            border-radius: 3px;
-            padding: .42rem .6rem;
-            font-size: 13px;
-            font-family: Arial, Helvetica, sans-serif;
-            color: var(--text);
-            background: #fff;
-            transition: border-color .15s, box-shadow .15s;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: var(--green);
-            box-shadow: 0 0 0 2px rgba(26,107,58,.15);
-        }
-        select.form-control { cursor: pointer; }
-        textarea.form-control { resize: vertical; min-height: 70px; }
-
-        /* stats grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.4rem;
-        }
-        .stat-card {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-            box-shadow: var(--shadow);
-            border-top: 3px solid var(--green);
-        }
-        .stat-card.gold  { border-top-color: var(--gold); }
-        .stat-card.red   { border-top-color: #c0392b; }
-        .stat-card.blue  { border-top-color: #2980b9; }
-        .stat-val { font-size: 1.8rem; font-weight: 700; color: var(--green-dk); line-height: 1.1; }
-        .stat-card.gold .stat-val { color: var(--gold); }
-        .stat-card.red  .stat-val { color: #c0392b; }
-        .stat-card.blue .stat-val { color: #2980b9; }
-        .stat-label { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: .05em; margin-top: 4px; }
-        .stat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-        /* standard data table */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            background: #fff;
-        }
-        .data-table th {
-            background: var(--green-dk);
-            color: #fff;
-            padding: .5rem .75rem;
-            text-align: left;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: .05em;
-            font-weight: 700;
-        }
-        .data-table td {
-            padding: .55rem .75rem;
-            border-bottom: 1px solid #ecf2ee;
-            vertical-align: middle;
-        }
-        .data-table tr:last-child td { border-bottom: none; }
-        .data-table tr:nth-child(even) td { background: #f9fbfa; }
-        .data-table tr:hover td { background: #f0f8f3; }
-    </style>
     @stack('styles')
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
 
-{{-- Top Demo Switcher & Quick Access --}}
-<div class="top-bar">
-    <div class="demo-roles">
-        <strong>Demo 1-Click Login:</strong>
-        <a href="{{ route('login.demo', 'patient') }}" class="demo-pill" title="Login as Student Patient">Patient</a>
-        <a href="{{ route('login.demo', 'doctor') }}" class="demo-pill" title="Login as Dr. Anisur Rahman">Doctor</a>
-        <a href="{{ route('login.demo', 'pharmacist') }}" class="demo-pill" title="Login as Head Pharmacist">Pharmacist</a>
-        <a href="{{ route('login.demo', 'admin') }}" class="demo-pill" title="Login as Administrator">Admin</a>
-    </div>
-    <div>
-        <span>Hotline: <strong>0188888888</strong> &nbsp;|&nbsp; UNIMED CENTER BUILDING, UNKNOWN</span>
-    </div>
-</div>
-
-{{-- Site header --}}
-<div class="site-header">
-    <a href="{{ url('/') }}" style="display:flex;align-items:center;gap:1.1rem;text-decoration:none;">
-        <div style="line-height:1;">
-            <span style="font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-.01em;">UniMed<span style="color:#c8d9c0;">Center</span></span>
-        </div>
-        <div style="width:1px;height:36px;background:rgba(255,255,255,.25);"></div>
-        <div class="logo-text">
-            <strong>University Medical Centre</strong>
-            <span>Health &amp; Wellness Division &mdash; Central Campus</span>
-        </div>
-    </a>
-    <div class="header-right">
-        <strong>Emergency Hotline: 0188888888</strong>
-        Mon–Fri 8:00am – 8:00pm &nbsp;|&nbsp; Sat 9:00am – 2:00pm
-    </div>
-</div>
-
-{{-- Main Navigation Bar --}}
-<nav>
-    <div class="nav-links">
-        <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a>
-
-        @auth
-            @if(Auth::user()->isPatient())
-                <a href="{{ route('patient.dashboard') }}" class="{{ request()->routeIs('patient.dashboard') ? 'active' : '' }}">My Dashboard</a>
-                <a href="{{ route('patient.queue') }}" class="{{ request()->routeIs('patient.queue') ? 'active' : '' }}">Live Queue</a>
-                <a href="{{ route('patient.appointments') }}" class="{{ request()->routeIs('patient.appointments*') ? 'active' : '' }}">Appointments</a>
-                <a href="{{ route('patient.prescriptions') }}" class="{{ request()->routeIs('patient.prescriptions*') ? 'active' : '' }}">Prescriptions</a>
-                <a href="{{ route('patient.profile') }}" class="{{ request()->routeIs('patient.profile') ? 'active' : '' }}">My Profile</a>
-            @elseif(Auth::user()->isDoctor())
-                <a href="{{ route('doctor.dashboard') }}" class="{{ request()->routeIs('doctor.dashboard') ? 'active' : '' }}">Doctor Desk</a>
-                <a href="{{ route('doctor.queue') }}" class="{{ request()->routeIs('doctor.queue') ? 'active' : '' }}">Consultation Queue</a>
-                <a href="{{ route('doctor.prescriptions.create') }}" class="{{ request()->routeIs('doctor.prescriptions.create') ? 'active' : '' }}">Generate Prescription</a>
-            @elseif(Auth::user()->isPharmacist())
-                <a href="{{ route('pharmacy.dashboard') }}" class="{{ request()->routeIs('pharmacy.dashboard') ? 'active' : '' }}">Pharmacy Desk</a>
-                <a href="{{ route('pharmacy.inventory') }}" class="{{ request()->routeIs('pharmacy.inventory') ? 'active' : '' }}">Medicine Inventory</a>
-                <a href="{{ route('pharmacy.dispense') }}" class="{{ request()->routeIs('pharmacy.dispense') ? 'active' : '' }}">Dispense Prescriptions</a>
-            @elseif(Auth::user()->isAdmin())
-                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Admin Analytics</a>
-                <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users*') ? 'active' : '' }}">User Management</a>
-                <a href="{{ route('pharmacy.inventory') }}" class="{{ request()->routeIs('pharmacy.inventory') ? 'active' : '' }}">Medicine Stock</a>
-                <a href="{{ route('doctor.queue') }}" class="{{ request()->routeIs('doctor.queue') ? 'active' : '' }}">Live Queues</a>
-            @endif
-        @else
-            <a href="{{ route('patients.register') }}" class="{{ request()->routeIs('patients.register') ? 'active' : '' }}">Patient Registration</a>
-            <a href="{{ route('appointments') }}" class="{{ request()->routeIs('appointments') ? 'active' : '' }}">Book Appointment</a>
-        @endauth
-    </div>
-
-    <div class="nav-auth">
-        @auth
-            <div class="user-tag">
-                <span>{{ Auth::user()->name }}</span>
-                @php
-                    $roleBadges = [
-                        'admin' => 'badge-red',
-                        'doctor' => 'badge-blue',
-                        'pharmacist' => 'badge-gold',
-                        'patient' => 'badge-green',
-                    ];
-                @endphp
-                <span class="badge {{ $roleBadges[Auth::user()->role] ?? 'badge-gray' }}">{{ ucfirst(Auth::user()->role) }}</span>
+{{-- Institutional Medical Header --}}
+<header class="bg-[#1a6b3a] text-white border-b-2 border-[#c8922a]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+        <a href="{{ url('/') }}" class="flex items-center gap-x-3 text-white no-underline group">
+            <div class="inline-flex justify-center items-center h-10 min-w-10 px-2.5 rounded-lg bg-white text-[#1a6b3a] font-black text-xs tracking-wider shrink-0 shadow-sm">
+                UMC
             </div>
-            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                @csrf
-                <button type="submit" class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.4);">Logout</button>
-            </form>
-        @else
-            <a href="{{ route('login') }}" class="btn btn-gold btn-sm">Staff &amp; Patient Login</a>
-        @endauth
+            <div>
+                <div class="font-bold text-lg tracking-tight text-white flex items-center gap-1">
+                    <span>UniMed</span><span class="text-[#c8922a]">Center</span>
+                </div>
+                <div class="text-[11px] text-emerald-100 font-medium tracking-wide uppercase">
+                    University Medical Centre &mdash; Central Campus
+                </div>
+            </div>
+        </a>
+
+        <div class="hidden md:flex items-center gap-x-3">
+            <div class="inline-flex items-center gap-x-2 py-1.5 px-3.5 rounded-lg bg-black/20 border border-white/15 text-xs text-white">
+                <span class="size-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                <span class="font-bold text-white">Emergency Hotline: 01888-888888</span>
+                <span class="text-white/40">|</span>
+                <span class="text-emerald-100 text-[11px]">OPD 8:00am&ndash;8:00pm &bull; 24/7 Emergency Shifts</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+{{-- Sticky Navigation Bar --}}
+<nav class="sticky top-0 z-50 bg-[#134d2a] border-b border-black/15 text-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        {{-- Navigation Links --}}
+        <div class="flex items-center gap-1 overflow-x-auto py-2">
+            <a href="{{ url('/') }}" class="py-1.5 px-3.5 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->is('/') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Home</a>
+
+            @auth
+                @if(Auth::user()->isPatient())
+                    <a href="{{ route('patient.dashboard') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('patient.dashboard') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">My Dashboard</a>
+                    <a href="{{ route('patient.queue') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('patient.queue') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Live Queue</a>
+                    <a href="{{ route('patient.appointments') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('patient.appointments*') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Appointments</a>
+                    <a href="{{ route('patient.prescriptions') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('patient.prescriptions*') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Prescriptions</a>
+                    <a href="{{ route('patient.profile') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('patient.profile') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">My Profile</a>
+                @elseif(Auth::user()->isDoctor())
+                    <a href="{{ route('doctor.dashboard') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('doctor.dashboard') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Doctor Desk</a>
+                    <a href="{{ route('doctor.queue') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('doctor.queue') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Consultation Queue</a>
+                    <a href="{{ route('doctor.prescriptions.create') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('doctor.prescriptions.create') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Generate Prescription</a>
+                @elseif(Auth::user()->isPharmacist())
+                    <a href="{{ route('pharmacy.dashboard') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('pharmacy.dashboard') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Pharmacy Desk</a>
+                    <a href="{{ route('pharmacy.inventory') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('pharmacy.inventory') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Medicine Inventory</a>
+                    <a href="{{ route('pharmacy.dispense') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('pharmacy.dispense') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Dispense Prescriptions</a>
+                @elseif(Auth::user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Admin Analytics</a>
+                    <a href="{{ route('admin.users') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('admin.users*') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">User Management</a>
+                    <a href="{{ route('pharmacy.inventory') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('pharmacy.inventory') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Medicine Stock</a>
+                    <a href="{{ route('doctor.queue') }}" class="py-1.5 px-3 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('doctor.queue') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Live Queues</a>
+                @endif
+            @else
+                <a href="{{ route('appointments') }}" class="py-1.5 px-3.5 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('appointments') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Emergency Booking</a>
+                <a href="{{ route('login') }}" class="py-1.5 px-3.5 inline-flex items-center text-xs font-semibold rounded-md transition-colors {{ request()->routeIs('login') ? 'bg-[#1a6b3a] text-white shadow-xs border-b-2 border-[#c8922a]' : 'text-emerald-100 hover:bg-white/10 hover:text-white' }}">Portal Login</a>
+            @endauth
+        </div>
+
+        {{-- Preline User Pill / Logout --}}
+        <div class="flex items-center gap-x-2.5 py-2">
+            @auth
+                @php
+                    $otherAccounts = Auth::user()->otherRoleAccounts();
+                @endphp
+                @if($otherAccounts->count() > 0)
+                    <div class="hidden sm:inline-flex items-center gap-x-1.5 py-1 px-2.5 rounded-full bg-white/10 border border-white/15 text-xs text-white">
+                        <span class="text-emerald-200 text-[11px]">Switch Portal:</span>
+                        @foreach($otherAccounts as $alt)
+                            <form action="{{ route('role.switch', $alt->role) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="font-bold underline text-[#c8922a] hover:text-white transition-colors cursor-pointer text-xs">
+                                    {{ ucfirst($alt->role) }}
+                                </button>
+                            </form>
+                            @if(! $loop->last)<span class="text-white/30">&bull;</span>@endif
+                        @endforeach
+                    </div>
+                @endif
+                <div class="inline-flex items-center gap-x-2 py-1 px-3 rounded-full bg-white/10 border border-white/15 text-xs">
+                    <span class="text-white font-medium">{{ Auth::user()->name }}</span>
+                    @php
+                        $roleBadges = [
+                            'admin' => 'badge-red',
+                            'doctor' => 'badge-blue',
+                            'pharmacist' => 'badge-gold',
+                            'patient' => 'badge-green',
+                        ];
+                    @endphp
+                    <span class="badge {{ $roleBadges[Auth::user()->role] ?? 'badge-gray' }}">{{ ucfirst(Auth::user()->role) }}</span>
+                </div>
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="py-1 px-2.5 inline-flex items-center text-xs font-medium rounded-md border border-white/30 text-white hover:bg-white/15 transition-colors">Logout</button>
+                </form>
+            @endauth
+        </div>
     </div>
 </nav>
 
-{{-- Breadcrumb --}}
-<div class="breadcrumb">
-    <a href="{{ url('/') }}">Home</a>
-    <span>&rsaquo;</span>
-    <span>@yield('title', 'Portal')</span>
+{{-- Breadcrumbs Line --}}
+<div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
+        <ol class="flex items-center whitespace-nowrap text-xs text-gray-500 gap-x-2">
+            <li class="inline-flex items-center">
+                <a href="{{ url('/') }}" class="text-[#1a6b3a] hover:text-[#134d2a] font-semibold flex items-center gap-x-1">
+                    Home
+                </a>
+            </li>
+            <li>
+                <svg class="shrink-0 size-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </li>
+            <li class="font-semibold text-gray-800 truncate">
+                @yield('title', 'Portal')
+            </li>
+        </ol>
+    </div>
 </div>
 
-<main>
+{{-- Main Container --}}
+<main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="bg-teal-50 border-t-2 border-teal-500 rounded-lg p-4 mb-5 shadow-xs flex items-center gap-x-3 text-sm text-teal-800" role="alert">
+            <svg class="shrink-0 size-4 text-teal-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>{{ session('success') }}</span>
+        </div>
     @endif
     @if(session('error'))
-        <div class="alert alert-error">{{ session('error') }}</div>
+        <div class="bg-red-50 border-s-4 border-red-500 p-4 mb-5 rounded-md text-sm text-red-800 shadow-xs flex items-center gap-x-3" role="alert">
+            <svg class="shrink-0 size-4 text-red-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            <span>{{ session('error') }}</span>
+        </div>
     @endif
     @if(session('info'))
-        <div class="alert alert-info">{{ session('info') }}</div>
+        <div class="bg-blue-50 border border-blue-200 text-sm text-blue-800 rounded-lg p-4 mb-5 shadow-xs flex items-center gap-x-3" role="alert">
+            <svg class="shrink-0 size-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <span>{{ session('info') }}</span>
+        </div>
     @endif
 
     @yield('content')
 </main>
 
-<footer>
-    <div>
-        &copy; {{ date('Y') }} University Medical Centre &mdash; All rights reserved.<br>
-        UNIMED CENTER BUILDING, UNKNOWN &nbsp;|&nbsp; Hotline: 0188888888
-    </div>
-    <div class="footer-links">
-        <a href="{{ route('home') }}">Home</a>
-        <a href="{{ route('patients.register') }}">Registration</a>
-        <a href="{{ route('login') }}">Portal Login</a>
-        <a href="#">Medical Emergency</a>
+{{-- Institutional Preline Footer --}}
+<footer class="mt-auto bg-[#134d2a] text-white border-t-2 border-[#c8922a]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-wrap items-center justify-between gap-4 text-xs text-emerald-100/80">
+        <div>
+            <div class="font-bold text-white text-sm tracking-tight mb-1">University Medical Centre</div>
+            <p class="text-emerald-200/70">Health &amp; Wellness Division &mdash; Central Campus &nbsp;|&nbsp; Hotline: 01888-888888</p>
+            <p class="text-emerald-200/50 text-[11px] mt-1">&copy; {{ date('Y') }} All rights reserved. Subsidized clinical services for university members.</p>
+        </div>
+        <div class="text-emerald-200/60 font-medium text-xs">
+            UNIMED
+        </div>
     </div>
 </footer>
 

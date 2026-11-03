@@ -2,15 +2,17 @@
 @section('title', 'Consultation Queue Management')
 
 @section('content')
-<div class="page-title">Patient Consultation Queue Management</div>
-<div class="page-subtitle">Department: <strong>{{ $doctor->department ?? 'General Medicine' }}</strong> &bull; Attending: <strong>{{ $doctor->name }}</strong></div>
+<div class="mb-6">
+    <h1 class="page-title">Patient Consultation Queue Management</h1>
+    <p class="page-subtitle">Department: <strong>{{ $doctor->department ?? 'General Medicine' }}</strong> &bull; Attending: <strong>{{ $doctor->name }}</strong></p>
+</div>
 
-<div class="card">
-    <div class="card-header">
-        <span>Active Queue &mdash; {{ date('d M Y') }}</span>
-        <span style="font-size:11px;font-weight:400;text-transform:none;">Total in line: {{ $todayQueues->count() }}</span>
+<div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden mb-6">
+    <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider">Active Queue &mdash; {{ date('d M Y') }}</span>
+        <span class="badge badge-gold">{{ $todayQueues->count() }} In Line</span>
     </div>
-    <div class="card-body" style="padding:0;">
+    <div class="overflow-x-auto">
         <table class="data-table">
             <thead>
                 <tr>
@@ -25,27 +27,27 @@
             </thead>
             <tbody>
                 @forelse($todayQueues as $q)
-                    <tr style="{{ $q->status === 'in_consultation' ? 'background:#f0f9f3;border-left:4px solid var(--green);' : '' }}">
+                    <tr class="{{ $q->status === 'in_consultation' ? 'bg-emerald-50/60 border-l-4 border-l-[#1a6b3a]' : '' }}">
                         <td>
-                            <strong style="color:var(--green);font-size:15px;">{{ $q->token_number }}</strong>
+                            <strong class="text-[#1a6b3a] text-base">{{ $q->token_number }}</strong>
                         </td>
                         <td>
-                            <strong>{{ $q->patient->full_name }}</strong>
-                            <div style="font-size:11px;color:var(--muted);">{{ ucfirst($q->patient->role_category) }} ({{ $q->patient->gender }})</div>
+                            <strong class="text-slate-900">{{ $q->patient->full_name }}</strong>
+                            <div class="text-[11px] text-gray-500">{{ ucfirst($q->patient->role_category) }} ({{ $q->patient->gender }})</div>
                         </td>
                         <td>
-                            <div>{{ $q->patient->university_id }}</div>
-                            <div style="font-size:11px;color:var(--muted);">{{ $q->patient->department ?? 'General' }}</div>
+                            <div class="font-medium text-slate-800">{{ $q->patient->university_id }}</div>
+                            <div class="text-[11px] text-gray-500">{{ $q->patient->department ?? 'General' }}</div>
                         </td>
                         <td>
                             @if($q->patient->allergies)
-                                <span class="badge badge-red" style="font-size:10px;">{{ $q->patient->allergies }}</span>
+                                <span class="badge badge-red">{{ $q->patient->allergies }}</span>
                             @else
-                                <span style="font-size:11px;color:var(--muted);">No allergies reported</span>
+                                <span class="text-[11px] text-gray-400">No allergies</span>
                             @endif
-                            <div style="font-size:11px;margin-top:2px;">Blood: <strong>{{ $q->patient->blood_group ?? 'N/A' }}</strong></div>
+                            <div class="text-[11px] text-gray-600 mt-1">Blood: <strong>{{ $q->patient->blood_group ?? 'N/A' }}</strong></div>
                         </td>
-                        <td style="font-size:12px;">
+                        <td class="text-xs text-gray-500">
                             {{ $q->created_at->diffForHumans(null, true) }} ago
                         </td>
                         <td>
@@ -62,33 +64,33 @@
                             </span>
                         </td>
                         <td>
-                            <div style="display:flex;gap:4px;flex-wrap:wrap;">
-                                <a href="{{ route('doctor.patients.history', $q->patient_id) }}" class="btn btn-outline btn-sm" title="View past history">History</a>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <a href="{{ route('doctor.patients.history', $q->patient_id) }}" class="btn btn-outline btn-xs">History</a>
 
                                 @if($q->status === 'waiting')
                                     <form action="{{ route('doctor.queue.call', $q->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="btn btn-green btn-sm">Call Patient</button>
+                                        <button type="submit" class="btn btn-green btn-xs">Call Patient</button>
                                     </form>
                                     <form action="{{ route('doctor.queue.skip', $q->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="btn btn-outline btn-sm" style="color:#c0392b;border-color:#e0a098;">Skip</button>
+                                        <button type="submit" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50">Skip</button>
                                     </form>
                                 @elseif($q->status === 'in_consultation')
-                                    <a href="{{ route('doctor.prescriptions.create', ['queue_id' => $q->id, 'patient_id' => $q->patient_id]) }}" class="btn btn-green btn-sm">Write Rx</a>
+                                    <a href="{{ route('doctor.prescriptions.create', ['queue_id' => $q->id, 'patient_id' => $q->patient_id]) }}" class="btn btn-green btn-xs">Write Rx</a>
                                     <form action="{{ route('doctor.queue.complete', $q->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="btn btn-gold btn-sm">Complete</button>
+                                        <button type="submit" class="btn btn-gold btn-xs">Complete</button>
                                     </form>
                                 @else
-                                    <span style="font-size:11px;color:var(--muted);">Attended</span>
+                                    <span class="text-[11px] text-gray-400">Attended</span>
                                 @endif
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:1.6rem;color:var(--muted);">No patients currently in queue.</td>
+                        <td colspan="7" class="text-center py-8 text-gray-400 text-xs">No patients currently in queue.</td>
                     </tr>
                 @endforelse
             </tbody>

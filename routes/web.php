@@ -8,14 +8,29 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PharmacyController;
 use Illuminate\Support\Facades\Route;
 
-// Public landing page.
+// Public & Landing
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Authentication & Quick Demo Logins
+// Authentication & Registration
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::get('/login/choose-portal', [AuthController::class, 'showChoosePortal'])->name('login.choose-portal');
+Route::post('/login/choose-portal', [AuthController::class, 'selectPortal'])->name('login.choose-portal.post');
+Route::post('/switch-role/{role}', [AuthController::class, 'switchRole'])->middleware('auth')->name('role.switch');
 Route::get('/login/demo/{role}', [AuthController::class, 'quickLogin'])->name('login.demo');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Admin Registration
+Route::get('/admin/register', [AuthController::class, 'showAdminRegister'])->name('admin.register');
+Route::post('/admin/register', [AuthController::class, 'registerAdmin'])->name('admin.register.post');
+
+// Doctor Registration
+Route::get('/doctor/register', [AuthController::class, 'showDoctorRegister'])->name('doctor.register');
+Route::post('/doctor/register', [AuthController::class, 'registerDoctor'])->name('doctor.register.post');
+
+// Pharmacy Registration
+Route::get('/pharmacy/register', [AuthController::class, 'showPharmacyRegister'])->name('pharmacy.register');
+Route::post('/pharmacy/register', [AuthController::class, 'registerPharmacy'])->name('pharmacy.register.post');
 
 // Patient Registration
 Route::get('/patients/register', fn () => view('patients.register'))->name('patients.register');

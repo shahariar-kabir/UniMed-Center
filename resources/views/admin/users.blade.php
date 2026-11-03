@@ -2,14 +2,16 @@
 @section('title', 'User Management & Role Authorization')
 
 @section('content')
-<div class="page-title">User Management &amp; Role Authorization</div>
-<div class="page-subtitle">Configure medical personnel, assign roles (Admin, Doctor, Pharmacist, Patient), and manage access permissions.</div>
+<div class="mb-6">
+    <h1 class="page-title">User Management &amp; Role Authorization</h1>
+    <p class="page-subtitle">Configure medical personnel, assign roles (Admin, Doctor, Pharmacist, Patient), and manage access permissions.</p>
+</div>
 
 {{-- Top Filter & Add User Button --}}
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;gap:1rem;flex-wrap:wrap;">
-    <form action="{{ route('admin.users') }}" method="GET" style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <input type="text" name="search" class="form-control" style="width:220px;" placeholder="Search name, email, ID..." value="{{ request('search') }}">
-        <select name="role" class="form-control" style="width:160px;">
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <form action="{{ route('admin.users') }}" method="GET" class="flex flex-wrap items-center gap-2">
+        <input type="text" name="search" class="form-control w-56 text-xs" placeholder="Search name, email, ID..." value="{{ request('search') }}">
+        <select name="role" class="form-control w-44 text-xs">
             <option value="">&mdash; All Roles &mdash;</option>
             <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Administrator</option>
             <option value="doctor" {{ request('role') === 'doctor' ? 'selected' : '' }}>Doctor</option>
@@ -23,17 +25,17 @@
     </form>
 
     <button type="button" onclick="document.getElementById('newUserFormCard').scrollIntoView({behavior:'smooth'})" class="btn btn-gold btn-sm">
-        + Create New Staff / User Account
+        + Create New Staff Account
     </button>
 </div>
 
 {{-- Users Table --}}
-<div class="card" style="margin-bottom:1.8rem;">
-    <div class="card-header">
-        <span>System Users Directory ({{ $users->total() }})</span>
-        <span style="font-size:11px;font-weight:400;text-transform:none;">Page {{ $users->currentPage() }} of {{ $users->lastPage() }}</span>
+<div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden mb-6">
+    <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider">System Users Directory ({{ $users->total() }})</span>
+        <span class="text-xs text-emerald-200 font-normal">Page {{ $users->currentPage() }} of {{ $users->lastPage() }}</span>
     </div>
-    <div class="card-body" style="padding:0;">
+    <div class="overflow-x-auto">
         <table class="data-table">
             <thead>
                 <tr>
@@ -49,12 +51,12 @@
                 @forelse($users as $u)
                     <tr>
                         <td>
-                            <strong>{{ $u->name }}</strong>
+                            <strong class="text-slate-900">{{ $u->name }}</strong>
                             @if($u->university_id)
-                                <div style="font-size:11px;color:var(--muted);">ID: {{ $u->university_id }}</div>
+                                <div class="text-[11px] text-gray-500">ID: {{ $u->university_id }}</div>
                             @endif
                         </td>
-                        <td>{{ $u->email }}</td>
+                        <td class="text-xs text-slate-700">{{ $u->email }}</td>
                         <td>
                             @php
                                 $roleBadges = [
@@ -64,13 +66,13 @@
                                     'patient' => 'badge-green',
                                 ];
                             @endphp
-                            <span class="badge {{ $roleBadges[$u->role] ?? 'badge-gray' }}" style="font-size:11px;">
+                            <span class="badge {{ $roleBadges[$u->role] ?? 'badge-gray' }}">
                                 {{ ucfirst($u->role) }}
                             </span>
                         </td>
                         <td>
-                            <div>{{ $u->department ?? 'General' }}</div>
-                            <small style="color:var(--muted);">{{ $u->designation ?? 'Member' }}</small>
+                            <div class="text-xs font-medium text-slate-800">{{ $u->department ?? 'General' }}</div>
+                            <div class="text-[11px] text-gray-500">{{ $u->designation ?? 'Member' }}</div>
                         </td>
                         <td>
                             @if($u->is_active)
@@ -81,26 +83,26 @@
                         </td>
                         <td>
                             {{-- Quick Role / Status Update Form --}}
-                            <form action="{{ route('admin.users.update', $u->id) }}" method="POST" style="display:flex;gap:4px;align-items:center;">
+                            <form action="{{ route('admin.users.update', $u->id) }}" method="POST" class="flex items-center gap-1.5">
                                 @csrf
                                 @method('PUT')
-                                <select name="role" class="form-control" style="width:110px;padding:2px 4px;font-size:11px;">
+                                <select name="role" class="py-1 px-2 text-xs border border-gray-300 rounded w-24">
                                     <option value="patient" {{ $u->role === 'patient' ? 'selected' : '' }}>Patient</option>
                                     <option value="doctor" {{ $u->role === 'doctor' ? 'selected' : '' }}>Doctor</option>
                                     <option value="pharmacist" {{ $u->role === 'pharmacist' ? 'selected' : '' }}>Pharmacist</option>
                                     <option value="admin" {{ $u->role === 'admin' ? 'selected' : '' }}>Admin</option>
                                 </select>
-                                <select name="is_active" class="form-control" style="width:85px;padding:2px 4px;font-size:11px;">
+                                <select name="is_active" class="py-1 px-2 text-xs border border-gray-300 rounded w-20">
                                     <option value="1" {{ $u->is_active ? 'selected' : '' }}>Active</option>
                                     <option value="0" {{ !$u->is_active ? 'selected' : '' }}>Disable</option>
                                 </select>
-                                <button type="submit" class="btn btn-outline btn-sm" style="padding:2px 6px;font-size:11px;">Update</button>
+                                <button type="submit" class="btn btn-outline btn-xs">Save</button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:1.6rem;color:var(--muted);">No users found matching query.</td>
+                        <td colspan="6" class="text-center py-8 text-gray-400 text-xs">No users found matching query.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -109,26 +111,29 @@
 </div>
 
 @if($users->hasPages())
-    <div style="margin-bottom:1.5rem;">
+    <div class="mb-6">
         {{ $users->links() }}
     </div>
 @endif
 
 {{-- Create New User Card --}}
-<div class="card" id="newUserFormCard">
-    <div class="card-header">+ Create New Medical Staff or Administrative Account</div>
-    <div class="card-body">
-        <form action="{{ route('admin.users.store') }}" method="POST">
+<div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl overflow-hidden" id="newUserFormCard">
+    <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider">Create New Medical Staff or Administrative Account</span>
+        <span class="badge badge-gold">Staff Provisioning</span>
+    </div>
+    <div class="p-5 sm:p-6">
+        <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-4">
             @csrf
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:.8rem;">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="form-label">Full Name <span class="req">*</span></label>
                     <input type="text" name="name" class="form-control" placeholder="e.g. Dr. Mahfuzur Rahman" required>
                 </div>
                 <div>
                     <label class="form-label">Email Address <span class="req">*</span></label>
-                    <input type="email" name="email" class="form-control" placeholder="name@bu.edu.bd" required>
+                    <input type="email" name="email" class="form-control" placeholder="name@university.edu.bd" required>
                 </div>
                 <div>
                     <label class="form-label">Assigned Role &amp; Access <span class="req">*</span></label>
@@ -141,7 +146,7 @@
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:.8rem;margin-bottom:1rem;">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div>
                     <label class="form-label">Password <span class="req">*</span></label>
                     <input type="password" name="password" class="form-control" placeholder="Initial password" required minlength="6">
@@ -152,7 +157,7 @@
                 </div>
                 <div>
                     <label class="form-label">Department / Clinic</label>
-                    <input type="text" name="department" class="form-control" placeholder="e.g. Ophthalmology, Dental">
+                    <input type="text" name="department" class="form-control" placeholder="e.g. General Medicine, Dental">
                 </div>
                 <div>
                     <label class="form-label">Official Designation</label>
@@ -160,8 +165,8 @@
                 </div>
             </div>
 
-            <div style="display:flex;justify-content:flex-end;">
-                <button type="submit" class="btn btn-green">Create &amp; Authorize Account</button>
+            <div class="flex justify-end pt-2">
+                <button type="submit" class="btn btn-green">Create &amp; Authorize Account &rarr;</button>
             </div>
         </form>
     </div>

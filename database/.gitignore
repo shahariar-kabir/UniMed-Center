@@ -1,5 +1,4 @@
-*.sqlite-journal
-*.sqlite-shm
-*.sqlite-wal
-!database.sqlite
+*.sqlite*
+!isrgrootx1.pem
+
 

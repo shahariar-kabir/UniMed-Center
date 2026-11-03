@@ -1,68 +1,33 @@
 @extends('layouts.app')
 @section('title', 'Patient Dashboard')
 
-@push('styles')
-<style>
-    .patient-grid {
-        display: grid;
-        grid-template-columns: 1fr 340px;
-        gap: 1.4rem;
-        align-items: start;
-    }
-    .queue-status-card {
-        background: #fff;
-        border: 2px solid var(--gold);
-        border-radius: var(--radius);
-        padding: 1.2rem;
-        margin-bottom: 1.4rem;
-        box-shadow: var(--shadow);
-    }
-    .token-display {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    .token-num {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: var(--green);
-        line-height: 1;
-    }
-    .token-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
-
-    @media (max-width: 860px) {
-        .patient-grid { grid-template-columns: 1fr; }
-    }
-</style>
-@endpush
-
 @section('content')
-<div class="page-title">Patient Portal &mdash; {{ $patient->full_name }}</div>
-<div class="page-subtitle">University ID: <strong>{{ $patient->university_id }}</strong> &nbsp;|&nbsp; Category: <strong>{{ ucfirst($patient->role_category) }}</strong> &nbsp;|&nbsp; Department: <strong>{{ $patient->department ?? 'General' }}</strong></div>
+<div class="mb-6">
+    <h1 class="page-title">Patient Portal &mdash; {{ $patient->full_name }}</h1>
+    <p class="page-subtitle">University ID: <strong>{{ $patient->university_id }}</strong> &nbsp;|&nbsp; Category: <strong>{{ ucfirst($patient->role_category) }}</strong> &nbsp;|&nbsp; Department: <strong>{{ $patient->department ?? 'General' }}</strong></p>
+</div>
 
 {{-- Live Queue Banner if in Queue Today --}}
 @if($activeQueue)
-    <div class="queue-status-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
-            <span class="badge badge-gold" style="font-size:11px;">TODAY'S LIVE QUEUE TICKET</span>
+    <div class="bg-white border-2 border-[#c8922a] rounded-xl p-5 mb-6 shadow-sm">
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-gray-100">
+            <span class="badge badge-gold font-bold">TODAY'S LIVE QUEUE TICKET</span>
             <span class="badge {{ $activeQueue->status === 'in_consultation' ? 'badge-green' : 'badge-yellow' }}">
                 {{ $activeQueue->status === 'in_consultation' ? 'NOW IN CONSULTATION' : 'WAITING FOR DOCTOR' }}
             </span>
         </div>
-        <div class="token-display">
+        <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <div class="token-num">{{ $activeQueue->token_number }}</div>
-                <div class="token-sub">Department: <strong>{{ $activeQueue->department }}</strong> &nbsp;|&nbsp; Clinic Counter 1</div>
+                <div class="text-3xl font-extrabold text-[#1a6b3a]">{{ $activeQueue->token_number }}</div>
+                <div class="text-xs text-gray-600 mt-1">Department: <strong>{{ $activeQueue->department }}</strong> &bull; Clinic Room 101</div>
             </div>
-            <div style="text-align:right;">
+            <div class="text-right">
                 @if($activeQueue->status === 'in_consultation')
-                    <div style="font-size:14px;font-weight:700;color:var(--green);">Please proceed to Doctor's Consultation Room</div>
-                    <div style="font-size:12px;color:var(--muted);">Doctor is attending you now.</div>
+                    <div class="text-sm font-bold text-emerald-800">Please proceed to Doctor's Consultation Room</div>
+                    <div class="text-xs text-gray-500">Doctor is attending you now.</div>
                 @else
-                    <div style="font-size:14px;font-weight:700;color:var(--text);">{{ $patientsAhead }} patient(s) ahead of you</div>
-                    <div style="font-size:12px;color:var(--muted);">Estimated wait: approx. {{ max(5, $patientsAhead * 8) }} minutes</div>
+                    <div class="text-sm font-bold text-slate-800">{{ $patientsAhead }} patient(s) ahead of you</div>
+                    <div class="text-xs text-gray-500">Estimated wait: approx. {{ max(5, $patientsAhead * 8) }} minutes</div>
                 @endif
             </div>
             <div>
@@ -89,22 +54,22 @@
         <div class="stat-sub">Digital Rx on file</div>
     </div>
     <div class="stat-card">
-        <div class="stat-val" style="color:var(--green);font-size:1.4rem;">VERIFIED</div>
+        <div class="stat-val text-emerald-700">VERIFIED</div>
         <div class="stat-label">Identity Status</div>
         <div class="stat-sub">Authorized University Member</div>
     </div>
 </div>
 
-<div class="patient-grid">
-    {{-- Left: Prescriptions & Upcoming Appointments --}}
-    <div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    {{-- Left 2 cols: Prescriptions & Appointments --}}
+    <div class="lg:col-span-2 space-y-6">
         {{-- Recent Digital Prescriptions --}}
-        <div class="card" style="margin-bottom:1.4rem;">
-            <div class="card-header">
-                <span>Digital Prescriptions &amp; Printable PDF</span>
-                <a href="{{ route('patient.prescriptions') }}" style="color:#fff;font-size:11px;text-decoration:underline;">View All &rarr;</a>
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden">
+            <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider">Digital Prescriptions &amp; Printable PDF</span>
+                <a href="{{ route('patient.prescriptions') }}" class="text-xs text-emerald-200 hover:underline">View All &rarr;</a>
             </div>
-            <div class="card-body" style="padding:0;">
+            <div class="overflow-x-auto">
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -118,24 +83,27 @@
                     <tbody>
                         @forelse($prescriptions as $rx)
                             <tr>
-                                <td><strong>{{ $rx->prescription_number }}</strong><br><small style="color:var(--muted);">{{ $rx->created_at->format('d M Y') }}</small></td>
-                                <td>{{ $rx->doctor->name }}</td>
-                                <td style="max-width:240px;">{{ Str::limit($rx->diagnosis, 45) }}</td>
+                                <td>
+                                    <strong class="text-slate-900 font-mono">{{ $rx->prescription_number }}</strong>
+                                    <div class="text-[11px] text-gray-500">{{ $rx->created_at->format('d M Y') }}</div>
+                                </td>
+                                <td class="text-xs font-medium text-slate-800">{{ $rx->doctor->name }}</td>
+                                <td class="text-xs text-gray-600 truncate max-w-[200px]">{{ Str::limit($rx->diagnosis, 45) }}</td>
                                 <td>
                                     <span class="badge {{ $rx->status === 'dispensed' ? 'badge-green' : 'badge-yellow' }}">
                                         {{ ucfirst($rx->status) }}
                                     </span>
                                 </td>
                                 <td>
-                                    <div style="display:flex;gap:4px;">
-                                        <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-sm">View</a>
-                                        <a href="{{ route('patient.prescriptions.pdf', $rx->id) }}" class="btn btn-green btn-sm" title="Download printable PDF">PDF &darr;</a>
+                                    <div class="flex items-center gap-1.5">
+                                        <a href="{{ route('patient.prescriptions.show', $rx->id) }}" class="btn btn-outline btn-xs">View</a>
+                                        <a href="{{ route('patient.prescriptions.pdf', $rx->id) }}" class="btn btn-green btn-xs" title="Download printable PDF">PDF &darr;</a>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" style="text-align:center;padding:1.2rem;color:var(--muted);">No digital prescriptions recorded yet.</td>
+                                <td colspan="5" class="text-center py-8 text-gray-400 text-xs">No digital prescriptions recorded yet.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -144,12 +112,12 @@
         </div>
 
         {{-- Upcoming Appointments --}}
-        <div class="card">
-            <div class="card-header">
-                <span>My Appointments</span>
-                <a href="{{ route('patient.appointments') }}" style="color:#fff;font-size:11px;text-decoration:underline;">Book New Visit &rarr;</a>
+        <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+            <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider">My Appointments</span>
+                <a href="{{ route('patient.appointments') }}" class="text-xs text-emerald-200 hover:underline">Book New Visit &rarr;</a>
             </div>
-            <div class="card-body" style="padding:0;">
+            <div class="overflow-x-auto">
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -163,15 +131,18 @@
                     <tbody>
                         @forelse($upcomingAppointments as $apt)
                             <tr>
-                                <td><strong>{{ $apt->appointment_number }}</strong></td>
-                                <td>{{ $apt->department }}</td>
-                                <td>{{ $apt->doctor?->name ?? 'Assigned on arrival' }}</td>
-                                <td>{{ $apt->appointment_date->format('d M Y') }} at {{ $apt->time_slot }}</td>
+                                <td class="font-mono text-xs font-semibold text-slate-800">{{ $apt->appointment_number }}</td>
+                                <td class="text-xs text-slate-900 font-medium">{{ $apt->department }}</td>
+                                <td class="text-xs text-gray-600">{{ $apt->doctor?->name ?? 'Assigned on arrival' }}</td>
+                                <td>
+                                    <div class="text-xs text-slate-800">{{ $apt->appointment_date->format('d M Y') }}</div>
+                                    <div class="text-[11px] font-bold text-emerald-700">{{ $apt->time_slot }}</div>
+                                </td>
                                 <td><span class="badge badge-green">{{ ucfirst($apt->status) }}</span></td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" style="text-align:center;padding:1.2rem;color:var(--muted);">No upcoming appointments scheduled.</td>
+                                <td colspan="5" class="text-center py-8 text-gray-400 text-xs">No upcoming appointments scheduled.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -180,42 +151,58 @@
         </div>
     </div>
 
-    {{-- Right Sidebar: Identity & Quick Actions --}}
-    <div>
-        <div class="card" style="margin-bottom:1.4rem;">
-            <div class="card-header">Identity &amp; Profile Summary</div>
-            <div class="card-body" style="font-size:13px;line-height:1.7;">
-                <div><strong>University ID:</strong> {{ $patient->university_id }}</div>
-                <div><strong>Email:</strong> {{ $patient->email }}</div>
-                <div><strong>Mobile:</strong> {{ $patient->phone }}</div>
-                <div><strong>Blood Group:</strong> <span class="badge badge-red">{{ $patient->blood_group ?? 'Not set' }}</span></div>
-                <div style="margin-top:.5rem;border-top:1px solid #ecf2ee;padding-top:.5rem;">
-                    <strong>Known Allergies:</strong><br>
-                    <span style="color:#c0392b;font-weight:700;">{{ $patient->allergies ?: 'No known drug allergies reported' }}</span>
+    {{-- Right 1 col: Identity & Quick Actions --}}
+    <div class="space-y-6">
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl p-5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
+                Identity &amp; Profile Summary
+            </h3>
+            <div class="text-xs text-gray-600 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500">University ID:</span>
+                    <strong class="text-slate-800">{{ $patient->university_id }}</strong>
                 </div>
-                <div style="margin-top:.5rem;border-top:1px solid #ecf2ee;padding-top:.5rem;">
-                    <strong>Emergency Contact:</strong><br>
-                    {{ $patient->emergency_name ?? 'Not set' }} &ndash; {{ $patient->emergency_phone ?? 'N/A' }}
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500">Email:</span>
+                    <strong class="text-slate-800">{{ $patient->email }}</strong>
                 </div>
-                <div style="margin-top:1rem;">
-                    <a href="{{ route('patient.profile') }}" class="btn btn-outline btn-sm" style="width:100%;">Edit Profile &amp; Contact Info</a>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500">Mobile:</span>
+                    <strong class="text-slate-800">{{ $patient->phone }}</strong>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500">Blood Group:</span>
+                    <span class="badge badge-red">{{ $patient->blood_group ?? 'Not set' }}</span>
+                </div>
+                <div class="pt-2 border-t border-gray-100">
+                    <span class="text-gray-500">Known Allergies:</span>
+                    <div class="text-red-700 font-bold mt-0.5">{{ $patient->allergies ?: 'No known drug allergies reported' }}</div>
+                </div>
+                <div class="pt-2 border-t border-gray-100">
+                    <span class="text-gray-500">Emergency Contact:</span>
+                    <div class="text-slate-800 font-medium mt-0.5">{{ $patient->emergency_name ?? 'Not set' }} &ndash; {{ $patient->emergency_phone ?? 'N/A' }}</div>
+                </div>
+                <div class="pt-3">
+                    <a href="{{ route('patient.profile') }}" class="btn btn-outline btn-sm w-full text-center">Edit Profile &amp; Contact Info</a>
                 </div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">Quick Actions</div>
-            <div class="card-body" style="display:flex;flex-direction:column;gap:.6rem;">
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl p-5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
+                Quick Patient Actions
+            </h3>
+            <div class="space-y-2">
                 @if(!$activeQueue)
                     <form action="{{ route('patient.queue.join') }}" method="POST">
                         @csrf
                         <input type="hidden" name="department" value="General Medicine">
-                        <button type="submit" class="btn btn-green" style="width:100%;">Get Today's Walk-in Queue Token</button>
+                        <button type="submit" class="btn btn-green w-full">Get Today's Walk-in Token</button>
                     </form>
                 @endif
-                <a href="{{ route('patient.queue') }}" class="btn btn-outline" style="width:100%;">View Live Queue Tracking</a>
-                <a href="{{ route('patient.appointments') }}" class="btn btn-outline" style="width:100%;">Book Doctor Appointment</a>
-                <a href="{{ route('patient.prescriptions') }}" class="btn btn-outline" style="width:100%;">Download Prescriptions (PDF)</a>
+                <a href="{{ route('patient.queue') }}" class="btn btn-outline w-full text-center">View Live Queue Tracking</a>
+                <a href="{{ route('patient.appointments') }}" class="btn btn-outline w-full text-center">Book Doctor Appointment</a>
+                <a href="{{ route('patient.prescriptions') }}" class="btn btn-outline w-full text-center">Download Prescriptions (PDF)</a>
             </div>
         </div>
     </div>

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -364,42 +365,45 @@ class AuthController extends Controller
             'declaration' => 'accepted',
         ]);
 
-        // Create User account for the patient
-        $user = User::create([
-            'name' => "{$validated['first_name']} {$validated['last_name']}",
-            'email' => $validated['email'],
-            'password' => Hash::make('password'), // default initial password
-            'role' => 'patient',
-            'university_id' => $validated['university_id'],
-            'phone' => $validated['phone'],
-            'department' => $validated['department'] ?? null,
-            'designation' => ucfirst($validated['role']),
-            'is_active' => true,
-        ]);
+        // Create User account for the patient and patient profile atomically
+        $user = DB::transaction(function () use ($validated) {
+            $user = User::create([
+                'name' => "{$validated['first_name']} {$validated['last_name']}",
+                'email' => $validated['email'],
+                'password' => Hash::make('password'), // default initial password
+                'role' => 'patient',
+                'university_id' => $validated['university_id'],
+                'phone' => $validated['phone'],
+                'department' => $validated['department'] ?? null,
+                'designation' => ucfirst($validated['role']),
+                'is_active' => true,
+            ]);
 
-        // Create Patient profile
-        Patient::create([
-            'user_id' => $user->id,
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'university_id' => $validated['university_id'],
-            'dob' => $validated['dob'],
-            'gender' => $validated['gender'],
-            'blood_group' => $validated['blood_group'] ?? null,
-            'nationality' => $validated['nationality'] ?? 'Bangladeshi',
-            'role_category' => $validated['role'],
-            'department' => $validated['department'] ?? null,
-            'year_semester' => $validated['year'] ?? null,
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'emergency_name' => $validated['emergency_name'] ?? null,
-            'emergency_phone' => $validated['emergency_phone'] ?? null,
-            'address' => $validated['address'] ?? null,
-            'allergies' => $validated['allergies'] ?? null,
-            'conditions' => $validated['conditions'] ?? [],
-            'medications' => $validated['medications'] ?? null,
-            'is_verified' => true,
-        ]);
+            Patient::create([
+                'user_id' => $user->id,
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'university_id' => $validated['university_id'],
+                'dob' => $validated['dob'],
+                'gender' => $validated['gender'],
+                'blood_group' => $validated['blood_group'] ?? null,
+                'nationality' => $validated['nationality'] ?? 'Bangladeshi',
+                'role_category' => $validated['role'],
+                'department' => $validated['department'] ?? null,
+                'year_semester' => $validated['year'] ?? null,
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'emergency_name' => $validated['emergency_name'] ?? null,
+                'emergency_phone' => $validated['emergency_phone'] ?? null,
+                'address' => $validated['address'] ?? null,
+                'allergies' => $validated['allergies'] ?? null,
+                'conditions' => $validated['conditions'] ?? [],
+                'medications' => $validated['medications'] ?? null,
+                'is_verified' => true,
+            ]);
+
+            return $user;
+        });
 
         // Log the newly registered patient in
         Auth::login($user);

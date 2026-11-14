@@ -32,9 +32,24 @@ class Appointment extends Model
 
     public static function generateNumber(): string
     {
-        $count = static::count() + 1;
+        $year = date('Y');
+        $prefix = "APT-{$year}-";
 
-        return 'APT-'.date('Y').'-'.str_pad((string) $count, 4, '0', STR_PAD_LEFT);
+        $latest = static::where('appointment_number', 'like', "{$prefix}%")
+            ->latest('id')
+            ->value('appointment_number');
+
+        $nextSeq = 1;
+        if ($latest && preg_match('/APT-\d{4}-(\d+)/', $latest, $m)) {
+            $nextSeq = ((int) $m[1]) + 1;
+        }
+
+        do {
+            $number = sprintf('APT-%s-%04d', $year, $nextSeq);
+            $nextSeq++;
+        } while (static::where('appointment_number', $number)->exists());
+
+        return $number;
     }
 
     public function patient(): BelongsTo

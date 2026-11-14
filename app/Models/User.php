@@ -114,15 +114,22 @@ class User extends Authenticatable
             ->get();
     }
 
-    public function getOrCreatePatient(): Patient
+    public function getOrCreatePatient(): ?Patient
     {
         if ($this->patient) {
             return $this->patient;
         }
 
-        $existing = Patient::where('email', $this->email)
-            ->orWhere('university_id', $this->university_id)
-            ->first();
+        // Only search for unlinked patient profile matching this specific email/ID
+        $existing = Patient::where('user_id', $this->id)->first()
+            ?? Patient::whereNull('user_id')
+                ->where(function ($q) {
+                    $q->where('email', $this->email);
+                    if ($this->university_id) {
+                        $q->orWhere('university_id', $this->university_id);
+                    }
+                })
+                ->first();
 
         if ($existing) {
             if (! $existing->user_id) {
@@ -130,6 +137,11 @@ class User extends Authenticatable
             }
 
             return $existing;
+        }
+
+        // Never auto-create a patient record for non-patient roles (doctors, pharmacists, admins)
+        if (! $this->isPatient()) {
+            return null;
         }
 
         $nameParts = explode(' ', $this->name, 2);

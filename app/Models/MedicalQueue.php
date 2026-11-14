@@ -36,14 +36,21 @@ class MedicalQueue extends Model
     public static function generateNextToken(?Carbon $date = null): string
     {
         $date = $date ?? Carbon::today();
-        $lastToken = static::whereDate('queue_date', $date)->max('token_number');
-        $nextNum = 101;
+        $last = static::whereDate('queue_date', $date)
+            ->latest('id')
+            ->first();
 
-        if ($lastToken && preg_match('/T-(\d+)/', $lastToken, $matches)) {
+        $nextNum = 101;
+        if ($last && preg_match('/T-(\d+)/', (string) $last->token_number, $matches)) {
             $nextNum = ((int) $matches[1]) + 1;
         }
 
-        return "T-{$nextNum}";
+        do {
+            $token = "T-{$nextNum}";
+            $nextNum++;
+        } while (static::whereDate('queue_date', $date)->where('token_number', $token)->exists());
+
+        return $token;
     }
 
     public function scopeToday(Builder $query): Builder

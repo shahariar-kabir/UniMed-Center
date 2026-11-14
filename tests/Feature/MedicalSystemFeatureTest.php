@@ -149,7 +149,27 @@ test('pharmacist can view inventory and dispense prescriptions', function () {
     // Inventory
     $this->get(route('pharmacy.inventory'))
         ->assertStatus(200)
-        ->assertSee('Medicine Inventory Control');
+        ->assertSee('Medicine Inventory Control')
+        ->assertSee("Today's Patients", false)
+        ->assertSee('Completed Consultations')
+        ->assertSee('Low-Stock Alerts')
+        ->assertSee('Near-Expiry Alerts')
+        ->assertSee('Restock Pharmacy Batch');
+
+    // Test Restock endpoint with batch update
+    $sampleMedicine = Medicine::first();
+    if ($sampleMedicine) {
+        $initialStock = $sampleMedicine->stock_quantity;
+        $this->post(route('pharmacy.inventory.stock', $sampleMedicine->id), [
+            'adjustment' => 100,
+            'batch_number' => 'UM-26R28',
+            'expiry_date' => '2027-11-14',
+        ])->assertRedirect();
+
+        $freshMed = $sampleMedicine->fresh();
+        $this->assertEquals($initialStock + 100, $freshMed->stock_quantity);
+        $this->assertEquals('UM-26R28', $freshMed->batch_number);
+    }
 
     // Dispense Desk
     $this->get(route('pharmacy.dispense'))
@@ -392,4 +412,124 @@ test('same email can be registered and used for multiple roles', function () {
     ]);
     $loginDoc->assertRedirect(route('doctor.dashboard'));
     $this->assertEquals('doctor', Auth::user()->role);
+});
+
+test('pharmacist cannot double-dispense and medicine stock is decremented atomically', function () {
+    $pharmacistUser = User::where('role', 'pharmacist')->first();
+    $this->actingAs($pharmacistUser);
+
+    $medicine = Medicine::create([
+        'name' => 'Amoxicillin Test',
+        'generic_name' => 'Amoxicillin',
+        'category' => 'Antibiotic',
+        'dosage_form' => 'Capsule',
+        'strength' => '500mg',
+        'batch_number' => 'BATCH-TEST-001',
+        'stock_quantity' => 100,
+        'reorder_level' => 10,
+        'unit' => 'capsules',
+        'expiry_date' => now()->addYear()->toDateString(),
+        'is_active' => true,
+    ]);
+
+    $patient = Patient::first();
+    $doctor = User::where('role', 'doctor')->first();
+
+    $prescription = Prescription::create([
+        'prescription_number' => Prescription::generateNumber(),
+        'patient_id' => $patient->id,
+        'doctor_id' => $doctor->id,
+        'diagnosis' => 'Bacterial Infection',
+        'status' => 'active',
+    ]);
+
+    $item = $prescription->items()->create([
+        'medicine_id' => $medicine->id,
+        'medicine_name' => $medicine->name,
+        'dosage' => '1+1+1',
+        'duration' => '7 days',
+        'quantity' => 21,
+        'is_dispensed' => false,
+    ]);
+
+    // First dispense: should decrement stock from 100 to 79
+    $response1 = $this->post(route('pharmacy.dispense.store', $prescription->id));
+    $response1->assertRedirect(route('pharmacy.dispense'));
+    $response1->assertSessionHas('success');
+
+    $this->assertEquals(79, $medicine->fresh()->stock_quantity);
+    $this->assertEquals('dispensed', $prescription->fresh()->status);
+    $this->assertTrue((bool) $item->fresh()->is_dispensed);
+
+    // Second dispense attempt on already dispensed prescription: should NOT deduct stock again
+    $response2 = $this->post(route('pharmacy.dispense.store', $prescription->id));
+    $response2->assertRedirect(route('pharmacy.dispense'));
+    $response2->assertSessionHas('info');
+
+    $this->assertEquals(79, $medicine->fresh()->stock_quantity);
+});
+
+test('doctor prescription calculates total quantity dynamically if missing or zero', function () {
+    $doctorUser = User::where('role', 'doctor')->first();
+    $this->actingAs($doctorUser);
+
+    $patient = Patient::first();
+    $medicine = Medicine::first();
+
+    $response = $this->post(route('doctor.prescriptions.store'), [
+        'patient_id' => $patient->id,
+        'diagnosis' => 'Acute Headache',
+        'medicines' => [
+            [
+                'medicine_id' => $medicine->id,
+                'medicine_name' => $medicine->name,
+                'dosage' => '1+0+1',
+                'duration' => '7 days',
+                'instructions' => 'After meal',
+                'quantity' => 0, // Should be auto-calculated to 2 * 7 = 14
+            ],
+        ],
+    ]);
+
+    $response->assertSessionHas('success');
+
+    $prescription = Prescription::where('patient_id', $patient->id)->latest('id')->first();
+    $this->assertNotNull($prescription);
+
+    $item = $prescription->items->first();
+    $this->assertEquals(14, $item->quantity);
+    $this->assertEquals('1+0+1', $item->dosage);
+    $this->assertEquals('7 days', $item->duration);
+});
+
+test('admin can create user with same email across distinct roles and initializes patient profile', function () {
+    $admin = User::where('role', 'admin')->first();
+    $this->actingAs($admin);
+
+    $sharedEmail = 'student.staff@bu.edu.bd';
+
+    // Create staff member as doctor first
+    $response1 = $this->post(route('admin.users.store'), [
+        'name' => 'Staff Member',
+        'email' => $sharedEmail,
+        'role' => 'doctor',
+        'password' => 'secret123',
+        'university_id' => 'STF-DOC-101',
+        'department' => 'General Medicine',
+    ]);
+    $response1->assertRedirect(route('admin.users'));
+    $this->assertDatabaseHas('users', ['email' => $sharedEmail, 'role' => 'doctor']);
+
+    // Create same person as patient: should succeed and create a linked patient profile
+    $response2 = $this->post(route('admin.users.store'), [
+        'name' => 'Staff Member',
+        'email' => $sharedEmail,
+        'role' => 'patient',
+        'password' => 'secret123',
+        'university_id' => 'STF-PAT-101',
+        'department' => 'Staff Health',
+    ]);
+    $response2->assertRedirect(route('admin.users'));
+    $this->assertDatabaseHas('users', ['email' => $sharedEmail, 'role' => 'patient']);
+    $this->assertDatabaseHas('patients', ['email' => $sharedEmail, 'university_id' => 'STF-PAT-101']);
 });

@@ -36,9 +36,24 @@ class Prescription extends Model
 
     public static function generateNumber(): string
     {
-        $count = static::count() + 1;
+        $year = date('Y');
+        $prefix = "RX-{$year}-";
 
-        return 'RX-'.date('Y').'-'.str_pad((string) $count, 4, '0', STR_PAD_LEFT);
+        $latest = static::where('prescription_number', 'like', "{$prefix}%")
+            ->latest('id')
+            ->value('prescription_number');
+
+        $nextSeq = 1;
+        if ($latest && preg_match('/RX-\d{4}-(\d+)/', $latest, $m)) {
+            $nextSeq = ((int) $m[1]) + 1;
+        }
+
+        do {
+            $number = sprintf('RX-%s-%04d', $year, $nextSeq);
+            $nextSeq++;
+        } while (static::where('prescription_number', $number)->exists());
+
+        return $number;
     }
 
     public function patient(): BelongsTo

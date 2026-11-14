@@ -21,11 +21,10 @@ class DatabaseSeeder extends Seeder
 
         // 1. Users & Roles
         $admin = User::updateOrCreate(
-            ['email' => 'admin@bu.edu.bd'],
+            ['email' => 'admin@bu.edu.bd', 'role' => 'admin'],
             [
                 'name' => 'System Administrator',
                 'password' => Hash::make('password'),
-                'role' => 'admin',
                 'university_id' => 'ADMIN-001',
                 'phone' => '0188888888',
                 'department' => 'Administration',
@@ -34,11 +33,10 @@ class DatabaseSeeder extends Seeder
         );
 
         $doctor1 = User::updateOrCreate(
-            ['email' => 'doctor@bu.edu.bd'],
+            ['email' => 'doctor@bu.edu.bd', 'role' => 'doctor'],
             [
                 'name' => 'Dr. Anisur Rahman',
                 'password' => Hash::make('password'),
-                'role' => 'doctor',
                 'university_id' => 'DOC-010',
                 'phone' => '01711002233',
                 'department' => 'General Medicine',
@@ -47,11 +45,10 @@ class DatabaseSeeder extends Seeder
         );
 
         $doctor2 = User::updateOrCreate(
-            ['email' => 'doctor2@bu.edu.bd'],
+            ['email' => 'doctor2@bu.edu.bd', 'role' => 'doctor'],
             [
                 'name' => 'Dr. Nusrat Sultana',
                 'password' => Hash::make('password'),
-                'role' => 'doctor',
                 'university_id' => 'DOC-011',
                 'phone' => '01711002244',
                 'department' => 'Gynaecology',
@@ -60,11 +57,10 @@ class DatabaseSeeder extends Seeder
         );
 
         $doctor3 = User::updateOrCreate(
-            ['email' => 'doctor3@bu.edu.bd'],
+            ['email' => 'doctor3@bu.edu.bd', 'role' => 'doctor'],
             [
                 'name' => 'Dr. Abdur Karim',
                 'password' => Hash::make('password'),
-                'role' => 'doctor',
                 'university_id' => 'DOC-012',
                 'phone' => '01711002255',
                 'department' => 'Dental',
@@ -73,11 +69,10 @@ class DatabaseSeeder extends Seeder
         );
 
         $pharmacist = User::updateOrCreate(
-            ['email' => 'pharma@bu.edu.bd'],
+            ['email' => 'pharma@bu.edu.bd', 'role' => 'pharmacist'],
             [
                 'name' => 'Md. Rafiqul Islam',
                 'password' => Hash::make('password'),
-                'role' => 'pharmacist',
                 'university_id' => 'PHARM-005',
                 'phone' => '01822334455',
                 'department' => 'Central Pharmacy',
@@ -86,11 +81,10 @@ class DatabaseSeeder extends Seeder
         );
 
         $patientUser = User::updateOrCreate(
-            ['email' => 'patient@bu.edu.bd'],
+            ['email' => 'patient@bu.edu.bd', 'role' => 'patient'],
             [
                 'name' => 'Rahman Al-Hasan',
                 'password' => Hash::make('password'),
-                'role' => 'patient',
                 'university_id' => '2022-CSE-011',
                 'phone' => '01911223344',
                 'department' => 'Computer Science & Engineering',

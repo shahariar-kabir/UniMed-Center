@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class PatientController extends Controller
@@ -108,30 +109,37 @@ class PatientController extends Controller
     {
         $patient = $this->getPatient();
 
-        $existing = MedicalQueue::where('patient_id', $patient->id)
-            ->today()
-            ->active()
-            ->first();
-
-        if ($existing) {
-            return back()->with('info', "You already have an active queue token for today: {$existing->token_number}");
-        }
-
         $department = $request->input('department', 'General Medicine');
         $doctor = User::where('role', 'doctor')
             ->where('department', 'like', "%{$department}%")
             ->first() ?? User::where('role', 'doctor')->first();
 
-        $queue = MedicalQueue::create([
-            'token_number' => MedicalQueue::generateNextToken(),
-            'queue_date' => Carbon::today(),
-            'patient_id' => $patient->id,
-            'doctor_id' => $doctor?->id,
-            'department' => $department,
-            'status' => 'waiting',
-        ]);
+        $queue = DB::transaction(function () use ($patient, $doctor, $department) {
+            $existing = MedicalQueue::where('patient_id', $patient->id)
+                ->today()
+                ->active()
+                ->lockForUpdate()
+                ->first();
 
-        return redirect()->route('patient.queue')->with('success', "Queue token generated: {$queue->token_number}. Please proceed to the waiting area.");
+            if ($existing) {
+                return $existing;
+            }
+
+            return MedicalQueue::create([
+                'token_number' => MedicalQueue::generateNextToken(),
+                'queue_date' => Carbon::today(),
+                'patient_id' => $patient->id,
+                'doctor_id' => $doctor?->id,
+                'department' => $department,
+                'status' => 'waiting',
+            ]);
+        });
+
+        if ($queue->wasRecentlyCreated) {
+            return redirect()->route('patient.queue')->with('success', "Queue token generated: {$queue->token_number}. Please proceed to the waiting area.");
+        }
+
+        return back()->with('info', "You already have an active queue token for today: {$queue->token_number}");
     }
 
     public function appointments(): View
@@ -238,12 +246,15 @@ class PatientController extends Controller
                 ->value('id') ?? User::where('role', 'doctor')->value('id');
         }
 
+        $consultationType = $request->input('consultation_type', 'appointment');
+
         $appointment = $this->createAppointmentRecord($patient, [
             'doctor_id' => $resolvedDoctorId,
             'department' => $request->input('department'),
             'appointment_date' => $appointmentDate,
             'time_slot' => $timeSlot,
             'reason' => $request->input('reason'),
+            'admin_notes' => $consultationType === 'walkin' ? 'Walk-in OPD consultation' : 'Scheduled appointment',
         ]);
 
         $queueMsg = '';
@@ -251,35 +262,40 @@ class PatientController extends Controller
             $queueMsg = " Live Queue Token assigned: {$appointment->queue->token_number}.";
         }
 
-        return redirect('/appointments')->with('success', "Appointment booked successfully! Reference: {$appointment->appointment_number}. Date: {$appointment->appointment_date->format('d M Y')} at {$appointment->time_slot}.{$queueMsg}");
+        $typeLabel = $consultationType === 'walkin' ? 'Walk-in consultation' : 'Appointment';
+
+        return redirect('/appointments')->with('success', "{$typeLabel} booked successfully! Reference: {$appointment->appointment_number}. Date: {$appointment->appointment_date->format('d M Y')} at {$appointment->time_slot}.{$queueMsg}");
     }
 
     private function createAppointmentRecord(Patient $patient, array $data): Appointment
     {
-        $appointment = Appointment::create([
-            'appointment_number' => Appointment::generateNumber(),
-            'patient_id' => $patient->id,
-            'doctor_id' => $data['doctor_id'] ?? null,
-            'department' => $data['department'],
-            'appointment_date' => $data['appointment_date'],
-            'time_slot' => $data['time_slot'],
-            'reason' => $data['reason'] ?? null,
-            'status' => 'confirmed',
-        ]);
-
-        if (Carbon::parse($data['appointment_date'])->isToday()) {
-            MedicalQueue::create([
-                'token_number' => MedicalQueue::generateNextToken(),
-                'queue_date' => Carbon::today(),
+        return DB::transaction(function () use ($patient, $data) {
+            $appointment = Appointment::create([
+                'appointment_number' => Appointment::generateNumber(),
                 'patient_id' => $patient->id,
-                'doctor_id' => $appointment->doctor_id,
-                'appointment_id' => $appointment->id,
-                'department' => $appointment->department,
-                'status' => 'waiting',
+                'doctor_id' => $data['doctor_id'] ?? null,
+                'department' => $data['department'],
+                'appointment_date' => $data['appointment_date'],
+                'time_slot' => $data['time_slot'],
+                'reason' => $data['reason'] ?? null,
+                'admin_notes' => $data['admin_notes'] ?? null,
+                'status' => 'confirmed',
             ]);
-        }
 
-        return $appointment;
+            if (Carbon::parse($data['appointment_date'])->isToday()) {
+                MedicalQueue::create([
+                    'token_number' => MedicalQueue::generateNextToken(),
+                    'queue_date' => Carbon::today(),
+                    'patient_id' => $patient->id,
+                    'doctor_id' => $appointment->doctor_id,
+                    'appointment_id' => $appointment->id,
+                    'department' => $appointment->department,
+                    'status' => 'waiting',
+                ]);
+            }
+
+            return $appointment;
+        });
     }
 
     public function prescriptions(): View
@@ -296,10 +312,13 @@ class PatientController extends Controller
 
     public function showPrescription(Prescription $prescription): View
     {
-        $patient = $this->getPatient();
+        $user = Auth::user();
 
-        if (Auth::user()->isPatient() && $prescription->patient_id !== $patient->id) {
-            abort(403, 'Unauthorized access to prescription.');
+        if ($user && $user->isPatient()) {
+            $patient = $user->patient ?? $this->getPatient();
+            if (! $patient || $prescription->patient_id !== $patient->id) {
+                abort(403, 'Unauthorized access to prescription.');
+            }
         }
 
         $prescription->load(['doctor', 'patient', 'items.medicine']);
@@ -309,10 +328,13 @@ class PatientController extends Controller
 
     public function downloadPrescriptionPdf(Prescription $prescription): Response
     {
-        $patient = $this->getPatient();
+        $user = Auth::user();
 
-        if (Auth::user()->isPatient() && $prescription->patient_id !== $patient->id) {
-            abort(403, 'Unauthorized access to prescription.');
+        if ($user && $user->isPatient()) {
+            $patient = $user->patient ?? $this->getPatient();
+            if (! $patient || $prescription->patient_id !== $patient->id) {
+                abort(403, 'Unauthorized access to prescription.');
+            }
         }
 
         $prescription->load(['doctor', 'patient', 'items.medicine']);

@@ -28,10 +28,10 @@
         {{-- Main Prescription Builder (8 cols) --}}
         <div class="lg:col-span-8 space-y-6">
             {{-- Patient Selection & Clinical Vitals --}}
-            <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden">
-                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider">1. Patient &amp; Clinical Examination</span>
-                    <span class="badge badge-gold">Patient Vitals</span>
+            <div class="bg-white border border-slate-200 border-t-4 border-t-[#0f766e] shadow-sm rounded-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-[#091e3a] to-[#0f2b48] text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0f766e]">
+                    <span class="text-xs font-bold uppercase tracking-wider font-heading">1. Patient &amp; Clinical Examination</span>
+                    <span class="badge badge-cyan">Patient Vitals</span>
                 </div>
                 <div class="p-5 sm:p-6 space-y-4">
                     <div>
@@ -78,63 +78,135 @@
             </div>
 
             {{-- Prescribed Medicines --}}
-            <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl overflow-hidden">
-                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+            <div class="bg-white border border-slate-200 border-t-4 border-t-[#0d9488] shadow-sm rounded-xl overflow-hidden">
+                <div class="bg-gradient-to-r from-[#091e3a] to-[#0f2b48] text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0d9488]">
                     <span class="text-xs font-bold uppercase tracking-wider">2. Prescribed Medicines (From Stock)</span>
-                    <button type="button" class="btn btn-outline btn-xs" onclick="addMedicineRow()">+ Add Medicine</button>
+                    <button type="button" class="btn btn-outline-white btn-xs" onclick="addMedicineRow()">+ Add Medicine</button>
                 </div>
                 <div class="p-5 sm:p-6 space-y-4">
                     <div id="medicinesContainer" class="space-y-4">
                         {{-- Row 0 --}}
-                        <div class="p-4 rounded-lg bg-slate-50 border border-gray-200 space-y-3 med-row" id="row_0">
-                            <div class="flex items-center justify-between border-b border-gray-200 pb-2">
-                                <strong class="text-xs font-bold text-[#1a6b3a] uppercase">Medicine Item #1</strong>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3.5 med-row" id="row_0">
+                            <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="size-6 rounded-full bg-[#0d9488] text-white text-xs font-bold flex items-center justify-center">1</span>
+                                    <strong class="text-xs font-bold text-slate-800 uppercase tracking-wide">Medicine Item #1</strong>
+                                </div>
                                 <button type="button" onclick="removeRow('row_0')" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50">Remove</button>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <div class="sm:col-span-2">
-                                    <label class="form-label">Select Medicine from Stock <span class="req">*</span></label>
-                                    <select name="medicines[0][medicine_id]" class="form-control med-select" required onchange="onMedSelect(this, 0)">
-                                        <option value="">&mdash; Choose from Available Stock &mdash;</option>
-                                        @foreach($medicines as $med)
-                                            <option value="{{ $med->id }}" data-name="{{ $med->name }}" data-instructions="{{ $med->instructions_default }}" data-stock="{{ $med->stock_quantity }}">
-                                                {{ $med->name }} ({{ $med->strength }}) &mdash; Stock: {{ $med->stock_quantity }} {{ $med->unit }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <input type="hidden" name="medicines[0][medicine_name]" id="med_name_0">
+                            {{-- 1. Medicine selection --}}
+                            <div>
+                                <label class="form-label">Select Medicine from Stock <span class="req">*</span></label>
+                                <select name="medicines[0][medicine_id]" id="med_select_0" class="form-control med-select" required onchange="onMedSelect(this, 0)">
+                                    <option value="">&mdash; Choose from Available Stock &mdash;</option>
+                                    @foreach($medicines as $med)
+                                        <option value="{{ $med->id }}" data-name="{{ $med->name }}" data-instructions="{{ $med->instructions_default }}" data-stock="{{ $med->stock_quantity }}" data-unit="{{ $med->unit }}">
+                                            {{ $med->name }} ({{ $med->strength }}) &mdash; Stock: {{ $med->stock_quantity }} {{ $med->unit }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <input type="hidden" name="medicines[0][medicine_name]" id="med_name_0">
+                            </div>
+
+                            {{-- 2. Dynamic Dosage Selection (Morning, Noon, Night) --}}
+                            <div class="p-3.5 bg-white rounded-lg border border-slate-200 space-y-2.5">
+                                <div class="flex items-center justify-between">
+                                    <label class="form-label mb-0 text-slate-800 font-bold">Dynamic Dosage Selection <span class="req">*</span></label>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[11px] text-slate-500">Pattern:</span>
+                                        <span class="text-xs font-black text-teal-800 font-mono bg-teal-50 px-2.5 py-0.5 rounded border border-teal-200" id="dosage_preview_0">1+0+1</span>
+                                    </div>
                                 </div>
+
+                                <div class="grid grid-cols-3 gap-3 text-center">
+                                    <div class="p-2 rounded-md bg-slate-50 border border-slate-200">
+                                        <span class="block text-[11px] font-semibold text-slate-700 mb-1">Morning (সকাল)</span>
+                                        <select id="dose_morning_0" class="form-control py-1 px-2 text-xs text-center font-bold" onchange="onDoseChange(0)">
+                                            <option value="0">0</option>
+                                            <option value="0.5">1/2</option>
+                                            <option value="1" selected>1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+                                    </div>
+                                    <div class="p-2 rounded-md bg-slate-50 border border-slate-200">
+                                        <span class="block text-[11px] font-semibold text-slate-700 mb-1">Noon (দুপুর)</span>
+                                        <select id="dose_noon_0" class="form-control py-1 px-2 text-xs text-center font-bold" onchange="onDoseChange(0)">
+                                            <option value="0" selected>0</option>
+                                            <option value="0.5">1/2</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+                                    </div>
+                                    <div class="p-2 rounded-md bg-slate-50 border border-slate-200">
+                                        <span class="block text-[11px] font-semibold text-slate-700 mb-1">Night (রাত)</span>
+                                        <select id="dose_night_0" class="form-control py-1 px-2 text-xs text-center font-bold" onchange="onDoseChange(0)">
+                                            <option value="0">0</option>
+                                            <option value="0.5">1/2</option>
+                                            <option value="1" selected>1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {{-- Quick Dosage Presets --}}
+                                <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
+                                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Quick Presets:</span>
+                                    <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(0, 1, 0, 1)">1+0+1</button>
+                                    <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(0, 1, 1, 1)">1+1+1</button>
+                                    <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(0, 1, 0, 0)">1+0+0</button>
+                                    <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(0, 0, 0, 1)">0+0+1</button>
+                                    <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(0, 0, 1, 0)">0+1+0</button>
+                                    <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(0, 2, 0, 2)">2+0+2</button>
+                                </div>
+
+                                <input type="hidden" name="medicines[0][dosage]" id="dosage_0" value="1+0+1">
+                            </div>
+
+                            {{-- 3. Duration & Instructions --}}
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="form-label">Total Qty <span class="req">*</span></label>
-                                    <input type="number" name="medicines[0][quantity]" class="form-control" min="1" value="10" required>
+                                    <label class="form-label">Duration (Days) <span class="req">*</span></label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" id="dur_days_0" class="form-control w-24 text-center font-bold" min="1" max="180" value="7" oninput="onDurationChange(0)" required>
+                                        <span class="text-xs font-semibold text-slate-500">Days</span>
+                                        <input type="hidden" name="medicines[0][duration]" id="dur_0" value="7 days">
+                                    </div>
+                                    <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                                        <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(0, 3)">3d</button>
+                                        <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(0, 5)">5d</button>
+                                        <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(0, 7)">7d</button>
+                                        <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(0, 10)">10d</button>
+                                        <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(0, 14)">14d</button>
+                                        <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(0, 30)">30d (1 mo)</button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="form-label">Instructions / Advice</label>
+                                    <input type="text" name="medicines[0][instructions]" id="inst_0" class="form-control" placeholder="e.g. After meal" value="After meal">
+                                    <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                                        <span class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-medium text-slate-600 cursor-pointer" onclick="setInstruction(0, 'After meal')">After meal</span>
+                                        <span class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-medium text-slate-600 cursor-pointer" onclick="setInstruction(0, 'Before meal')">Before meal</span>
+                                        <span class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-medium text-slate-600 cursor-pointer" onclick="setInstruction(0, 'With water')">With water</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <div>
-                                    <label class="form-label">Dosage (Pattern) <span class="req">*</span></label>
-                                    <input type="text" name="medicines[0][dosage]" id="dosage_0" class="form-control text-xs" placeholder="e.g. 1+0+1" value="1+0+1" required>
-                                    <div class="flex items-center gap-1 mt-1.5 flex-wrap">
-                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(0, '1+0+1')">1+0+1</span>
-                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(0, '1+1+1')">1+1+1</span>
-                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(0, '1+0+0')">1+0+0</span>
-                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(0, '0+0+1')">0+0+1</span>
-                                    </div>
+                            {{-- 4. Dynamic Total Quantity Display (Total Given Days x Dosages) --}}
+                            <div class="p-3 bg-teal-50/70 border border-teal-200 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-xs">
+                                <div class="flex items-center gap-2">
+                                    <span class="size-2 rounded-full bg-[#0d9488]"></span>
+                                    <span class="text-xs font-bold text-teal-950 uppercase tracking-wide">Total Dispensing Quantity:</span>
+                                    <span class="text-sm font-black text-teal-900 font-mono" id="qty_display_0">14 tablets</span>
                                 </div>
-                                <div>
-                                    <label class="form-label">Duration <span class="req">*</span></label>
-                                    <input type="text" name="medicines[0][duration]" id="dur_0" class="form-control text-xs" placeholder="e.g. 5 days" value="5 days" required>
-                                    <div class="flex items-center gap-1 mt-1.5 flex-wrap">
-                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(0, '3 days')">3d</span>
-                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(0, '5 days')">5d</span>
-                                        <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(0, '7 days')">7d</span>
-                                    </div>
+                                <div class="text-xs font-semibold text-teal-800" id="qty_breakdown_0">
+                                    2 doses/day &times; 7 days = 14 tablets
                                 </div>
-                                <div>
-                                    <label class="form-label">Instructions / Advice</label>
-                                    <input type="text" name="medicines[0][instructions]" id="inst_0" class="form-control text-xs" placeholder="e.g. After meal" value="After meal">
-                                </div>
+                                <input type="hidden" name="medicines[0][quantity]" id="qty_0" value="14">
                             </div>
                         </div>
                     </div>
@@ -144,25 +216,25 @@
             </div>
 
             {{-- Clinical Advice --}}
-            <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl overflow-hidden">
-                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider">3. Clinical Advice &amp; Follow-up Instructions</span>
-                    <span class="badge badge-gold">Patient Guidance</span>
+            <div class="bg-white border border-slate-200 border-t-4 border-t-[#0284c7] shadow-sm rounded-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-[#091e3a] to-[#0f2b48] text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0f766e]">
+                    <span class="text-xs font-bold uppercase tracking-wider font-heading">3. Clinical Advice &amp; Follow-up Instructions</span>
+                    <span class="badge badge-cyan">Patient Guidance</span>
                 </div>
                 <div class="p-5 sm:p-6">
-                    <textarea name="clinical_advice" class="form-control" rows="3" placeholder="Dietary restrictions, rest instructions, follow-up date, or alarm symptoms...">Drink plenty of warm fluids. Take adequate bed rest. Avoid cold foods/drinks. Return to medical centre if symptoms worsen or fever persists past 3 days.</textarea>
+                    <textarea name="clinical_advice" class="form-control" rows="4" placeholder="Dietary restrictions, rest instructions, follow-up date, or alarm symptoms...">Drink plenty of warm fluids. Take adequate bed rest. Avoid cold foods/drinks. Return to medical centre if symptoms worsen or fever persists past 3 days.</textarea>
                 </div>
             </div>
 
             <div class="flex items-center justify-end gap-3 pt-2">
-                <a href="{{ route('doctor.queue') }}" class="btn btn-outline">Cancel</a>
-                <button type="submit" class="btn btn-green py-2.5 px-6">Issue &amp; Generate Prescription &rarr;</button>
+                <a href="{{ route('doctor.queue') }}" class="btn btn-outline btn-sm">Cancel</a>
+                <button type="submit" class="btn btn-teal btn-sm">Issue &amp; Generate Prescription &rarr;</button>
             </div>
         </div>
 
         {{-- Right Alerts & Dosage Legend (4 cols) --}}
         <div class="lg:col-span-4 space-y-6">
-            <div class="bg-white border border-gray-200 border-t-4 border-t-red-600 shadow-sm rounded-xl p-5">
+            <div class="bg-white border border-gray-200 border-t-4 border-t-red-600 shadow-sm rounded-lg p-5">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-red-700 border-b border-gray-200 pb-2 mb-3">
                     Patient Allergy Alert
                 </h3>
@@ -177,7 +249,7 @@
                 </div>
             </div>
 
-            <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl p-5">
+            <div class="bg-white border border-slate-200 border-t-4 border-t-[#0284c7] shadow-sm rounded-xl p-5">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
                     Dosage Pattern Legend
                 </h3>
@@ -194,55 +266,127 @@
 
 {{-- Hidden Template for Dynamic Rows --}}
 <template id="medicineRowTemplate">
-    <div class="p-4 rounded-lg bg-slate-50 border border-gray-200 space-y-3 med-row" id="row_INDEX">
-        <div class="flex items-center justify-between border-b border-gray-200 pb-2">
-            <strong class="text-xs font-bold text-[#1a6b3a] uppercase">Medicine Item #INDEX_PLUS</strong>
+    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3.5 med-row" id="row_INDEX">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <div class="flex items-center gap-2">
+                <span class="size-6 rounded-full bg-[#0d9488] text-white text-xs font-bold flex items-center justify-center">INDEX_PLUS</span>
+                <strong class="text-xs font-bold text-slate-800 uppercase tracking-wide">Medicine Item #INDEX_PLUS</strong>
+            </div>
             <button type="button" onclick="removeRow('row_INDEX')" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50">Remove</button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="sm:col-span-2">
-                <label class="form-label">Select Medicine from Stock <span class="req">*</span></label>
-                <select name="medicines[INDEX][medicine_id]" class="form-control med-select" required onchange="onMedSelect(this, INDEX)">
-                    <option value="">&mdash; Choose from Available Stock &mdash;</option>
-                    @foreach($medicines as $med)
-                        <option value="{{ $med->id }}" data-name="{{ $med->name }}" data-instructions="{{ $med->instructions_default }}" data-stock="{{ $med->stock_quantity }}">
-                            {{ $med->name }} ({{ $med->strength }}) &mdash; Stock: {{ $med->stock_quantity }} {{ $med->unit }}
-                        </option>
-                    @endforeach
-                </select>
-                <input type="hidden" name="medicines[INDEX][medicine_name]" id="med_name_INDEX">
+        {{-- 1. Medicine selection --}}
+        <div>
+            <label class="form-label">Select Medicine from Stock <span class="req">*</span></label>
+            <select name="medicines[INDEX][medicine_id]" id="med_select_INDEX" class="form-control med-select" required onchange="onMedSelect(this, INDEX)">
+                <option value="">&mdash; Choose from Available Stock &mdash;</option>
+                @foreach($medicines as $med)
+                    <option value="{{ $med->id }}" data-name="{{ $med->name }}" data-instructions="{{ $med->instructions_default }}" data-stock="{{ $med->stock_quantity }}" data-unit="{{ $med->unit }}">
+                        {{ $med->name }} ({{ $med->strength }}) &mdash; Stock: {{ $med->stock_quantity }} {{ $med->unit }}
+                    </option>
+                @endforeach
+            </select>
+            <input type="hidden" name="medicines[INDEX][medicine_name]" id="med_name_INDEX">
+        </div>
+
+        {{-- 2. Dynamic Dosage Selection (Morning, Noon, Night) --}}
+        <div class="p-3.5 bg-white rounded-lg border border-slate-200 space-y-2.5">
+            <div class="flex items-center justify-between">
+                <label class="form-label mb-0 text-slate-800 font-bold">Dynamic Dosage Selection <span class="req">*</span></label>
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-slate-500">Pattern:</span>
+                    <span class="text-xs font-black text-teal-800 font-mono bg-teal-50 px-2.5 py-0.5 rounded border border-teal-200" id="dosage_preview_INDEX">1+0+1</span>
+                </div>
             </div>
+
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-2 rounded-md bg-slate-50 border border-slate-200">
+                    <span class="block text-[11px] font-semibold text-slate-700 mb-1">Morning (সকাল)</span>
+                    <select id="dose_morning_INDEX" class="form-control py-1 px-2 text-xs text-center font-bold" onchange="onDoseChange(INDEX)">
+                        <option value="0">0</option>
+                        <option value="0.5">1/2</option>
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+                <div class="p-2 rounded-md bg-slate-50 border border-slate-200">
+                    <span class="block text-[11px] font-semibold text-slate-700 mb-1">Noon (দুপুর)</span>
+                    <select id="dose_noon_INDEX" class="form-control py-1 px-2 text-xs text-center font-bold" onchange="onDoseChange(INDEX)">
+                        <option value="0" selected>0</option>
+                        <option value="0.5">1/2</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+                <div class="p-2 rounded-md bg-slate-50 border border-slate-200">
+                    <span class="block text-[11px] font-semibold text-slate-700 mb-1">Night (রাত)</span>
+                    <select id="dose_night_INDEX" class="form-control py-1 px-2 text-xs text-center font-bold" onchange="onDoseChange(INDEX)">
+                        <option value="0">0</option>
+                        <option value="0.5">1/2</option>
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+            </div>
+
+            {{-- Quick Dosage Presets --}}
+            <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Quick Presets:</span>
+                <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(INDEX, 1, 0, 1)">1+0+1</button>
+                <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(INDEX, 1, 1, 1)">1+1+1</button>
+                <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(INDEX, 1, 0, 0)">1+0+0</button>
+                <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(INDEX, 0, 0, 1)">0+0+1</button>
+                <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(INDEX, 0, 1, 0)">0+1+0</button>
+                <button type="button" class="py-0.5 px-2 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="applyPresetDosage(INDEX, 2, 0, 2)">2+0+2</button>
+            </div>
+
+            <input type="hidden" name="medicines[INDEX][dosage]" id="dosage_INDEX" value="1+0+1">
+        </div>
+
+        {{-- 3. Duration & Instructions --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-                <label class="form-label">Total Qty <span class="req">*</span></label>
-                <input type="number" name="medicines[INDEX][quantity]" class="form-control" min="1" value="10" required>
+                <label class="form-label">Duration (Days) <span class="req">*</span></label>
+                <div class="flex items-center gap-2">
+                    <input type="number" id="dur_days_INDEX" class="form-control w-24 text-center font-bold" min="1" max="180" value="7" oninput="onDurationChange(INDEX)" required>
+                    <span class="text-xs font-semibold text-slate-500">Days</span>
+                    <input type="hidden" name="medicines[INDEX][duration]" id="dur_INDEX" value="7 days">
+                </div>
+                <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                    <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(INDEX, 3)">3d</button>
+                    <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(INDEX, 5)">5d</button>
+                    <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(INDEX, 7)">7d</button>
+                    <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(INDEX, 10)">10d</button>
+                    <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(INDEX, 14)">14d</button>
+                    <button type="button" class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer" onclick="setDurationDays(INDEX, 30)">30d (1 mo)</button>
+                </div>
+            </div>
+
+            <div>
+                <label class="form-label">Instructions / Advice</label>
+                <input type="text" name="medicines[INDEX][instructions]" id="inst_INDEX" class="form-control" placeholder="e.g. After meal" value="After meal">
+                <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                    <span class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-medium text-slate-600 cursor-pointer" onclick="setInstruction(INDEX, 'After meal')">After meal</span>
+                    <span class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-medium text-slate-600 cursor-pointer" onclick="setInstruction(INDEX, 'Before meal')">Before meal</span>
+                    <span class="py-0.5 px-1.5 rounded bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-[10px] font-medium text-slate-600 cursor-pointer" onclick="setInstruction(INDEX, 'With water')">With water</span>
+                </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-                <label class="form-label">Dosage (Pattern) <span class="req">*</span></label>
-                <input type="text" name="medicines[INDEX][dosage]" id="dosage_INDEX" class="form-control text-xs" placeholder="e.g. 1+0+1" value="1+0+1" required>
-                <div class="flex items-center gap-1 mt-1.5 flex-wrap">
-                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(INDEX, '1+0+1')">1+0+1</span>
-                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(INDEX, '1+1+1')">1+1+1</span>
-                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(INDEX, '1+0+0')">1+0+0</span>
-                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDosage(INDEX, '0+0+1')">0+0+1</span>
-                </div>
+        {{-- 4. Dynamic Total Quantity Display (Total Given Days x Dosages) --}}
+        <div class="p-3 bg-teal-50/70 border border-teal-200 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-xs">
+            <div class="flex items-center gap-2">
+                <span class="size-2 rounded-full bg-[#0d9488]"></span>
+                <span class="text-xs font-bold text-teal-950 uppercase tracking-wide">Total Dispensing Quantity:</span>
+                <span class="text-sm font-black text-teal-900 font-mono" id="qty_display_INDEX">14 tablets</span>
             </div>
-            <div>
-                <label class="form-label">Duration <span class="req">*</span></label>
-                <input type="text" name="medicines[INDEX][duration]" id="dur_INDEX" class="form-control text-xs" placeholder="e.g. 5 days" value="5 days" required>
-                <div class="flex items-center gap-1 mt-1.5 flex-wrap">
-                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(INDEX, '3 days')">3d</span>
-                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(INDEX, '5 days')">5d</span>
-                    <span class="py-0.5 px-1.5 rounded bg-white border border-gray-300 text-[10px] font-bold text-[#134d2a] cursor-pointer hover:bg-emerald-50" onclick="setDuration(INDEX, '7 days')">7d</span>
-                </div>
+            <div class="text-xs font-semibold text-teal-800" id="qty_breakdown_INDEX">
+                2 doses/day &times; 7 days = 14 tablets
             </div>
-            <div>
-                <label class="form-label">Instructions / Advice</label>
-                <input type="text" name="medicines[INDEX][instructions]" id="inst_INDEX" class="form-control text-xs" placeholder="e.g. After meal" value="After meal">
-            </div>
+            <input type="hidden" name="medicines[INDEX][quantity]" id="qty_INDEX" value="14">
         </div>
     </div>
 </template>
@@ -251,6 +395,95 @@
 @push('scripts')
 <script>
     let rowIndex = 1;
+
+    function formatNumberLabel(num) {
+        if (num === 0.5) return '1/2';
+        return num.toString();
+    }
+
+    function calculateRowTotal(idx) {
+        const morningEl = document.getElementById('dose_morning_' + idx);
+        const noonEl = document.getElementById('dose_noon_' + idx);
+        const nightEl = document.getElementById('dose_night_' + idx);
+        const daysEl = document.getElementById('dur_days_' + idx);
+        const selectEl = document.getElementById('med_select_' + idx);
+
+        const m = morningEl ? parseFloat(morningEl.value) || 0 : 1;
+        const n = noonEl ? parseFloat(noonEl.value) || 0 : 0;
+        const e = nightEl ? parseFloat(nightEl.value) || 0 : 1;
+        const days = daysEl ? Math.max(1, parseInt(daysEl.value, 10) || 1) : 7;
+
+        // Daily doses
+        const dailyDoses = m + n + e;
+        const pattern = `${formatNumberLabel(m)}+${formatNumberLabel(n)}+${formatNumberLabel(e)}`;
+
+        // Update hidden dosage input & preview
+        const dosageHidden = document.getElementById('dosage_' + idx);
+        if (dosageHidden) dosageHidden.value = pattern;
+        const dosagePreview = document.getElementById('dosage_preview_' + idx);
+        if (dosagePreview) dosagePreview.textContent = pattern;
+
+        // Update hidden duration input
+        const durHidden = document.getElementById('dur_' + idx);
+        if (durHidden) durHidden.value = `${days} days`;
+
+        // Total calculated quantity
+        const totalQty = Math.max(1, Math.ceil(dailyDoses * days));
+
+        // Get unit from selected medicine
+        let unit = 'tablets';
+        if (selectEl && selectEl.selectedIndex > 0) {
+            const opt = selectEl.options[selectEl.selectedIndex];
+            unit = opt.getAttribute('data-unit') || 'tablets';
+        }
+
+        // Update hidden quantity input
+        const qtyHidden = document.getElementById('qty_' + idx);
+        if (qtyHidden) qtyHidden.value = totalQty;
+
+        // Update display badge
+        const qtyDisplay = document.getElementById('qty_display_' + idx);
+        if (qtyDisplay) qtyDisplay.textContent = `${totalQty} ${unit}`;
+
+        // Update breakdown description
+        const qtyBreakdown = document.getElementById('qty_breakdown_' + idx);
+        if (qtyBreakdown) {
+            qtyBreakdown.innerHTML = `${dailyDoses} doses/day &times; ${days} days = ${totalQty} ${unit}`;
+        }
+    }
+
+    function onDoseChange(idx) {
+        calculateRowTotal(idx);
+    }
+
+    function onDurationChange(idx) {
+        calculateRowTotal(idx);
+    }
+
+    function applyPresetDosage(idx, m, n, e) {
+        const morningEl = document.getElementById('dose_morning_' + idx);
+        const noonEl = document.getElementById('dose_noon_' + idx);
+        const nightEl = document.getElementById('dose_night_' + idx);
+
+        if (morningEl) morningEl.value = m;
+        if (noonEl) noonEl.value = n;
+        if (nightEl) nightEl.value = e;
+
+        calculateRowTotal(idx);
+    }
+
+    function setDurationDays(idx, days) {
+        const daysEl = document.getElementById('dur_days_' + idx);
+        if (daysEl) {
+            daysEl.value = days;
+            calculateRowTotal(idx);
+        }
+    }
+
+    function setInstruction(idx, val) {
+        const instEl = document.getElementById('inst_' + idx);
+        if (instEl) instEl.value = val;
+    }
 
     function onMedSelect(selectEl, idx) {
         const selected = selectEl.options[selectEl.selectedIndex];
@@ -261,17 +494,11 @@
         if (nameInput) nameInput.value = medName || '';
 
         const instInput = document.getElementById('inst_' + idx);
-        if (instInput && defaultInst) instInput.value = defaultInst;
-    }
+        if (instInput && defaultInst && !instInput.value.trim()) {
+            instInput.value = defaultInst;
+        }
 
-    function setDosage(idx, val) {
-        const el = document.getElementById('dosage_' + idx);
-        if (el) el.value = val;
-    }
-
-    function setDuration(idx, val) {
-        const el = document.getElementById('dur_' + idx);
-        if (el) el.value = val;
+        calculateRowTotal(idx);
     }
 
     function addMedicineRow() {
@@ -283,7 +510,10 @@
 
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = newHtml;
-        container.appendChild(tempDiv.firstElementChild);
+        const newElement = tempDiv.firstElementChild;
+        container.appendChild(newElement);
+
+        calculateRowTotal(rowIndex);
         rowIndex++;
     }
 
@@ -317,7 +547,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const sel = document.querySelector('.med-select');
+        calculateRowTotal(0);
+
+        const sel = document.getElementById('med_select_0');
         if (sel && sel.selectedIndex > 0) {
             onMedSelect(sel, 0);
         }

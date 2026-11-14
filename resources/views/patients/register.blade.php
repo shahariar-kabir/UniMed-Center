@@ -37,7 +37,7 @@
 
             {{-- Section 1: Personal Details --}}
             <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
-                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <div class="bg-gradient-to-r from-[#091e3a] to-[#0f2b48] text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0d9488]">
                     <span class="text-xs font-bold uppercase tracking-wider">Section 1 &mdash; Personal Details</span>
                     <span class="badge badge-gold">Identity</span>
                 </div>
@@ -78,7 +78,7 @@
                         <div class="flex items-center gap-4 flex-wrap pt-1 text-xs">
                             @foreach(['Male','Female','Other','Prefer not to say'] as $g)
                                 <label class="flex items-center gap-x-2 cursor-pointer text-slate-700">
-                                    <input type="radio" name="gender" value="{{ $g }}" {{ old('gender') === $g ? 'checked' : '' }} required class="text-emerald-600 focus:ring-emerald-500">
+                                    <input type="radio" name="gender" value="{{ $g }}" {{ old('gender') === $g ? 'checked' : '' }} required class="text-emerald-600 focus:ring-teal-500">
                                     <span>{{ $g }}</span>
                                 </label>
                             @endforeach
@@ -89,7 +89,7 @@
 
             {{-- Section 2: University Details --}}
             <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
-                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <div class="bg-gradient-to-r from-[#091e3a] to-[#0f2b48] text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0d9488]">
                     <span class="text-xs font-bold uppercase tracking-wider">Section 2 &mdash; University Affiliation</span>
                     <span class="badge badge-gold">Academic</span>
                 </div>
@@ -126,7 +126,7 @@
 
             {{-- Section 3: Contact & Emergency --}}
             <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
-                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <div class="bg-gradient-to-r from-[#091e3a] to-[#0f2b48] text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0d9488]">
                     <span class="text-xs font-bold uppercase tracking-wider">Section 3 &mdash; Contact &amp; Emergency Details</span>
                     <span class="badge badge-gold">Contact</span>
                 </div>
@@ -162,7 +162,7 @@
 
             {{-- Section 4: Medical History --}}
             <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
-                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <div class="bg-gradient-to-r from-[#091e3a] to-[#0f2b48] text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0d9488]">
                     <span class="text-xs font-bold uppercase tracking-wider">Section 4 &mdash; Medical Profile &amp; Allergies</span>
                     <span class="badge badge-gold">Clinical</span>
                 </div>
@@ -179,7 +179,7 @@
                                 <label class="flex items-center gap-x-2 text-xs text-slate-700 cursor-pointer">
                                     <input type="checkbox" name="conditions[]" value="{{ $cond }}"
                                         {{ in_array($cond, old('conditions', [])) ? 'checked' : '' }}
-                                        class="rounded text-emerald-600 focus:ring-emerald-500">
+                                        class="rounded text-emerald-600 focus:ring-teal-500">
                                     <span>{{ $cond }}</span>
                                 </label>
                             @endforeach
@@ -195,7 +195,7 @@
 
             {{-- Section 5: Declaration & Submission --}}
             <div class="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
-                <div class="bg-[#134d2a] text-white px-5 py-3.5 flex items-center justify-between">
+                <div class="bg-gradient-to-r from-[#091e3a] to-[#0f2b48] text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-[#0d9488]">
                     <span class="text-xs font-bold uppercase tracking-wider">Patient Declaration</span>
                     <span class="badge badge-green">Consent</span>
                 </div>
@@ -207,7 +207,7 @@
                     </p>
 
                     <label class="flex items-start gap-x-2.5 text-xs text-slate-800 font-medium cursor-pointer">
-                        <input type="checkbox" name="declaration" required class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
+                        <input type="checkbox" name="declaration" required class="mt-0.5 rounded text-emerald-600 focus:ring-teal-500">
                         <span>I have read and agree to the patient consent declaration above. <span class="req">*</span></span>
                     </label>
                 </div>
@@ -224,7 +224,7 @@
 
     {{-- Sidebar Information (1 col) --}}
     <div class="space-y-6">
-        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl p-5">
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#0d9488] shadow-sm rounded-xl p-5">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
                 Before You Register
             </h3>
@@ -236,7 +236,7 @@
             </ul>
         </div>
 
-        <div class="bg-white border border-gray-200 border-t-4 border-t-[#c8922a] shadow-sm rounded-xl p-5">
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#0284c7] shadow-sm rounded-xl p-5">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
                 Need Assistance?
             </h3>
@@ -250,7 +250,7 @@
             </div>
         </div>
 
-        <div class="bg-white border border-gray-200 border-t-4 border-t-[#1a6b3a] shadow-sm rounded-xl p-5">
+        <div class="bg-white border border-gray-200 border-t-4 border-t-[#0d9488] shadow-sm rounded-xl p-5">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-gray-200 pb-2 mb-3">
                 Already Registered?
             </h3>

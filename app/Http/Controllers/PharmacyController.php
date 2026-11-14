@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MedicalQueue;
 use App\Models\Medicine;
 use App\Models\Prescription;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class PharmacyController extends Controller
@@ -46,7 +48,8 @@ class PharmacyController extends Controller
             $query->where(function ($q) use ($s) {
                 $q->where('name', 'like', "%{$s}%")
                     ->orWhere('generic_name', 'like', "%{$s}%")
-                    ->orWhere('batch_number', 'like', "%{$s}%");
+                    ->orWhere('batch_number', 'like', "%{$s}%")
+                    ->orWhere('category', 'like', "%{$s}%");
             });
         }
 
@@ -54,16 +57,41 @@ class PharmacyController extends Controller
             $query->where('category', $request->input('category'));
         }
 
-        if ($request->input('filter') === 'low_stock') {
+        $filter = $request->input('filter');
+        if ($filter === 'low_stock') {
             $query->lowStock();
-        } elseif ($request->input('filter') === 'near_expiry') {
-            $query->nearExpiry(60);
+        } elseif ($filter === 'near_expiry') {
+            $query->nearExpiry(45);
+        } elseif ($filter === 'available') {
+            $query->whereColumn('stock_quantity', '>', 'reorder_level')
+                ->where('expiry_date', '>', now()->addDays(45));
+        } elseif ($filter === 'out_expired' || $filter === 'expired') {
+            $query->where(function ($q) {
+                $q->where('stock_quantity', '<=', 0)
+                    ->orWhere('expiry_date', '<', now());
+            });
         }
 
         $medicines = $query->orderBy('name')->paginate(15)->withQueryString();
         $categories = Medicine::select('category')->distinct()->pluck('category');
 
-        return view('pharmacy.inventory', compact('medicines', 'categories'));
+        // Operational Overview Metrics matching Reference UI
+        $todayPatientsCount = MedicalQueue::whereDate('created_at', Carbon::today())->count();
+        $completedConsultationsCount = Prescription::whereDate('created_at', Carbon::today())->where('status', 'dispensed')->count();
+        if ($completedConsultationsCount === 0) {
+            $completedConsultationsCount = Prescription::whereDate('created_at', Carbon::today())->count();
+        }
+        $lowStockCount = Medicine::whereColumn('stock_quantity', '<=', 'reorder_level')->count();
+        $nearExpiryCount = Medicine::where('expiry_date', '<=', Carbon::now()->addDays(45))->count();
+
+        return view('pharmacy.inventory', compact(
+            'medicines',
+            'categories',
+            'todayPatientsCount',
+            'completedConsultationsCount',
+            'lowStockCount',
+            'nearExpiryCount'
+        ));
     }
 
     public function storeMedicine(Request $request): RedirectResponse
@@ -92,16 +120,36 @@ class PharmacyController extends Controller
     {
         $validated = $request->validate([
             'adjustment' => 'required|integer',
-            'action' => 'required|in:add,set',
+            'action' => 'sometimes|in:add,set',
+            'batch_number' => 'nullable|string|max:50',
+            'expiry_date' => 'nullable|date',
         ]);
 
-        if ($validated['action'] === 'add') {
-            $medicine->increment('stock_quantity', $validated['adjustment']);
-        } else {
-            $medicine->update(['stock_quantity' => max(0, $validated['adjustment'])]);
-        }
+        $action = $request->input('action', 'add');
 
-        return back()->with('success', "Stock for {$medicine->name} updated to {$medicine->stock_quantity} {$medicine->unit}.");
+        DB::transaction(function () use ($medicine, $validated, $action) {
+            $lockedMedicine = Medicine::where('id', $medicine->id)->lockForUpdate()->first();
+            if ($lockedMedicine) {
+                if ($action === 'add') {
+                    $lockedMedicine->increment('stock_quantity', $validated['adjustment']);
+                } else {
+                    $lockedMedicine->update(['stock_quantity' => max(0, $validated['adjustment'])]);
+                }
+
+                $updates = [];
+                if (! empty($validated['batch_number'])) {
+                    $updates['batch_number'] = $validated['batch_number'];
+                }
+                if (! empty($validated['expiry_date'])) {
+                    $updates['expiry_date'] = $validated['expiry_date'];
+                }
+                if (! empty($updates)) {
+                    $lockedMedicine->update($updates);
+                }
+            }
+        });
+
+        return back()->with('success', "Stock for {$medicine->name} updated successfully to {$medicine->fresh()->stock_quantity} {$medicine->unit}.");
     }
 
     public function dispenseList(): View
@@ -116,21 +164,33 @@ class PharmacyController extends Controller
 
     public function dispense(Prescription $prescription): RedirectResponse
     {
-        foreach ($prescription->items as $item) {
-            if ($item->medicine_id) {
-                $med = Medicine::find($item->medicine_id);
-                if ($med) {
-                    $med->decrement('stock_quantity', min($med->stock_quantity, $item->quantity));
-                }
-            }
-            $item->update(['is_dispensed' => true]);
+        if ($prescription->status === 'dispensed') {
+            return redirect()->route('pharmacy.dispense')->with('info', "Prescription {$prescription->prescription_number} has already been dispensed.");
         }
 
-        $prescription->update([
-            'status' => 'dispensed',
-            'dispensed_at' => Carbon::now(),
-            'dispensed_by' => auth()->id(),
-        ]);
+        DB::transaction(function () use ($prescription) {
+            $lockedPrescription = Prescription::where('id', $prescription->id)->lockForUpdate()->first();
+            if (! $lockedPrescription || $lockedPrescription->status === 'dispensed') {
+                return;
+            }
+
+            foreach ($lockedPrescription->items as $item) {
+                if ($item->medicine_id) {
+                    $med = Medicine::where('id', $item->medicine_id)->lockForUpdate()->first();
+                    if ($med) {
+                        $deduct = min($med->stock_quantity, $item->quantity);
+                        $med->decrement('stock_quantity', $deduct);
+                    }
+                }
+                $item->update(['is_dispensed' => true]);
+            }
+
+            $lockedPrescription->update([
+                'status' => 'dispensed',
+                'dispensed_at' => Carbon::now(),
+                'dispensed_by' => auth()->id(),
+            ]);
+        });
 
         return redirect()->route('pharmacy.dispense')->with('success', "Prescription {$prescription->prescription_number} dispensed successfully. Medicine inventory updated.");
     }
